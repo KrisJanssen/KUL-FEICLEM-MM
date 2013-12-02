@@ -1,0 +1,18 @@
+[submodule "3rdpartypublic_1_4"]
+	path = 3rdpartypublic_1_4
+	owner = /
+	url = https://valelab.ucsf.edu/svn/3rdpartypublic
+	revision = 152
+	branch = /
+	fetch = :refs/remotes/git-svn
+	remote = svn
+	type = dir
+[submodule "MM_1_4_trunk"]
+	path = MM_1_4_trunk
+	owner = /
+	url = https://valelab.ucsf.edu/svn/micromanager2/trunk
+	revision = 12277
+	branch = /
+	fetch = :refs/remotes/git-svn
+	remote = svn
+	type = dir
