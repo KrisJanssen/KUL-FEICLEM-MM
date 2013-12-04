@@ -11,38 +11,38 @@
     </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Cobolt.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\MMDevice\DeviceUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\MMDevice\ModuleInterface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\MMDevice\Property.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Cobolt.h">
+    <ClInclude Include="Omicron.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\MMDevice\DeviceBase.h">
+    <ClInclude Include="..\..\..\..\micromanager\MMDevice\Property.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\MMDevice\MMDevice.h">
+    <ClInclude Include="..\..\..\..\micromanager\MMDevice\ModuleInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\MMDevice\ModuleInterface.h">
+    <ClInclude Include="..\..\..\..\micromanager\MMDevice\DeviceUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\MMDevice\Property.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\micromanager\MMDevice\Property.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\micromanager\MMDevice\ModuleInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\micromanager\MMDevice\DeviceUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Omicron.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

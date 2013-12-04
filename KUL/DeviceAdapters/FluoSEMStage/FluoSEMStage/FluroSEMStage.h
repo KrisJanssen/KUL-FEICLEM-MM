@@ -9,8 +9,8 @@
 // LICENSE:       LGPL
 //
 // AUTHOR:        Nico Stuurman, nico@cmp.ucsf.edu, 11/09/2008
-//                automatic device detection by Karl Hoover
-//
+//                automatic device detection by Karl Hoover.
+//				  Adaptation to KUL Quanta FEG 250 CLEM stage by Thomas Franklin, 2013
 //
 
 #ifndef _FluroSEMStage_H_
@@ -20,8 +20,8 @@
 #define PI_CNTR_NO_ERROR  0L
 #define PI_CNTR_UNKNOWN_COMMAND 2L
 
-#include "../../MMDevice/MMDevice.h"
-#include "../../MMDevice/DeviceBase.h"
+#include "../../../../micromanager/MMDevice/MMDevice.h"
+#include "../../../../micromanager/MMDevice/DeviceBase.h"
 #include <string>
 #include <map>
 

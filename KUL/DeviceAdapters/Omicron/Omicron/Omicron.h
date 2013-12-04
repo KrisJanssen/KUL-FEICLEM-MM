@@ -13,9 +13,9 @@
 #define _OMICRON_H_
 #endif
 
-#include "../../MMDevice/MMDevice.h"
-#include "../../MMDevice/DeviceBase.h"
-#include "../../MMDevice/ModuleInterface.h"
+#include "../../../../micromanager/MMDevice/MMDevice.h"
+#include "../../../../micromanager/MMDevice/DeviceBase.h"
+#include "../../../../micromanager/MMDevice/ModuleInterface.h"
 
 #include <string>
 #include <map>

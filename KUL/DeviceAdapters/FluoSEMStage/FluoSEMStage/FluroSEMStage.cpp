@@ -13,7 +13,7 @@
 //
 
 #include "FluroSEMStage.h"
-#include "../../MMDevice/ModuleInterface.h"
+#include "../../../../micromanager/MMDevice/ModuleInterface.h"
 #include <sstream>
 #include <cstdio>
 
