@@ -66,6 +66,6 @@ public class FluoSEMStageControl implements MMPlugin {
    }
    
    public String getCopyright() {
-      return "University of California, 2010";
+      return "KU Leuven, 2013";
    }
 }

@@ -268,7 +268,7 @@ public class FluoSEMLaserControlFrame extends javax.swing.JFrame {
 
         Title.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         Title.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Title.setText("FluorSEM Laser Control");
+        Title.setText("FluoSEM Laser Control");
 
         jPower1.setText("jPower1");
 
