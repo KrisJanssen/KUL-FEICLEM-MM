@@ -19,26 +19,26 @@
  *               INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES.
  **/
 
-package FluroSEM;
+package FluoSEM;
 
 import mmcorej.CMMCore;
 import org.micromanager.api.MMPlugin;
 import org.micromanager.api.ScriptInterface;
-import static FluroSEM.FluroSEMLaserControl.tooltipDescription;
+import static FluoSEM.FluoSEMLaserControl.tooltipDescription;
 
 
-public class FluroSEMLaserControl implements MMPlugin {
-   public static String menuName = "FluroSEM Laser Control";
-   public static String tooltipDescription = "FluroSEM Laser Control of Lighthub.";
+public class FluoSEMLaserControl implements MMPlugin {
+   public static String menuName = "FluoSEM Laser Control";
+   public static String tooltipDescription = "FluoSEM Laser Control of Lighthub.";
    private CMMCore core_;
    private ScriptInterface gui_;
-   private FluroSEMLaserControlFrame myFrame_;
+   private FluoSEMLaserControlFrame myFrame_;
 
    public void setApp(ScriptInterface app) {
       gui_ = app;                                        
       core_ = app.getMMCore();
       if (myFrame_ == null)
-         myFrame_ = new FluroSEMLaserControlFrame(gui_);
+         myFrame_ = new FluoSEMLaserControlFrame(gui_);
       myFrame_.setVisible(true);
    }
 
@@ -47,14 +47,14 @@ public class FluroSEMLaserControl implements MMPlugin {
    }
 
    public void show() {
-         String ig = "FluroSEM Laser Control";
+         String ig = "FluoSEM Laser Control";
    }
 
    public void configurationChanged() {
    }
 
    public String getInfo () {
-      return "FluroSEM Laser Control Plugin";
+      return "FluoSEM Laser Control Plugin";
    }
 
    public String getDescription() {

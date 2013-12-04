@@ -12,7 +12,7 @@
 //
 //
 
-#include "FluroSEMStage.h"
+#include "FluoSEMStage.h"
 #include "../../../../micromanager/MMDevice/ModuleInterface.h"
 #include <sstream>
 #include <cstdio>
@@ -23,14 +23,14 @@
    #define snprintf _snprintf 
 #endif
 
-const char* g_DeviceNameFluroSEMStageHub = "FluroSEM-Stage-Hub";
-const char* g_DeviceNameFluroSEMStageXY = "FluroSEM-Stage-XY";
-const char* g_DeviceNameFluroSEMStageLR = "FluroSEM-Stage-LR";
-const char* g_DeviceNameFluroSEMStageZ = "FluroSEM-Stage-Z";
+const char* g_DeviceNameFluoSEMStageHub = "FluoSEM-Stage-Hub";
+const char* g_DeviceNameFluoSEMStageXY = "FluoSEM-Stage-XY";
+const char* g_DeviceNameFluoSEMStageLR = "FluoSEM-Stage-LR";
+const char* g_DeviceNameFluoSEMStageZ = "FluoSEM-Stage-Z";
 
 
-//const char* g_DeviceNameFluroSEMStageE861 = "FluroSEM-Stage-E861";
-//const char* g_DeviceNameFluroSEMStageC867 = "FluroSEM-Stage-C867";
+//const char* g_DeviceNameFluoSEMStageE861 = "FluoSEM-Stage-E861";
+//const char* g_DeviceNameFluoSEMStageC867 = "FluoSEM-Stage-C867";
 
 
 /*/ Global info about the state of the Arduino.  This should be folded into a class
@@ -46,19 +46,19 @@ const char* g_On = "On";
 const char* g_Off = "Off";
 */
 // static lock
-MMThreadLock CFluroSEMStageHub::lock_;
+MMThreadLock CFluoSEMStageHub::lock_;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Exported MMDevice API
 ///////////////////////////////////////////////////////////////////////////////
 MODULE_API void InitializeModuleData()
 {
-   AddAvailableDeviceName(g_DeviceNameFluroSEMStageHub, "Hub (required)");
-   AddAvailableDeviceName(g_DeviceNameFluroSEMStageXY, "Stage XY");
-   AddAvailableDeviceName(g_DeviceNameFluroSEMStageLR, "Objective LR");
-   AddAvailableDeviceName(g_DeviceNameFluroSEMStageZ, "Objective Z");
-  // AddAvailableDeviceName(g_DeviceNameFluroSEMStageE861, "E861 Objective Controller");
-  // AddAvailableDeviceName(g_DeviceNameFluroSEMStageC867, "C867 Stage Controller");
+   AddAvailableDeviceName(g_DeviceNameFluoSEMStageHub, "Hub (required)");
+   AddAvailableDeviceName(g_DeviceNameFluoSEMStageXY, "Stage XY");
+   AddAvailableDeviceName(g_DeviceNameFluoSEMStageLR, "Objective LR");
+   AddAvailableDeviceName(g_DeviceNameFluoSEMStageZ, "Objective Z");
+  // AddAvailableDeviceName(g_DeviceNameFluoSEMStageE861, "E861 Objective Controller");
+  // AddAvailableDeviceName(g_DeviceNameFluoSEMStageC867, "C867 Stage Controller");
 }
 
 MODULE_API MM::Device* CreateDevice(const char* deviceName)
@@ -66,21 +66,21 @@ MODULE_API MM::Device* CreateDevice(const char* deviceName)
    if (deviceName == 0)
       return 0;
 
-   if (strcmp(deviceName, g_DeviceNameFluroSEMStageHub) == 0)
+   if (strcmp(deviceName, g_DeviceNameFluoSEMStageHub) == 0)
    {
-      return new CFluroSEMStageHub;
+      return new CFluoSEMStageHub;
    }
-   else if (strcmp(deviceName, g_DeviceNameFluroSEMStageXY) == 0)
+   else if (strcmp(deviceName, g_DeviceNameFluoSEMStageXY) == 0)
    {
-      return new CFluroSEMStageXY;
+      return new CFluoSEMStageXY;
    }
-   else if (strcmp(deviceName, g_DeviceNameFluroSEMStageLR) == 0)
+   else if (strcmp(deviceName, g_DeviceNameFluoSEMStageLR) == 0)
    {
-      return new CFluroSEMStageLR;
+      return new CFluoSEMStageLR;
    }
-   else if (strcmp(deviceName, g_DeviceNameFluroSEMStageZ) == 0)
+   else if (strcmp(deviceName, g_DeviceNameFluoSEMStageZ) == 0)
    {
-      return new CFluroSEMStageZ; // channel 1
+      return new CFluoSEMStageZ; // channel 1
    }
 
    return 0;
@@ -95,7 +95,7 @@ MODULE_API void DeleteDevice(MM::Device* pDevice)
 // CArduinoHUb implementation
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-CFluroSEMStageHub::CFluroSEMStageHub() :
+CFluoSEMStageHub::CFluoSEMStageHub() :
 initialized_ (false)
 {
    portAvailable_ = false;
@@ -106,26 +106,26 @@ initialized_ (false)
    SetErrorText(PI_CNTR_NO_ERROR, "No Error");
    SetErrorText(PI_CNTR_UNKNOWN_COMMAND, "Unknown Command");
 
-   CPropertyAction* pAct = new CPropertyAction(this, &CFluroSEMStageHub::OnPort);
+   CPropertyAction* pAct = new CPropertyAction(this, &CFluoSEMStageHub::OnPort);
    CreateProperty(MM::g_Keyword_Port, "Undefined", MM::String, false, pAct, true);
 }
 
-CFluroSEMStageHub::~CFluroSEMStageHub()
+CFluoSEMStageHub::~CFluoSEMStageHub()
 {
    Shutdown();
 }
 
-void CFluroSEMStageHub::GetName(char* name) const
+void CFluoSEMStageHub::GetName(char* name) const
 {
-   CDeviceUtils::CopyLimitedString(name, g_DeviceNameFluroSEMStageHub);
+   CDeviceUtils::CopyLimitedString(name, g_DeviceNameFluoSEMStageHub);
 }
 
-bool CFluroSEMStageHub::Busy()
+bool CFluoSEMStageHub::Busy()
 {
    return false;
 }
 
-MM::DeviceDetectionStatus CFluroSEMStageHub::DetectDevice(void)
+MM::DeviceDetectionStatus CFluoSEMStageHub::DetectDevice(void)
 {
    if (initialized_)
       return MM::CanCommunicate;
@@ -178,10 +178,10 @@ MM::DeviceDetectionStatus CFluroSEMStageHub::DetectDevice(void)
    return result;
 }
 
-int CFluroSEMStageHub::Initialize()
+int CFluoSEMStageHub::Initialize()
 {
    // Name
-   int ret = CreateProperty(MM::g_Keyword_Name, g_DeviceNameFluroSEMStageHub, MM::String, true);
+   int ret = CreateProperty(MM::g_Keyword_Name, g_DeviceNameFluoSEMStageHub, MM::String, true);
    std::vector<std::string> answer;
 
    // The first second or so after opening the serial port, the Arduino is waiting for firmwareupgrades.  Simply sleep 1 second.
@@ -207,15 +207,15 @@ int CFluroSEMStageHub::Initialize()
    return DEVICE_OK;
 }
 
-int CFluroSEMStageHub::DetectInstalledDevices()
+int CFluoSEMStageHub::DetectInstalledDevices()
 {
    if (MM::CanCommunicate == DetectDevice()) 
    {
       std::vector<std::string> peripherals; 
       peripherals.clear();
-      peripherals.push_back(g_DeviceNameFluroSEMStageXY);
-      peripherals.push_back(g_DeviceNameFluroSEMStageLR);
-      peripherals.push_back(g_DeviceNameFluroSEMStageZ);
+      peripherals.push_back(g_DeviceNameFluoSEMStageXY);
+      peripherals.push_back(g_DeviceNameFluoSEMStageLR);
+      peripherals.push_back(g_DeviceNameFluoSEMStageZ);
       for (size_t i=0; i < peripherals.size(); i++) 
       {
          MM::Device* pDev = ::CreateDevice(peripherals[i].c_str());
@@ -229,13 +229,13 @@ int CFluroSEMStageHub::DetectInstalledDevices()
    return DEVICE_OK;
 }
 
-int CFluroSEMStageHub::Shutdown()
+int CFluoSEMStageHub::Shutdown()
 {
    initialized_ = false;
    return DEVICE_OK;
 }
 
-bool CFluroSEMStageHub::SendGCSCommand(unsigned char singlebyte)
+bool CFluoSEMStageHub::SendGCSCommand(unsigned char singlebyte)
 {
    int ret = WriteToComPort(port_.c_str(), &singlebyte, 1);
    if (ret != DEVICE_OK)
@@ -246,7 +246,7 @@ bool CFluroSEMStageHub::SendGCSCommand(unsigned char singlebyte)
 	return true;
 }
 
-bool CFluroSEMStageHub::SendGCSCommand(const std::string command)
+bool CFluoSEMStageHub::SendGCSCommand(const std::string command)
 {
    int ret = SendSerialCommand(port_.c_str(), command.c_str(), "\n");
    if (ret != DEVICE_OK)
@@ -257,21 +257,21 @@ bool CFluroSEMStageHub::SendGCSCommand(const std::string command)
 	return true;
 }
 
-bool CFluroSEMStageHub::GCSCommandWithAnswer(const std::string command, std::vector<std::string>& answer, int nExpectedLines)
+bool CFluoSEMStageHub::GCSCommandWithAnswer(const std::string command, std::vector<std::string>& answer, int nExpectedLines)
 {
 	if (!SendGCSCommand(command))
 		return false;
 	return ReadGCSAnswer(answer, nExpectedLines);
 }
 
-bool CFluroSEMStageHub::GCSCommandWithAnswer(unsigned char singlebyte, std::vector<std::string>& answer, int nExpectedLines)
+bool CFluoSEMStageHub::GCSCommandWithAnswer(unsigned char singlebyte, std::vector<std::string>& answer, int nExpectedLines)
 {
 	if (!SendGCSCommand(singlebyte))
 		return false;
 	return ReadGCSAnswer(answer, nExpectedLines);
 }
 
-bool CFluroSEMStageHub::ReadGCSAnswer(std::vector<std::string>& answer, int nExpectedLines)
+bool CFluoSEMStageHub::ReadGCSAnswer(std::vector<std::string>& answer, int nExpectedLines)
 {
 	answer.clear();
    std::string line;
@@ -291,7 +291,7 @@ bool CFluroSEMStageHub::ReadGCSAnswer(std::vector<std::string>& answer, int nExp
 	return true;
 }
 
-int CFluroSEMStageHub::OnPort(MM::PropertyBase* pProp, MM::ActionType pAct)
+int CFluoSEMStageHub::OnPort(MM::PropertyBase* pProp, MM::ActionType pAct)
 {
    if (pAct == MM::BeforeGet)
    {
@@ -305,16 +305,16 @@ int CFluroSEMStageHub::OnPort(MM::PropertyBase* pProp, MM::ActionType pAct)
    return DEVICE_OK;
 }
 
-CFluroSEMStageXY::CFluroSEMStageXY():initialized_(false)
+CFluoSEMStageXY::CFluoSEMStageXY():initialized_(false)
 {
    InitializeDefaultErrorMessages();
 
    // Description
-   int ret = CreateProperty(MM::g_Keyword_Description, "FluroSEM XY Stage", MM::String, true);
+   int ret = CreateProperty(MM::g_Keyword_Description, "FluoSEM XY Stage", MM::String, true);
    assert(DEVICE_OK == ret);
 
    // Name
-   ret = CreateProperty(MM::g_Keyword_Name, g_DeviceNameFluroSEMStageXY, MM::String, true);
+   ret = CreateProperty(MM::g_Keyword_Name, g_DeviceNameFluoSEMStageXY, MM::String, true);
    assert(DEVICE_OK == ret);
 
    ret = CreateProperty("Stage Voltage", "9500", MM::Integer, false);
@@ -328,19 +328,19 @@ CFluroSEMStageXY::CFluroSEMStageXY():initialized_(false)
 
 }
 
-CFluroSEMStageXY::~CFluroSEMStageXY()
+CFluoSEMStageXY::~CFluoSEMStageXY()
 {
    Shutdown();
 }
 
-void CFluroSEMStageXY::GetName(char* name) const
+void CFluoSEMStageXY::GetName(char* name) const
 {
-   CDeviceUtils::CopyLimitedString(name, g_DeviceNameFluroSEMStageXY);
+   CDeviceUtils::CopyLimitedString(name, g_DeviceNameFluoSEMStageXY);
 }
 
-int CFluroSEMStageXY::Initialize()
+int CFluoSEMStageXY::Initialize()
 {
-   CFluroSEMStageHub* hub = static_cast<CFluroSEMStageHub*>(GetParentHub());
+   CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
  //  if (!hub || !hub->IsPortAvailable()) {
  //     return ERR_NO_PORT_SET;
  //  }
@@ -357,18 +357,18 @@ int CFluroSEMStageXY::Initialize()
 
 
 
-int CFluroSEMStageXY::Shutdown()
+int CFluoSEMStageXY::Shutdown()
 {
    initialized_ = false;
    return DEVICE_OK;
 }
 
-bool CFluroSEMStageXY::Busy()
+bool CFluoSEMStageXY::Busy()
 {
    return false;
 }
 
-int CFluroSEMStageXY::SetPositionSteps(long x, long y)
+int CFluoSEMStageXY::SetPositionSteps(long x, long y)
 {
 	int i = 0;
 	long voltage = 0;
@@ -376,7 +376,7 @@ int CFluroSEMStageXY::SetPositionSteps(long x, long y)
 	GetProperty("Stage Voltage", voltage);
 	//GetProperty("Stage Delay", delay);
 	std::ostringstream command;
-   CFluroSEMStageHub* hub = static_cast<CFluroSEMStageHub*>(GetParentHub());
+   CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
   // if (!hub || !hub->IsPortAvailable())
   //    return ERR_NO_PORT_SET;
    if(x > 0)
@@ -412,7 +412,7 @@ int CFluroSEMStageXY::SetPositionSteps(long x, long y)
    return DEVICE_OK;
 }
 
-int CFluroSEMStageXY::GetPositionSteps(long& x, long& y)
+int CFluoSEMStageXY::GetPositionSteps(long& x, long& y)
 {
 	x = 0;
 	y = 0;
@@ -420,66 +420,66 @@ int CFluroSEMStageXY::GetPositionSteps(long& x, long& y)
    return DEVICE_OK;
 }
 
-double CFluroSEMStageXY::GetStepSize()
+double CFluoSEMStageXY::GetStepSize()
 {
 	return 1.0;
 }
 
-int CFluroSEMStageXY::Home()
+int CFluoSEMStageXY::Home()
 {
 	return DEVICE_UNSUPPORTED_COMMAND;
 }
 
-int CFluroSEMStageXY::Stop()
+int CFluoSEMStageXY::Stop()
 {
 		return DEVICE_UNSUPPORTED_COMMAND;
 }
 
-int CFluroSEMStageXY::SetOrigin()
+int CFluoSEMStageXY::SetOrigin()
 {
 
 	return DEVICE_UNSUPPORTED_COMMAND;
 }
 
-int CFluroSEMStageXY::GetLimitsUm(double& xMin, double& xMax, double& yMin, double& yMax)
+int CFluoSEMStageXY::GetLimitsUm(double& xMin, double& xMax, double& yMin, double& yMax)
 {
 	return DEVICE_UNSUPPORTED_COMMAND;
 }
 
-int CFluroSEMStageXY::GetStepLimits(long& xMin, long& xMax, long& yMin, long& yMax)
+int CFluoSEMStageXY::GetStepLimits(long& xMin, long& xMax, long& yMin, long& yMax)
 {
 	return DEVICE_UNSUPPORTED_COMMAND;
 }
 
-double CFluroSEMStageXY::GetStepSizeXUm()
+double CFluoSEMStageXY::GetStepSizeXUm()
 {
 	return 1.0;
 }
 
-double CFluroSEMStageXY::GetStepSizeYUm()
+double CFluoSEMStageXY::GetStepSizeYUm()
 {
 	return 1.0;
 }
 
-int CFluroSEMStageXY::SetRelativePositionUm(double dx, double dy)
+int CFluoSEMStageXY::SetRelativePositionUm(double dx, double dy)
 {
 	SetPositionSteps(long(dx), long(dy));
 	return DEVICE_OK;
 }
 
-CFluroSEMStageLR::CFluroSEMStageLR():initialized_(false)
+CFluoSEMStageLR::CFluoSEMStageLR():initialized_(false)
 {
    InitializeDefaultErrorMessages();
 
    // Description
-   int ret = CreateProperty(MM::g_Keyword_Description, "FluroSEM LR Objective Stage", MM::String, true);
+   int ret = CreateProperty(MM::g_Keyword_Description, "FluoSEM LR Objective Stage", MM::String, true);
    assert(DEVICE_OK == ret);
 
    // Name
-   ret = CreateProperty(MM::g_Keyword_Name, g_DeviceNameFluroSEMStageXY, MM::String, true);
+   ret = CreateProperty(MM::g_Keyword_Name, g_DeviceNameFluoSEMStageXY, MM::String, true);
    assert(DEVICE_OK == ret);
 
-   CPropertyAction* pAct = new CPropertyAction(this, &CFluroSEMStageLR::OnStepVoltage);
+   CPropertyAction* pAct = new CPropertyAction(this, &CFluoSEMStageLR::OnStepVoltage);
    ret = CreateProperty("Step Voltage", "30", MM::Integer, false, pAct);
    assert(DEVICE_OK == ret);
 
@@ -488,19 +488,19 @@ CFluroSEMStageLR::CFluroSEMStageLR():initialized_(false)
 
 }
 
-CFluroSEMStageLR::~CFluroSEMStageLR()
+CFluoSEMStageLR::~CFluoSEMStageLR()
 {
    Shutdown();
 }
 
-void CFluroSEMStageLR::GetName(char* name) const
+void CFluoSEMStageLR::GetName(char* name) const
 {
-   CDeviceUtils::CopyLimitedString(name, g_DeviceNameFluroSEMStageLR);
+   CDeviceUtils::CopyLimitedString(name, g_DeviceNameFluoSEMStageLR);
 }
 
-int CFluroSEMStageLR::Initialize()
+int CFluoSEMStageLR::Initialize()
 {
-   CFluroSEMStageHub* hub = static_cast<CFluroSEMStageHub*>(GetParentHub());
+   CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
  //  if (!hub || !hub->IsPortAvailable()) {
  //     return ERR_NO_PORT_SET;
  //  }
@@ -513,24 +513,24 @@ int CFluroSEMStageLR::Initialize()
    return DEVICE_OK;
 }
 
-int CFluroSEMStageLR::Shutdown()
+int CFluoSEMStageLR::Shutdown()
 {
    initialized_ = false;
    return DEVICE_OK;
 }
 
-bool CFluroSEMStageLR::Busy()
+bool CFluoSEMStageLR::Busy()
 {
    return false;
 }
 
-int CFluroSEMStageLR::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct)
+int CFluoSEMStageLR::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct)
 {
    if (eAct == MM::BeforeGet) {
       // Nothing to do, let the caller use cached property
    } else if (eAct ==MM::AfterSet) {
       std::ostringstream command;
-		CFluroSEMStageHub* hub = static_cast<CFluroSEMStageHub*>(GetParentHub());
+		CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
 		long val;
 		pProp->Get(val);
   // if (!hub || !hub->IsPortAvailable())
@@ -547,10 +547,10 @@ int CFluroSEMStageLR::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct
 
    return DEVICE_OK;
 }
-int CFluroSEMStageLR::SetPositionSteps(long x, long y)
+int CFluoSEMStageLR::SetPositionSteps(long x, long y)
 {
 	std::ostringstream command;
-   CFluroSEMStageHub* hub = static_cast<CFluroSEMStageHub*>(GetParentHub());
+   CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
   // if (!hub || !hub->IsPortAvailable())
   //    return ERR_NO_PORT_SET;
    
@@ -581,7 +581,7 @@ int CFluroSEMStageLR::SetPositionSteps(long x, long y)
    return DEVICE_OK;
 }
 
-int CFluroSEMStageLR::GetPositionSteps(long& x, long& y)
+int CFluoSEMStageLR::GetPositionSteps(long& x, long& y)
 {
 	x = 0;
 	y = 0;
@@ -589,73 +589,73 @@ int CFluroSEMStageLR::GetPositionSteps(long& x, long& y)
    return DEVICE_OK;
 }
 
-double CFluroSEMStageLR::GetStepSize()
+double CFluoSEMStageLR::GetStepSize()
 {
 	return 1.0;
 }
 
-int CFluroSEMStageLR::Home()
+int CFluoSEMStageLR::Home()
 {
 	return DEVICE_UNSUPPORTED_COMMAND;
 }
 
-int CFluroSEMStageLR::SetRelativePositionUm(double dx, double dy)
+int CFluoSEMStageLR::SetRelativePositionUm(double dx, double dy)
 {
 	SetPositionSteps(long(dx), long(dy));
 	return DEVICE_OK;
 }
 
-int CFluroSEMStageLR::Stop()
+int CFluoSEMStageLR::Stop()
 {
 		return DEVICE_UNSUPPORTED_COMMAND;
 }
 
-int CFluroSEMStageLR::SetOrigin()
+int CFluoSEMStageLR::SetOrigin()
 {
 
 	return DEVICE_UNSUPPORTED_COMMAND;
 }
 
-int CFluroSEMStageLR::GetLimitsUm(double& xMin, double& xMax, double& yMin, double& yMax)
+int CFluoSEMStageLR::GetLimitsUm(double& xMin, double& xMax, double& yMin, double& yMax)
 {
 	return DEVICE_UNSUPPORTED_COMMAND;
 }
 
-int CFluroSEMStageLR::GetStepLimits(long& xMin, long& xMax, long& yMin, long& yMax)
+int CFluoSEMStageLR::GetStepLimits(long& xMin, long& xMax, long& yMin, long& yMax)
 {
 	return DEVICE_UNSUPPORTED_COMMAND;
 }
 
-double CFluroSEMStageLR::GetStepSizeXUm()
+double CFluoSEMStageLR::GetStepSizeXUm()
 {
 	return 1.0;
 }
 
-double CFluroSEMStageLR::GetStepSizeYUm()
+double CFluoSEMStageLR::GetStepSizeYUm()
 {
 	return 1.0;
 }
 
 
-CFluroSEMStageZ::CFluroSEMStageZ():initialized_(false),_umPerStepDown(1.0),_umPerStepUp(1.0)
+CFluoSEMStageZ::CFluoSEMStageZ():initialized_(false),_umPerStepDown(1.0),_umPerStepUp(1.0)
 {
    InitializeDefaultErrorMessages();
 
    // Description
-   int ret = CreateProperty(MM::g_Keyword_Description, "FluroSEM OBjective Z Stage", MM::String, true);
+   int ret = CreateProperty(MM::g_Keyword_Description, "FluoSEM OBjective Z Stage", MM::String, true);
    assert(DEVICE_OK == ret);
-   CPropertyAction* pAct = new CPropertyAction(this, &CFluroSEMStageZ::OnFineVoltage);
+   CPropertyAction* pAct = new CPropertyAction(this, &CFluoSEMStageZ::OnFineVoltage);
    ret = CreateProperty("Fine Voltage", "0", MM::Integer, false, pAct);
    assert(DEVICE_OK == ret);
-   pAct = new CPropertyAction(this, &CFluroSEMStageZ::OnStepVoltage);
+   pAct = new CPropertyAction(this, &CFluoSEMStageZ::OnStepVoltage);
    ret = CreateProperty("Step Voltage", "30", MM::Integer, false, pAct);
    assert(DEVICE_OK == ret);
-  // pAct = new CPropertyAction(this, &CFluroSEMStageZ::OnStepVoltage);
+  // pAct = new CPropertyAction(this, &CFluoSEMStageZ::OnStepVoltage);
    ret = CreateProperty("Relative Position", "0.0", MM::Float, false);
    assert(DEVICE_OK == ret);
 
    // Name
-   ret = CreateProperty(MM::g_Keyword_Name, g_DeviceNameFluroSEMStageZ, MM::String, true);
+   ret = CreateProperty(MM::g_Keyword_Name, g_DeviceNameFluoSEMStageZ, MM::String, true);
    assert(DEVICE_OK == ret);
 
    // parent ID display
@@ -663,18 +663,18 @@ CFluroSEMStageZ::CFluroSEMStageZ():initialized_(false),_umPerStepDown(1.0),_umPe
 
 }
 
-CFluroSEMStageZ::~CFluroSEMStageZ()
+CFluoSEMStageZ::~CFluoSEMStageZ()
 {
    Shutdown();
 }
 
-int CFluroSEMStageZ::OnFineVoltage(MM::PropertyBase* pProp, MM::ActionType eAct)
+int CFluoSEMStageZ::OnFineVoltage(MM::PropertyBase* pProp, MM::ActionType eAct)
 {
    if (eAct == MM::BeforeGet) {
       // Nothing to do, let the caller use cached property
    } else if (eAct ==MM::AfterSet) {
       std::ostringstream command;
-		CFluroSEMStageHub* hub = static_cast<CFluroSEMStageHub*>(GetParentHub());
+		CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
 		long val;
 		pProp->Get(val);
   // if (!hub || !hub->IsPortAvailable())
@@ -692,13 +692,13 @@ int CFluroSEMStageZ::OnFineVoltage(MM::PropertyBase* pProp, MM::ActionType eAct)
    return DEVICE_OK;
 }
 
-int CFluroSEMStageZ::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct)
+int CFluoSEMStageZ::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct)
 {
    if (eAct == MM::BeforeGet) {
       // Nothing to do, let the caller use cached property
    } else if (eAct ==MM::AfterSet) {
       std::ostringstream command;
-		CFluroSEMStageHub* hub = static_cast<CFluroSEMStageHub*>(GetParentHub());
+		CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
 		long val;
 		pProp->Get(val);
   // if (!hub || !hub->IsPortAvailable())
@@ -712,14 +712,14 @@ int CFluroSEMStageZ::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct)
    return DEVICE_OK;
 }
 
-void CFluroSEMStageZ::GetName(char* name) const
+void CFluoSEMStageZ::GetName(char* name) const
 {
-   CDeviceUtils::CopyLimitedString(name, g_DeviceNameFluroSEMStageZ);
+   CDeviceUtils::CopyLimitedString(name, g_DeviceNameFluoSEMStageZ);
 }
 
-int CFluroSEMStageZ::Initialize()
+int CFluoSEMStageZ::Initialize()
 {
-   CFluroSEMStageHub* hub = static_cast<CFluroSEMStageHub*>(GetParentHub());
+   CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
  //  if (!hub || !hub->IsPortAvailable()) {
  //     return ERR_NO_PORT_SET;
  //  }
@@ -732,23 +732,23 @@ int CFluroSEMStageZ::Initialize()
    return DEVICE_OK;
 }
 
-int CFluroSEMStageZ::Shutdown()
+int CFluoSEMStageZ::Shutdown()
 {
    initialized_ = false;
    return DEVICE_OK;
 }
 
-bool CFluroSEMStageZ::Busy()
+bool CFluoSEMStageZ::Busy()
 {
    return false;
 }
 
-int CFluroSEMStageZ::SetPositionSteps(long steps)
+int CFluoSEMStageZ::SetPositionSteps(long steps)
 {
 	std::ostringstream command;
 	long stepvoltage;
 	GetProperty("Step Voltage", stepvoltage); 
-   CFluroSEMStageHub* hub = static_cast<CFluroSEMStageHub*>(GetParentHub());
+   CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
   // if (!hub || !hub->IsPortAvailable())
   //    return ERR_NO_PORT_SET;
 	   command.str("");
@@ -766,18 +766,18 @@ int CFluroSEMStageZ::SetPositionSteps(long steps)
 	   return DEVICE_OK;
 }
 
-int CFluroSEMStageZ::GetPositionSteps(long& steps)
+int CFluoSEMStageZ::GetPositionSteps(long& steps)
 {
 
    return DEVICE_OK;
 }
   
-int CFluroSEMStageZ::SetPositionUm(double pos)
+int CFluoSEMStageZ::SetPositionUm(double pos)
 {
  return DEVICE_UNSUPPORTED_COMMAND;
 }
 
-int CFluroSEMStageZ::SetRelativePositionUm(double pos)
+int CFluoSEMStageZ::SetRelativePositionUm(double pos)
 {
 	long stepconvert;
 	double oldpos; 
@@ -801,13 +801,13 @@ int CFluroSEMStageZ::SetRelativePositionUm(double pos)
 	return DEVICE_OK;
 }
 
-int CFluroSEMStageZ::GetPositionUm(double& pos)
+int CFluoSEMStageZ::GetPositionUm(double& pos)
 { 
 GetProperty("Relative Position", pos);
  return DEVICE_OK;
 }
 
-int CFluroSEMStageZ::SetOrigin()
+int CFluoSEMStageZ::SetOrigin()
 {
 	double pos = 0.0;
 	std::string posstring;
@@ -816,7 +816,7 @@ int CFluroSEMStageZ::SetOrigin()
    return DEVICE_OK;
 }
 
-int CFluroSEMStageZ::GetLimits(double& min, double& max)
+int CFluoSEMStageZ::GetLimits(double& min, double& max)
 {
    return DEVICE_UNSUPPORTED_COMMAND;
 }

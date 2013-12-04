@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package FluroSEM;
+package FluoSEM;
 
 
 import mmcorej.CMMCore;
@@ -17,7 +17,7 @@ import org.micromanager.api.ScriptInterface;
  *
  * @author supervisor
  */
-public class FluroSEMLaserControlFrame extends javax.swing.JFrame {
+public class FluoSEMLaserControlFrame extends javax.swing.JFrame {
 
    private final ScriptInterface gui_;
    private final CMMCore core_;
@@ -45,9 +45,9 @@ public class FluroSEMLaserControlFrame extends javax.swing.JFrame {
    private static String nm561PLabel = "Laser 561nmP";
    private static String nm642PLabel = "Laser 642nmP";
     /**
-     * Creates new form FluroSEMLaserControlFrame
+     * Creates new form FluoSEMLaserControlFrame
      */
-    public FluroSEMLaserControlFrame(ScriptInterface gui) {
+    public FluoSEMLaserControlFrame(ScriptInterface gui) {
 
         gui_ = gui;
         core_ = gui_.getMMCore();

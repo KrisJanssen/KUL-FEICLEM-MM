@@ -17,7 +17,7 @@
  *               INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES.
  */
 
-package FluroSEM;
+package FluoSEM;
 
 import mmcorej.CMMCore;
 
@@ -32,7 +32,7 @@ import org.micromanager.api.ScriptInterface;
  *
  * @author nico
  */
-public class FluroSEMStageControlFrame extends javax.swing.JFrame {
+public class FluoSEMStageControlFrame extends javax.swing.JFrame {
    private final ScriptInterface gui_;
    private final CMMCore core_;
    private Preferences prefs_;
@@ -59,12 +59,12 @@ public class FluroSEMStageControlFrame extends javax.swing.JFrame {
    private static final String SMALLMOVEMENTZ = "SMALLMOVEMENTZ";
    private static final String MEDIUMMOVEMENTZ = "MEDIUMMOVEMENTZ";
 
-   private static String XYStageLabel = "FluroSEM-Stage-XY";
-   private static String ZStageLabel = "FluroSEM-Stage-Z";
-   private static String LRStageLabel = "FluroSEM-Stage-LR";
+   private static String XYStageLabel = "FluoSEM-Stage-XY";
+   private static String ZStageLabel = "FluoSEM-Stage-Z";
+   private static String LRStageLabel = "FluoSEM-Stage-LR";
 
     /** Creates new form StageControlFrame */
-    public FluroSEMStageControlFrame(ScriptInterface gui) {
+    public FluoSEMStageControlFrame(ScriptInterface gui) {
        gui_ = gui;
        core_ = gui_.getMMCore();
        nf_ = NumberFormat.getInstance();
@@ -778,8 +778,6 @@ public class FluroSEMStageControlFrame extends javax.swing.JFrame {
                 .add(jLabel3)
                 .addContainerGap())
         );
-
-        jLabel4.getAccessibleContext().setAccessibleName("Small Movement Delay");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

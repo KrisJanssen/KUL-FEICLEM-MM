@@ -1,5 +1,5 @@
  //////////////////////////////////////////////////////////////////////////////
-// FILE:          FluroSEMStage.h
+// FILE:          FluoSEMStage.h
 // PROJECT:       Micro-Manager
 // SUBSYSTEM:     DeviceAdapters
 //-----------------------------------------------------------------------------
@@ -13,8 +13,8 @@
 //				  Adaptation to KUL Quanta FEG 250 CLEM stage by Thomas Franklin, 2013
 //
 
-#ifndef _FluroSEMStage_H_
-#define _FluroSEMStage_H_
+#ifndef _FluoSEMStage_H_
+#define _FluoSEMStage_H_
 
 #define COM_ERROR -1L
 #define PI_CNTR_NO_ERROR  0L
@@ -31,11 +31,11 @@
 
 //class ArduinoInputMonitorThread;
 
-class CFluroSEMStageHub : public HubBase<CFluroSEMStageHub>  
+class CFluoSEMStageHub : public HubBase<CFluoSEMStageHub>  
 {
 public:
-   CFluroSEMStageHub();
-   ~CFluroSEMStageHub();
+   CFluoSEMStageHub();
+   ~CFluoSEMStageHub();
 
    int Initialize();
    int Shutdown();
@@ -81,11 +81,11 @@ private:
    static MMThreadLock lock_;
 };
 
-class CFluroSEMStageXY : public CXYStageBase<CFluroSEMStageXY>  
+class CFluoSEMStageXY : public CXYStageBase<CFluoSEMStageXY>  
 {
 public:
-   CFluroSEMStageXY();
-   ~CFluroSEMStageXY();
+   CFluoSEMStageXY();
+   ~CFluoSEMStageXY();
   
    // MMDevice API
    // ------------
@@ -119,11 +119,11 @@ private:
    std::string name_;
 };
 
-class CFluroSEMStageLR : public CXYStageBase<CFluroSEMStageLR>  
+class CFluoSEMStageLR : public CXYStageBase<CFluoSEMStageLR>  
 {
 public:
-   CFluroSEMStageLR();
-   ~CFluroSEMStageLR();
+   CFluoSEMStageLR();
+   ~CFluoSEMStageLR();
   
    // MMDevice API
    // ------------
@@ -151,7 +151,7 @@ public:
 	 
    // action interface
    // ----------------
-   int CFluroSEMStageLR::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct);
+   int CFluoSEMStageLR::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct);
 private:
    bool initialized_;
    std::string name_;
@@ -159,11 +159,11 @@ private:
    double _xPos, _yPos;
 };
 
-class CFluroSEMStageZ : public CStageBase<CFluroSEMStageZ>  
+class CFluoSEMStageZ : public CStageBase<CFluoSEMStageZ>  
 {
 public:
-   CFluroSEMStageZ();
-   ~CFluroSEMStageZ();
+   CFluoSEMStageZ();
+   ~CFluoSEMStageZ();
   
    // MMDevice API
    // ------------
@@ -188,8 +188,8 @@ public:
 
    // action interface
    // ----------------
-int CFluroSEMStageZ::OnFineVoltage(MM::PropertyBase* pProp, MM::ActionType eAct);
-int CFluroSEMStageZ::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct);
+int CFluoSEMStageZ::OnFineVoltage(MM::PropertyBase* pProp, MM::ActionType eAct);
+int CFluoSEMStageZ::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct);
 private:
    bool initialized_;
    std::string name_;

@@ -19,26 +19,26 @@
  *               INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES.
  **/
 
-package FluroSEM;
+package FluoSEM;
 
 import mmcorej.CMMCore;
 import org.micromanager.api.MMPlugin;
 import org.micromanager.api.ScriptInterface;
-import static FluroSEM.FluroSEMStageControl.tooltipDescription;
+import static FluoSEM.FluoSEMStageControl.tooltipDescription;
 
 
-public class FluroSEMStageControl implements MMPlugin {
-   public static String menuName = "FluroSEM Stage Control";
-   public static String tooltipDescription = "FluroSEM Stage control of stage XY and objective LRZ.";
+public class FluoSEMStageControl implements MMPlugin {
+   public static String menuName = "FluoSEM Stage Control";
+   public static String tooltipDescription = "FluoSEM Stage control of stage XY and objective LRZ.";
    private CMMCore core_;
    private ScriptInterface gui_;
-   private FluroSEMStageControlFrame myFrame_;
+   private FluoSEMStageControlFrame myFrame_;
 
    public void setApp(ScriptInterface app) {
       gui_ = app;                                        
       core_ = app.getMMCore();
       if (myFrame_ == null)
-         myFrame_ = new FluroSEMStageControlFrame(gui_);
+         myFrame_ = new FluoSEMStageControlFrame(gui_);
       myFrame_.setVisible(true);
    }
 
@@ -47,14 +47,14 @@ public class FluroSEMStageControl implements MMPlugin {
    }
 
    public void show() {
-         String ig = "FluroSEM Stage Control";
+         String ig = "FluoSEM Stage Control";
    }
 
    public void configurationChanged() {
    }
 
    public String getInfo () {
-      return "FluroSEM Stage Control Plugin";
+      return "FluoSEM Stage Control Plugin";
    }
 
    public String getDescription() {
