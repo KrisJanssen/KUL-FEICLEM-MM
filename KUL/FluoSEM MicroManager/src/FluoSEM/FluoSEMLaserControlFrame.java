@@ -264,7 +264,7 @@ public class FluoSEMLaserControlFrame extends javax.swing.JFrame {
         jLabel18 = new javax.swing.JLabel();
         jLaserPercentSet13 = new javax.swing.JTextField();
 
-        setMinimumSize(new java.awt.Dimension(507, 507));
+        setMinimumSize(new java.awt.Dimension(650, 454));
 
         Title.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         Title.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -906,6 +906,8 @@ public class FluoSEMLaserControlFrame extends javax.swing.JFrame {
                         .addComponent(jPanel13, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
+
+        setBounds(0, 0, 660, 489);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jLasermWSet1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jLasermWSet1KeyPressed
