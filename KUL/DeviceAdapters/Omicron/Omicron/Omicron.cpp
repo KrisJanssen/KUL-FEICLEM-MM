@@ -464,18 +464,14 @@ int Omicron::OnPowerStatus(MM::PropertyBase* pProp, MM::ActionType /* eAct */)
      ret = GetSerialAnswer(port_.c_str(), "\r", answer);
 	 PurgeComPort(port_.c_str());
      if (ret != DEVICE_OK) return ret;
-     if(answer != "!UK")
+	 if(answer.compare(0,4,"!MDP") == 0)
 	 {
-		 if(answer.length() > 4)
-		 {
 	 answer = answer.substr(4) + " mW";
-
 	 pProp->Set(answer.c_str());
-		 }
 	 }
 	 else
 	 {
-		 LogMessage("Received !UK", true);
+		 LogMessage("Received non MDP response", true);
 	 }
      return DEVICE_OK;
 }
