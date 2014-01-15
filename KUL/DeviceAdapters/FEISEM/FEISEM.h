@@ -114,6 +114,8 @@ private:
         IMicroscopeControl * pIMicroscopeControl;
 		IScanControl * pIScanControl;
 		IVacSystemControl * pIVacSystemControl;
+		IConnectionPointContainer * pIConnectionPointContainer;
+		IDispatch * pIDispatch;
 };
 
 

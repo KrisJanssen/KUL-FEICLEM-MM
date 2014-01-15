@@ -61,11 +61,26 @@ const char* g_CameraDeviceName = "DCam";
 const char* g_HubDeviceName = "FEISEM Hub";
 
 // constants for naming pixel types (allowed values of the "PixelType" property)
-const char* g_PixelType_8bit = "8bit";
-const char* g_PixelType_16bit = "16bit";
-const char* g_PixelType_32bitRGB = "32bitRGB";
-const char* g_PixelType_64bitRGB = "64bitRGB";
-const char* g_PixelType_32bit = "32bit";  // floating point greyscale
+const char* g_MODE_HIVAC = "Hi-Vac";
+const char* g_MODE_CHARGENEUT = "Low Vacuum";
+const char* g_MODE_ENVIRONMENTAL = "Environmental";
+
+const char* g_STATE_ALL_AIR = "Vented";
+const char* g_STATE_PUMPING = "Pumping - Pumping";
+const char* g_STATE_PREVAC = "Pumping - Prevac";
+const char* g_STATE_VACUUM = "At Vacuum";
+const char* g_STATE_VENTING = "Venting";
+const char* g_STATE_ERROR = "Error";
+
+const char* g_SCAN_NONE = "None";
+const char* g_SCAN_EXTERNAL = "External";
+const char* g_SCAN_FULLFRAME = "Full Frame";
+const char* g_SCAN_SPOT = "Spot";
+const char* g_SCAN_LINE = "Line";
+
+
+const char* g_HTSTATE_ON = "ON";
+const char* g_HTSTATE_OFF = "OFF";
 
 // TODO: linux entry code
 
@@ -156,6 +171,8 @@ FEISEMHub::FEISEMHub()
         pIMicroscopeControl = NULL;
 		pIScanControl = NULL;
 		pIVacSystemControl = NULL;
+		pIConnectionPointContainer = NULL;
+		pIDispatch = NULL; 
 }
 
 void FEISEMHub::LogFEIError(HRESULT hresult)
@@ -208,11 +225,28 @@ int FEISEMHub::OnChamberState(MM::PropertyBase* pProp, MM::ActionType pAct)
 int FEISEMHub::OnChamberMode(MM::PropertyBase* pProp, MM::ActionType pAct)
 {
 	HRESULT hresult;
+	XTLibVacuumUserMode mode; 
    if (pAct == MM::BeforeGet)
    {
-   }
-   else if (pAct == MM::AfterSet)
-   {
+	   hresult = pIVacSystemControl->get_Mode(&mode);	  
+	  if(hresult == S_OK)
+	  {
+		switch (mode) {
+		  case XTLIB_VACUUMUSER_MODE_HIVAC:
+			  pProp->Set(g_MODE_HIVAC);
+
+		  case XTLIB_VACUUMUSER_MODE_CHARGENEUT: 
+			  pProp->Set(g_MODE_CHARGENEUT);
+
+		  case XTLIB_VACUUMUSER_MODE_ENVIRONMENTAL: 
+			  pProp->Set(g_MODE_ENVIRONMENTAL);
+		  default:;
+		}
+	  }
+	  else
+	  {
+		  LogFEIError(hresult);
+	  }
    }
    return DEVICE_OK;
 }
@@ -505,10 +539,27 @@ int FEISEMHub::Initialize()
 		pAct = new CPropertyAction (this, &FEISEMHub::OnChamberState);
 		ret = CreateProperty("Chamber State", "unknown" , MM::String, true, pAct, true);
 		assert(DEVICE_OK == ret);
-		pAct = new CPropertyAction (this, &FEISEMHub::OnChamberMode);
-		ret = CreateProperty("Chamber Mode", "unknown" , MM::String, false, pAct, true);
+
+		vector<string> StateValues;
+		StateValues.push_back(g_STATE_ALL_AIR);
+		StateValues.push_back(g_STATE_PUMPING);
+		StateValues.push_back(g_STATE_PREVAC);
+		StateValues.push_back(g_STATE_VACUUM);
+		StateValues.push_back(g_STATE_VENTING);
+		StateValues.push_back(g_STATE_ERROR);
+		ret = SetAllowedValues("Chamber State", StateValues);
 		assert(DEVICE_OK == ret);
 
+		pAct = new CPropertyAction (this, &FEISEMHub::OnChamberMode);
+		ret = CreateProperty("Chamber Mode", "unknown" , MM::String, true, pAct, true);
+		assert(DEVICE_OK == ret);
+
+		vector<string> ModeValues;
+		ModeValues.push_back(g_MODE_HIVAC);
+		ModeValues.push_back(g_MODE_CHARGENEUT);
+		ModeValues.push_back(g_MODE_ENVIRONMENTAL);
+		ret = SetAllowedValues("Chamber Mode", ModeValues);
+		assert(DEVICE_OK == ret);
 		
 		hr = pIVacSystemControl->get_PressureRange((XTLibRange)XTLIB_RANGE_MIN, &min);
 		if(hr != S_OK)
@@ -522,11 +573,20 @@ int FEISEMHub::Initialize()
 		}
 		SetPropertyLimits("Pressure (Pa)", min, max);
 
-
 		//ScanControl
 		pAct = new CPropertyAction (this, &FEISEMHub::OnScanMode);
-		ret = CreateProperty("Scan Mode", "-1" , MM::Integer, false, pAct, true);
+		ret = CreateProperty("Scan Mode", g_SCAN_NONE , MM::String, false, pAct, true);
 		assert(DEVICE_OK == ret);
+
+		vector<string> ScanValues;
+		ScanValues.push_back(g_SCAN_NONE);
+		ScanValues.push_back(g_SCAN_EXTERNAL);
+		ScanValues.push_back(g_SCAN_FULLFRAME);
+		ScanValues.push_back(g_SCAN_SPOT);
+		ScanValues.push_back(g_SCAN_LINE);
+		ret = SetAllowedValues("Scan Mode", ScanValues);
+		assert(DEVICE_OK == ret);
+
 		pAct = new CPropertyAction (this, &FEISEMHub::OnDwellTime);
 		ret = CreateProperty("Dwell Time (s)", "0.0" , MM::Float, false, pAct, true);
 		assert(DEVICE_OK == ret);
@@ -551,9 +611,27 @@ int FEISEMHub::Initialize()
 		pAct = new CPropertyAction (this, &FEISEMHub::OnPixels);
 		ret = CreateProperty("Vertical Pixels", "442" , MM::Integer, false, pAct, true);
 		assert(DEVICE_OK == ret);
+
+		vector<string> VertPixelValues;
+		VertPixelValues.push_back("442");
+		VertPixelValues.push_back("884");
+		VertPixelValues.push_back("1768");
+		VertPixelValues.push_back("3536");
+		ret = SetAllowedValues("Vertical Pixels", VertPixelValues);
+		assert(DEVICE_OK == ret);
+
 		pAct = new CPropertyAction (this, &FEISEMHub::OnPixels);
 		ret = CreateProperty("Horizontal Pixels", "512" , MM::Integer, false, pAct, true);
 		assert(DEVICE_OK == ret);
+
+		vector<string> HoriPixelValues;
+		HoriPixelValues.push_back("512");
+		HoriPixelValues.push_back("1024");
+		HoriPixelValues.push_back("2048");
+		HoriPixelValues.push_back("4096");
+		ret = SetAllowedValues("Horizontal Pixels", HoriPixelValues);
+		assert(DEVICE_OK == ret);
+
 /*		ret = CreateProperty("Vertical Pixels Max", "3536" , MM::Integer, true);
 		assert(DEVICE_OK == ret);
 		ret = CreateProperty("Vertical Pixels Min", "442" , MM::Integer, true);
@@ -671,8 +749,15 @@ int FEISEMHub::Initialize()
 		assert(DEVICE_OK == ret);
 		//ElectronBeamControl	
 		pAct = new CPropertyAction (this, &FEISEMHub::OnHTState);
-		ret = CreateProperty("HTState", "false" , MM::String, false, pAct, true);
+		ret = CreateProperty("HTState", "unknown" , MM::String, false, pAct, true);
 		assert(DEVICE_OK == ret);
+
+		vector<string> HTStateValues;
+		HTStateValues.push_back(g_HTSTATE_ON);
+		HTStateValues.push_back(g_HTSTATE_OFF);
+		ret = SetAllowedValues("HTState", HTStateValues);
+		assert(DEVICE_OK == ret);
+		 
 		pAct = new CPropertyAction (this, &FEISEMHub::OnAcceleratingVoltage);
 		ret = CreateProperty("Acceleration Voltage (V)", "0.0" , MM::Float, false, pAct, true);
 		assert(DEVICE_OK == ret);
