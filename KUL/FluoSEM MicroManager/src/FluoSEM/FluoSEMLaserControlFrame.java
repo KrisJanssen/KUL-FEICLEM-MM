@@ -264,6 +264,7 @@ public class FluoSEMLaserControlFrame extends javax.swing.JFrame {
         jLabel18 = new javax.swing.JLabel();
         jLaserPercentSet13 = new javax.swing.JTextField();
 
+        setAlwaysOnTop(true);
         setMinimumSize(new java.awt.Dimension(650, 454));
 
         Title.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N

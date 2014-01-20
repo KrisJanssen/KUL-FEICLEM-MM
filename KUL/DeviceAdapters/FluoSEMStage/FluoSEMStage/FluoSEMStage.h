@@ -194,6 +194,8 @@ private:
    bool initialized_;
    std::string name_;
    double _umPerStepUp, _umPerStepDown;
+   bool _wasLastMoveStep;
+   bool _isFirstMove;
    double _Pos;
 };
 

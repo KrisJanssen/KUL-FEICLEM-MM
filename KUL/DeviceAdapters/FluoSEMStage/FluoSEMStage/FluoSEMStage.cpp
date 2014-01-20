@@ -637,7 +637,7 @@ double CFluoSEMStageLR::GetStepSizeYUm()
 }
 
 
-CFluoSEMStageZ::CFluoSEMStageZ():initialized_(false),_umPerStepDown(1.0),_umPerStepUp(1.0)
+CFluoSEMStageZ::CFluoSEMStageZ():initialized_(false),_umPerStepDown(1.0),_umPerStepUp(1.0),_wasLastMoveStep(false),_isFirstMove(true)
 {
    InitializeDefaultErrorMessages();
 
@@ -679,14 +679,23 @@ int CFluoSEMStageZ::OnFineVoltage(MM::PropertyBase* pProp, MM::ActionType eAct)
 		pProp->Get(val);
   // if (!hub || !hub->IsPortAvailable())
   //    return ERR_NO_PORT_SET;
-	   command.str("");
-	   command.clear();
-	   command << "3 RNP 1 0";  
-	   hub->SendGCSCommand(command.str());
+		if(_isFirstMove)
+		{
+			_wasLastMoveStep = true;
+			_isFirstMove = false;
+		}
+		if(_wasLastMoveStep)
+		{
+			command.str("");
+		    command.clear();
+			command << "3 RNP 1 0";  
+			hub->SendGCSCommand(command.str());
+		}  
 	   command.str("");
 	   command.clear();
 	   command << "3 OAD 1 " << val;  
 	   hub->SendGCSCommand(command.str());
+	   _wasLastMoveStep = false;
    }
 
    return DEVICE_OK;
@@ -751,18 +760,28 @@ int CFluoSEMStageZ::SetPositionSteps(long steps)
    CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
   // if (!hub || !hub->IsPortAvailable())
   //    return ERR_NO_PORT_SET;
-	   command.str("");
-	   command.clear();
-	   command << "3 RNP 1 0";  
-	   hub->SendGCSCommand(command.str());
-	   command.str("");
-	   command.clear();
-	   command << "3 SSA 1 " << stepvoltage;
-	   hub->SendGCSCommand(command.str());
+
+		if(_isFirstMove)
+		{
+			_wasLastMoveStep = false;
+			_isFirstMove = false;
+		}
+		if(!_wasLastMoveStep)
+		{
+			command.str("");
+		    command.clear();
+			command << "3 RNP 1 0";  
+			hub->SendGCSCommand(command.str());
+		}  
+//	   command.str("");
+//	   command.clear();
+//	   command << "3 SSA 1 " << stepvoltage;
+//	   hub->SendGCSCommand(command.str());
 	   command.str("");
 	   command.clear();
 	   command << "3 OSM 1 " << steps;  
 	   hub->SendGCSCommand(command.str());
+	   _wasLastMoveStep = true;
 	   return DEVICE_OK;
 }
 
