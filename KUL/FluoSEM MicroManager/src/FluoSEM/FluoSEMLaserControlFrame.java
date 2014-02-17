@@ -124,22 +124,22 @@ public class FluoSEMLaserControlFrame extends javax.swing.JFrame {
                 gui_.logError(e);
             }
         try {
-                core_.setProperty(nm532ENLabel, "Volts", 0.0);
+                core_.setProperty(nm532ENLabel, "Volts", 5);
             } catch (Exception e) {
                 gui_.logError(e);
             }
         try {
-                core_.setProperty(nm532PLabel, "Volts", 0.0);
+                core_.setProperty(nm532PLabel, "Volts", 5);
             } catch (Exception e) {
                 gui_.logError(e);
             }
         try {
-                core_.setProperty(nm561ENLabel, "Volts", 0.0);
+                core_.setProperty(nm561ENLabel, "Volts", 5);
             } catch (Exception e) {
                 gui_.logError(e);
             }
         try {
-                core_.setProperty(nm561PLabel, "Volts", 0.0);
+                core_.setProperty(nm561PLabel, "Volts", 5);
             } catch (Exception e) {
                 gui_.logError(e);
             }
@@ -1114,7 +1114,7 @@ public class FluoSEMLaserControlFrame extends javax.swing.JFrame {
     private void jLasermWSet10KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jLasermWSet10KeyPressed
             if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
             try {
-                core_.setProperty(nm532PLabel, "Volts", (Float.parseFloat(jLasermWSet10.getText()))/90.9);
+                core_.setProperty(nm532PLabel, "Volts", (5-(Float.parseFloat(jLasermWSet10.getText())/60)));
             } catch (Exception e) {
                 gui_.logError(e);
             }
@@ -1133,29 +1133,29 @@ public class FluoSEMLaserControlFrame extends javax.swing.JFrame {
             } catch (Exception e) {
                 gui_.logError(e);
             }
-            try {
+           /* try {
                 core_.setProperty(nm532ENLabel, "Volts", 5.0);
             } catch (Exception e) {
                 gui_.logError(e);
-            }
+            }*/
         } else {
                                    try {
             core_.setProperty(nm532Label, "Laser", "Off");
             } catch (Exception e) {
                 gui_.logError(e);
             }
-            try {
+            /*try {
                 core_.setProperty(nm532ENLabel, "Volts", 0.0);
             } catch (Exception e) {
                 gui_.logError(e);
-            }
+            }*/
         }
     }//GEN-LAST:event_jLaserOnOff10ActionPerformed
 
     private void jLasermWSet11KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jLasermWSet11KeyPressed
         if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
             try {
-                core_.setProperty(nm561PLabel, "Volts", (Float.parseFloat(jLasermWSet11.getText()))/45.45);
+                core_.setProperty(nm561PLabel, "Volts", 5-(Float.parseFloat(jLasermWSet11.getText())/30));
             } catch (Exception e) {
                 gui_.logError(e);
             }
@@ -1174,29 +1174,29 @@ public class FluoSEMLaserControlFrame extends javax.swing.JFrame {
             } catch (Exception e) {
                 gui_.logError(e);
             }
-            try {
+           /* try {
                 core_.setProperty(nm561ENLabel, "Volts", 5.0);
             } catch (Exception e) {
                 gui_.logError(e);
-            }
+            }*/
         } else {
                                try {
             core_.setProperty(nm561Label, "Laser", "Off");
             } catch (Exception e) {
                 gui_.logError(e);
             }
-            try {
+            /*try {
                 core_.setProperty(nm561ENLabel, "Volts", 0.0);
             } catch (Exception e) {
                 gui_.logError(e);
-            }
+            }*/
         }
     }//GEN-LAST:event_jLaserOnOff11ActionPerformed
 
     private void jLaserPercentSet10KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jLaserPercentSet10KeyPressed
         if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
             try {
-                core_.setProperty(nm532PLabel, "Volts", Float.parseFloat(jLaserPercentSet10.getText())/30.3);
+                core_.setProperty(nm532PLabel, "Volts", (5-Float.parseFloat(jLaserPercentSet10.getText())/20));
             } catch (Exception e) {
                 gui_.logError(e);
             }
@@ -1216,7 +1216,7 @@ public class FluoSEMLaserControlFrame extends javax.swing.JFrame {
     private void jLaserPercentSet11KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jLaserPercentSet11KeyPressed
             if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
             try {
-                core_.setProperty(nm561PLabel, "Volts", Float.parseFloat(jLaserPercentSet11.getText())/30.3);
+                core_.setProperty(nm561PLabel, "Volts", (5-Float.parseFloat(jLaserPercentSet11.getText())/20));
             } catch (Exception e) {
                 gui_.logError(e);
             }
