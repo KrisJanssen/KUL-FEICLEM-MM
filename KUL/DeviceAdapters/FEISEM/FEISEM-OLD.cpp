@@ -23,16 +23,19 @@
 //                INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES.
 // CVS:           $Id$
 //
-#include "FEISEM.h"
-#include "../../../micromanager/MMDevice/ModuleInterface.h"
-#include <sstream>
-#include <cstdio>
 
-#ifdef WIN32
-   #define WIN32_LEAN_AND_MEAN
-   #include <windows.h>
-   #define snprintf _snprintf 
-#endif
+#include "FEISEM.h"
+#include <cstdio>
+#include <string>
+#include <math.h>
+#include "../../../micromanager/MMDevice/ModuleInterface.h"
+#include "../../../micromanager/MMCore/Error.h"
+#include <sstream>
+#include <algorithm>
+#include "WriteCompactTiffRGB.h"
+#include <iostream>
+
+#define _AFXDLL
 
 //#include "stdafx.h"
 
@@ -62,6 +65,7 @@ const double g_ScanRotationMultiplier = 180/3.141582;
 // to load particular device from the "DemoCamera.dll" library
 const char* g_CameraDeviceName = "FEISEM Camera";
 const char* g_ControllerDeviceName = "FEISEM Controller";
+const char* g_HubDeviceName = "FEISEM Hub";
 
 // constants for naming pixel types (allowed values of the "PixelType" property)
 const char* g_MODE_HIVAC = "Hi-Vac";
@@ -88,7 +92,26 @@ const char* g_HTSTATE_RAMPING_UP = "Ramping Up";
 const char* g_HTSTATE_RAMPING_DOWN = "Ramping Down";
 const char* g_HTSTATE_INITIALIZING = "Initialising";
 
+// TODO: linux entry code
 
+// windows DLL entry code
+#ifdef WIN32
+BOOL APIENTRY DllMain( HANDLE /*hModule*/, 
+                      DWORD  ul_reason_for_call, 
+                      LPVOID /*lpReserved*/
+                      )
+{
+   switch (ul_reason_for_call)
+   {
+   case DLL_PROCESS_ATTACH:
+   case DLL_THREAD_ATTACH:
+   case DLL_THREAD_DETACH:
+   case DLL_PROCESS_DETACH:
+      break;
+   }
+   return TRUE;
+}
+#endif
 
 
 
@@ -107,7 +130,7 @@ MODULE_API void InitializeModuleData()
 {
   // AddAvailableDeviceName(g_CameraDeviceName, "FEISEM Camera");
   // AddAvailableDeviceName(g_ControllerDeviceName, "FEISEM Controller");
-   AddAvailableDeviceName(g_ControllerDeviceName, "FEISEM Controller");
+   RegisterDevice(g_ControllerDeviceName, MM::GenericDevice, "FEISEM Controller");
 /*   AddAvailableDeviceName(g_WheelDeviceName, "Demo filter wheel");
    AddAvailableDeviceName(g_StateDeviceName, "Demo State Device");
    AddAvailableDeviceName(g_ObjectiveDeviceName, "Demo objective turret");
@@ -122,7 +145,7 @@ MODULE_API void InitializeModuleData()
    AddAvailableDeviceName("ImageFlipX", "ImageFlipX");
    AddAvailableDeviceName("ImageFlipY", "ImageFlipY");
    AddAvailableDeviceName("MedianFilter", "MedianFilter");*/
-
+   RegisterDevice(g_HubDeviceName, MM::HubDevice, "FEISEM Hub");
 
 
 }
@@ -139,12 +162,16 @@ MODULE_API MM::Device* CreateDevice(const char* deviceName)
    }*/
    if (strcmp(deviceName, g_ControllerDeviceName) == 0)
    {
-	  return new FEISEMController;
+	  return new FEISEMController();
    }
   /* else if (strcmp(deviceName, g_CameraDeviceName) == 0)
    {
 	  return new FEISEMCamera();
    }*/
+   else if (strcmp(deviceName, g_HubDeviceName) == 0)
+   {
+	  return new FEISEMHub();
+   }
 
    // ...supplied name not recognized
    return 0;
@@ -157,9 +184,13 @@ MODULE_API void DeleteDevice(MM::Device* pDevice)
 
 
 
-
+FEISEMHub::FEISEMHub():initialized_(false),busy_(false)
+{
+		CreateProperty(MM::g_Keyword_Description, "FEISEM Hub", MM::String, true);
+}
 FEISEMController::FEISEMController():initialized_(false),busy_(false)
 {
+		hub = NULL;
 		pIBeamControl = NULL;
         pIElectronBeamControl = NULL;
 		pIVideoControl = NULL;
@@ -173,16 +204,13 @@ FEISEMController::FEISEMController():initialized_(false),busy_(false)
 
 		CreateProperty(MM::g_Keyword_Description, "FEISEM Controller", MM::String, true);
 		int ret = CreateProperty(MM::g_Keyword_Description, "FEISEM Controller", MM::String, true);
-		assert(DEVICE_OK == nret);
+
    // Name
    ret = CreateProperty(MM::g_Keyword_Name, g_ControllerDeviceName, MM::String, true);
-   assert(DEVICE_OK == ret);
-
-   
-
+   CreateHubIDProperty();
 }
 
-void FEISEMController::LogFEIError(HRESULT hresult)
+void FEISEMHub::LogFEIError(HRESULT hresult)
 {
 	LogMessage("XTLib Error: " + hresult, true);
 }
@@ -190,7 +218,16 @@ void FEISEMController::LogFEIError(HRESULT hresult)
 
 
 
+int FEISEMHub::Shutdown()
+{
 
+
+      //  cout << _T( "Uninitializing COM library" ) << endl;
+        
+		//return DEVICE_OK;
+	initialized_ = false;
+	return DEVICE_OK;
+}
 
 int FEISEMController::Shutdown()
 {
@@ -230,34 +267,42 @@ int FEISEMController::Shutdown()
 	return DEVICE_OK;
 }
 
-
+FEISEMHub::~FEISEMHub()
+{
+        Shutdown();
+}
 
 FEISEMController::~FEISEMController()
 {
         Shutdown();
 }
 
-void FEISEMController::COMInit()
+
+int FEISEMHub::Initialize()
 {
-	if ( pIMicroscopeControl )
-	{
-	}
-	else
-	{
-	
-	}
+  // FEISEMHub* pHub = static_cast<FEISEMHub*>(GetParentHub());
+   
+	return DEVICE_OK;
 }
 
 int FEISEMController::Initialize()
-{	
-	double min, max;
+{
+
+   hub = static_cast<FEISEMHub*>(GetParentHub());
+
+   char hubLabel[MM::MaxStrLength];
+   hub->GetLabel(hubLabel);
+   SetParentID(hubLabel); // for backward comp.
+
+   double min, max;
    long lmin, lmax;
    int nRetCode = 0;
-   HRESULT hr = E_FAIL;
+
+        HRESULT hr = E_FAIL;
         
         CComBSTR sMachine( MACHINE );
 
-        if ( SUCCEEDED( hr = CoInitializeEx(NULL, COINIT_MULTITHREADED ) ) )
+        if ( SUCCEEDED( hr = CoInitialize( NULL ) ) )
         {
   //          cout << _T( "COM library initialized successfully" ) << endl;
 
@@ -342,7 +387,7 @@ int FEISEMController::Initialize()
         {
        //     cout << _T( "ERROR: Cannot initialize COM library" ) << endl;
         }
-		}    
+	}
 
 		vector<string> BOOLOPT;
 		BOOLOPT.push_back("true");
@@ -350,14 +395,14 @@ int FEISEMController::Initialize()
 		//VacSystemControl
 		CPropertyAction* pAct = new CPropertyAction (this, &FEISEMController::OnPressure);
 		int ret = CreateProperty("Pressure (Pa)", "1000.0" , MM::Float, false, pAct);
-		assert(DEVICE_OK == ret);
+		assert(nRet == DEVICE_OK);
         
 
 	//	ret = CreateProperty("Pressure Range (Pa)", "0.0" , MM::Float, true);
 	//	assert(DEVICE_OK == ret);
 		pAct = new CPropertyAction (this, &FEISEMController::OnChamberState);
 		ret = CreateProperty("Chamber State", "unknown" , MM::String, true, pAct);
-		assert(DEVICE_OK == ret);
+		assert(nRet == DEVICE_OK);
         
 
 		vector<string> StateValues;
@@ -368,11 +413,12 @@ int FEISEMController::Initialize()
 		StateValues.push_back(g_STATE_VENTING);
 		StateValues.push_back(g_STATE_ERROR);
 		ret = SetAllowedValues("Chamber State", StateValues);
-		assert(DEVICE_OK == ret);
+		if (DEVICE_OK != ret)
+        return ret;
 
 		pAct = new CPropertyAction (this, &FEISEMController::OnChamberMode);
 		ret = CreateProperty("Chamber Mode", "unknown" , MM::String, true, pAct);
-		assert(DEVICE_OK == ret);
+		assert(nRet == DEVICE_OK);
         	
 
 		vector<string> ModeValues;
@@ -380,23 +426,24 @@ int FEISEMController::Initialize()
 		ModeValues.push_back(g_MODE_CHARGENEUT);
 		ModeValues.push_back(g_MODE_ENVIRONMENTAL);
 		ret = SetAllowedValues("Chamber Mode", ModeValues);
-		assert(DEVICE_OK == ret);	
+		if (DEVICE_OK != ret)
+        return ret;		
 		hr = pIVacSystemControl->get_PressureRange((XTLibRange)XTLIB_RANGE_MIN, &min);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		hr = pIVacSystemControl->get_PressureRange((XTLibRange)XTLIB_RANGE_MAX, &max);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		SetPropertyLimits("Pressure (Pa)", min, max);
 
 		//ScanControl
 		pAct = new CPropertyAction (this, &FEISEMController::OnScanMode);
 		ret = CreateProperty("Scan Mode", g_SCAN_NONE , MM::String, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 
 		vector<string> ScanValues;
@@ -406,11 +453,12 @@ int FEISEMController::Initialize()
 		ScanValues.push_back(g_SCAN_SPOT);
 		ScanValues.push_back(g_SCAN_LINE);
 		ret = SetAllowedValues("Scan Mode", ScanValues);
-		assert(DEVICE_OK == ret);
+		if (DEVICE_OK != ret)
+        return ret;
 
 		pAct = new CPropertyAction (this, &FEISEMController::OnDwellTime);
 		ret = CreateProperty("Dwell Time (us)", "0.0" , MM::Float, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 //		ret = CreateProperty("Dwell Time Max", "0.0" , MM::Float, true);
 //		assert(DEVICE_OK == ret);
@@ -420,20 +468,20 @@ int FEISEMController::Initialize()
 		hr = pIScanControl->get_DwellTimeRange((XTLibRange)XTLIB_RANGE_MIN, &min);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		hr = pIScanControl->get_DwellTimeRange((XTLibRange)XTLIB_RANGE_MAX, &max);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		ret = SetPropertyLimits("Dwell Time (us)", min*g_TimeMultiplier, max*g_TimeMultiplier);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 
 		pAct = new CPropertyAction (this, &FEISEMController::OnVPixels);
 		ret = CreateProperty("Vertical Pixels", "442" , MM::Integer, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 
 		vector<string> VertPixelValues;
@@ -442,7 +490,8 @@ int FEISEMController::Initialize()
 		VertPixelValues.push_back("1768");
 		VertPixelValues.push_back("3536");
 		ret = SetAllowedValues("Vertical Pixels", VertPixelValues);
-		assert(DEVICE_OK == ret);
+				if (DEVICE_OK != ret)
+        return ret;
 
 		pAct = new CPropertyAction (this, &FEISEMController::OnHPixels);
 		ret = CreateProperty("Horizontal Pixels", "512" , MM::Integer, false, pAct);
@@ -454,7 +503,8 @@ int FEISEMController::Initialize()
 		HoriPixelValues.push_back("2048");
 		HoriPixelValues.push_back("4096");
 		ret = SetAllowedValues("Horizontal Pixels", HoriPixelValues);
-		assert(DEVICE_OK == ret);
+				if (DEVICE_OK != ret)
+        return ret;
 
 /*		ret = CreateProperty("Vertical Pixels Max", "3536" , MM::Integer, true);
 		assert(DEVICE_OK == ret);
@@ -468,54 +518,54 @@ int FEISEMController::Initialize()
 		hr = pIScanControl->get_NrOfVertPixelsRange((XTLibRange)XTLIB_RANGE_MIN, &lmin);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		hr = pIScanControl->get_NrOfVertPixelsRange((XTLibRange)XTLIB_RANGE_MAX, &lmax);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		ret = SetPropertyLimits("Vertical Pixels", static_cast<double>(lmin), static_cast<double>(lmax));
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		hr = pIScanControl->get_NrOfHorPixelsRange((XTLibRange)XTLIB_RANGE_MIN, &lmin);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		hr = pIScanControl->get_NrOfHorPixelsRange((XTLibRange)XTLIB_RANGE_MAX, &lmax);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		ret = SetPropertyLimits("Horizontal Pixels", static_cast<double>(lmin), static_cast<double>(lmax));
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 
 		pAct = new CPropertyAction (this, &FEISEMController::OnSelectedAreaXStart);
 		ret = CreateProperty("Selected Area X Start", "0" , MM::Integer, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		pAct = new CPropertyAction (this, &FEISEMController::OnSelectedAreaYStart);
 		ret = CreateProperty("Selected Area Y Start", "0" , MM::Integer, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		pAct = new CPropertyAction (this, &FEISEMController::OnSelectedAreaX);
 		ret = CreateProperty("Selected Area X Size", "512" , MM::Integer, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		pAct = new CPropertyAction (this, &FEISEMController::OnSelectedAreaY);
 		ret = CreateProperty("Selected Area Y Size", "442" , MM::Integer, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		//512 x 442
 		pAct = new CPropertyAction (this, &FEISEMController::OnFOV);
 		ret = CreateProperty("FOV X (um)", "1" , MM::Float, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		pAct = new CPropertyAction (this, &FEISEMController::OnFOV);
 		ret = CreateProperty("FOV Y (um)", "0.86328125" , MM::Float, true, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 /*		ret = CreateProperty("FOV X Min", "0.0" , MM::Float, true);
 		assert(DEVICE_OK == ret);
@@ -529,32 +579,32 @@ int FEISEMController::Initialize()
 		hr = pIScanControl->get_ScanFieldXRange((XTLibRange)XTLIB_RANGE_MIN, &min);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		hr = pIScanControl->get_ScanFieldXRange((XTLibRange)XTLIB_RANGE_MAX, &max);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		ret = SetPropertyLimits("FOV X (um)", min*g_DistanceMultiplier, max*g_DistanceMultiplier);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		hr = pIScanControl->get_ScanFieldYRange((XTLibRange)XTLIB_RANGE_MIN, &min);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		hr = pIScanControl->get_ScanFieldYRange((XTLibRange)XTLIB_RANGE_MAX, &max);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		ret=SetPropertyLimits("FOV Y (um)", min*g_DistanceMultiplier, max*g_DistanceMultiplier);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		pAct = new CPropertyAction (this, &FEISEMController::OnRotation);
 		ret = CreateProperty("Rotation", "0.0" , MM::Float, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 /*		ret = CreateProperty("Rotation Min", "0.0" , MM::Float, true);
 		assert(DEVICE_OK == ret);
@@ -564,51 +614,52 @@ int FEISEMController::Initialize()
 		hr = pIScanControl->get_RotationRange((XTLibRange)XTLIB_RANGE_MIN, &min);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		hr = pIScanControl->get_RotationRange((XTLibRange)XTLIB_RANGE_MAX, &max);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		ret=SetPropertyLimits("Rotation", min*g_ScanRotationMultiplier, max*g_ScanRotationMultiplier);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		pAct = new CPropertyAction (this, &FEISEMController::OnSelectedEnabled);
 		ret = CreateProperty("Selected Area Enabled", "false" , MM::String, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 
 		ret = SetAllowedValues("Selected Area Enabled", BOOLOPT);
-		assert(DEVICE_OK == ret);
+		if (DEVICE_OK != ret)
+        return ret;
 		pAct = new CPropertyAction (this, &FEISEMController::OnSpotX);
 		ret = CreateProperty("Spot X", "256" , MM::Integer, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		pAct = new CPropertyAction (this, &FEISEMController::OnSpotY);
 		ret = CreateProperty("Spot Y", "221" , MM::Integer, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		//ElectronBeamControl	
 		pAct = new CPropertyAction (this, &FEISEMController::OnHTState);
 		ret = CreateProperty("HTState", "unknown" , MM::String, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 
 		vector<string> HTStateValues;
 		HTStateValues.push_back(g_HTSTATE_ON);
 		HTStateValues.push_back(g_HTSTATE_OFF);
 		ret = SetAllowedValues("HTState", HTStateValues);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		 
 		pAct = new CPropertyAction (this, &FEISEMController::OnAcceleratingVoltage);
 		ret = CreateProperty("Acceleration Voltage (V)", "20000.0" , MM::Float, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		pAct = new CPropertyAction (this, &FEISEMController::OnSpotSize);
 		ret = CreateProperty("Spot Size", "2.0" , MM::Float, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 	/*	ret = CreateProperty("Spot Min", "1.0" , MM::Float, true);
 		assert(DEVICE_OK == ret);
@@ -618,30 +669,31 @@ int FEISEMController::Initialize()
 		hr = pIElectronBeamControl->get_SpotSizeRange((XTLibRange)XTLIB_RANGE_MIN, &min);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		hr = pIElectronBeamControl->get_SpotSizeRange((XTLibRange)XTLIB_RANGE_MAX, &max);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		ret = SetPropertyLimits("Spot Size", min, max);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		pAct = new CPropertyAction (this, &FEISEMController::OnBeamBlank);
 		ret = CreateProperty("Beam Blank", "false" , MM::String, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 
 		ret = SetAllowedValues("Beam Blank", BOOLOPT);
-		assert(DEVICE_OK == ret);
+				if (DEVICE_OK != ret)
+        return ret;
 		pAct = new CPropertyAction (this, &FEISEMController::OnStigmationX);
 		ret = CreateProperty("Stigmation X", "0.0" , MM::Float, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		pAct = new CPropertyAction (this, &FEISEMController::OnStigmationY);
 		ret = CreateProperty("Stigmation Y", "0.0" , MM::Float, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 	/*	ret = CreateProperty("Stigmation X Min", "0.0" , MM::Float, true);
 		assert(DEVICE_OK == ret);
@@ -655,37 +707,37 @@ int FEISEMController::Initialize()
 		hr = pIElectronBeamControl->get_StigmatorXRange((XTLibRange)XTLIB_RANGE_MIN, &min);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		hr = pIElectronBeamControl->get_StigmatorXRange((XTLibRange)XTLIB_RANGE_MAX, &max);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		ret = SetPropertyLimits("Stigmation X", min*g_StigmationMultiplier, max*g_StigmationMultiplier);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		hr = pIElectronBeamControl->get_StigmatorYRange((XTLibRange)XTLIB_RANGE_MIN, &min);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		hr = pIElectronBeamControl->get_StigmatorYRange((XTLibRange)XTLIB_RANGE_MAX, &max);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
         ret = SetPropertyLimits("Stigmation Y", min*g_StigmationMultiplier, max*g_StigmationMultiplier);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		//BeamControl
 		pAct = new CPropertyAction (this, &FEISEMController::OnBeamShiftX);
 		ret = CreateProperty("Beam Shift X", "0.0" , MM::Float, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		pAct = new CPropertyAction (this, &FEISEMController::OnBeamShiftY);
 		ret = CreateProperty("Beam Shift Y", "0.0" , MM::Float, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 	/*	ret = CreateProperty("Beam Shift X Min", "0.0" , MM::Float, true);
 		assert(DEVICE_OK == ret);
@@ -699,44 +751,47 @@ int FEISEMController::Initialize()
 		hr = pIBeamControl->get_BeamShiftXRange((XTLibRange)XTLIB_RANGE_MIN, &min);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		hr = pIBeamControl->get_BeamShiftXRange((XTLibRange)XTLIB_RANGE_MAX, &max);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		ret = SetPropertyLimits("Beam Shift X", min*g_BeamShiftMultiplier, max*g_BeamShiftMultiplier);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		hr = pIBeamControl->get_BeamShiftYRange((XTLibRange)XTLIB_RANGE_MIN, &min);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		hr = pIBeamControl->get_BeamShiftYRange((XTLibRange)XTLIB_RANGE_MAX, &max);
 		if(hr != S_OK)
 		{
-			LogFEIError(hr);
+			hub->LogFEIError(hr);
 		}
 		ret = SetPropertyLimits("Beam Shift Y", min*g_BeamShiftMultiplier, max*g_BeamShiftMultiplier);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 
 		pAct = new CPropertyAction (this, &FEISEMController::OnSaveImage);
 		ret = CreateProperty("Save Image", "false" , MM::String, false, pAct);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 
 		ret = SetAllowedValues("Save Image", BOOLOPT);
-		assert(DEVICE_OK == ret);
+				if (DEVICE_OK != ret)
+        return ret;
 		ret = CreateProperty("Image Filename", "D:\\Imaging\\MMSave\\filename" , MM::String, false);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
         
 		
 
 				ret = CreateProperty("Image Counter", "0" , MM::Integer, false);
-				assert(DEVICE_OK == ret);
+				assert(nRet == DEVICE_OK);
+        
+
   	initialized_ = true;
 	return DEVICE_OK;
 }
@@ -757,7 +812,7 @@ int FEISEMController::OnPressure(MM::PropertyBase* pProp, MM::ActionType eAct)
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -778,14 +833,13 @@ int FEISEMController::OnPressure(MM::PropertyBase* pProp, MM::ActionType eAct)
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
 }
 int FEISEMController::OnChamberState(MM::PropertyBase* pProp, MM::ActionType eAct)
 {
-	
 	HRESULT hresult;
 	XTLibVacuumUserState state; 
    if (eAct == MM::BeforeGet)
@@ -819,14 +873,13 @@ int FEISEMController::OnChamberState(MM::PropertyBase* pProp, MM::ActionType eAc
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
 }
 int FEISEMController::OnChamberMode(MM::PropertyBase* pProp, MM::ActionType eAct)
 {
-	
 	HRESULT hresult;
 	XTLibVacuumUserMode mode; 
    if (eAct == MM::BeforeGet)
@@ -851,14 +904,13 @@ int FEISEMController::OnChamberMode(MM::PropertyBase* pProp, MM::ActionType eAct
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
 }
 int FEISEMController::OnScanMode(MM::PropertyBase* pProp, MM::ActionType eAct)
 {
-	
 	  HRESULT hresult;
 	  XTLibScanMode mode;
 	  string modestring;
@@ -893,7 +945,7 @@ int FEISEMController::OnScanMode(MM::PropertyBase* pProp, MM::ActionType eAct)
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -925,14 +977,13 @@ int FEISEMController::OnScanMode(MM::PropertyBase* pProp, MM::ActionType eAct)
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
 }
 int FEISEMController::OnDwellTime(MM::PropertyBase* pProp, MM::ActionType eAct)
 {
-	
 	HRESULT hresult;
 	double dwelltime;
    if (eAct == MM::BeforeGet)
@@ -944,7 +995,7 @@ int FEISEMController::OnDwellTime(MM::PropertyBase* pProp, MM::ActionType eAct)
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -965,14 +1016,13 @@ int FEISEMController::OnDwellTime(MM::PropertyBase* pProp, MM::ActionType eAct)
 	   }
 	   else
 	   {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	   }
    }
    return DEVICE_OK;
 }
 int FEISEMController::OnHPixels(MM::PropertyBase* pProp, MM::ActionType eAct)
 {
-	
 	HRESULT hresult;
 	long Pixels;
    if (eAct == MM::BeforeGet)
@@ -985,7 +1035,7 @@ int FEISEMController::OnHPixels(MM::PropertyBase* pProp, MM::ActionType eAct)
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -997,14 +1047,13 @@ int FEISEMController::OnHPixels(MM::PropertyBase* pProp, MM::ActionType eAct)
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
 }
 int FEISEMController::OnVPixels(MM::PropertyBase* pProp, MM::ActionType eAct)
 {
-	
 	HRESULT hresult;
 	long Pixels;
    if (eAct == MM::BeforeGet)
@@ -1017,7 +1066,7 @@ int FEISEMController::OnVPixels(MM::PropertyBase* pProp, MM::ActionType eAct)
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1029,14 +1078,13 @@ int FEISEMController::OnVPixels(MM::PropertyBase* pProp, MM::ActionType eAct)
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
 }
 int FEISEMController::OnSelectedAreaX(MM::PropertyBase* pProp, MM::ActionType eAct)
 {
-	
 	HRESULT hresult;
 	long XStart, YStart, X, Y;
    if (eAct == MM::BeforeGet)
@@ -1048,7 +1096,7 @@ int FEISEMController::OnSelectedAreaX(MM::PropertyBase* pProp, MM::ActionType eA
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1063,12 +1111,12 @@ int FEISEMController::OnSelectedAreaX(MM::PropertyBase* pProp, MM::ActionType eA
 			}
 			else
 			{	
-				LogFEIError(hresult);
+				hub->LogFEIError(hresult);
 			}
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
@@ -1086,7 +1134,7 @@ int FEISEMController::OnSelectedAreaY(MM::PropertyBase* pProp, MM::ActionType eA
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1101,12 +1149,12 @@ int FEISEMController::OnSelectedAreaY(MM::PropertyBase* pProp, MM::ActionType eA
 			}
 			else
 			{	
-				LogFEIError(hresult);
+				hub->LogFEIError(hresult);
 			}
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
@@ -1124,7 +1172,7 @@ int FEISEMController::OnSelectedAreaXStart(MM::PropertyBase* pProp, MM::ActionTy
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1139,12 +1187,12 @@ int FEISEMController::OnSelectedAreaXStart(MM::PropertyBase* pProp, MM::ActionTy
 			}
 			else
 			{	
-				LogFEIError(hresult);
+				hub->LogFEIError(hresult);
 			}
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
@@ -1162,7 +1210,7 @@ int FEISEMController::OnSelectedAreaYStart(MM::PropertyBase* pProp, MM::ActionTy
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1177,12 +1225,12 @@ int FEISEMController::OnSelectedAreaYStart(MM::PropertyBase* pProp, MM::ActionTy
 			}
 			else
 			{	
-				LogFEIError(hresult);
+				hub->LogFEIError(hresult);
 			}
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
@@ -1201,7 +1249,7 @@ HRESULT hresult;
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1222,7 +1270,7 @@ HRESULT hresult;
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
@@ -1241,7 +1289,7 @@ int FEISEMController::OnRotation(MM::PropertyBase* pProp, MM::ActionType eAct)
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1261,7 +1309,7 @@ int FEISEMController::OnRotation(MM::PropertyBase* pProp, MM::ActionType eAct)
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
@@ -1290,7 +1338,7 @@ int FEISEMController::OnSelectedEnabled(MM::PropertyBase* pProp, MM::ActionType 
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1311,7 +1359,7 @@ int FEISEMController::OnSelectedEnabled(MM::PropertyBase* pProp, MM::ActionType 
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
@@ -1330,7 +1378,7 @@ int FEISEMController::OnSpotX(MM::PropertyBase* pProp, MM::ActionType eAct)
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1345,12 +1393,12 @@ int FEISEMController::OnSpotX(MM::PropertyBase* pProp, MM::ActionType eAct)
 		}
 	  else
 			{	
-			LogFEIError(hresult);
+			hub->LogFEIError(hresult);
 			}
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
 	  
    }
@@ -1370,7 +1418,7 @@ int FEISEMController::OnSpotY(MM::PropertyBase* pProp, MM::ActionType eAct)
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1385,12 +1433,12 @@ int FEISEMController::OnSpotY(MM::PropertyBase* pProp, MM::ActionType eAct)
 		}
 	  else
 			{	
-			LogFEIError(hresult);
+			hub->LogFEIError(hresult);
 			}
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
 	  
    }
@@ -1398,7 +1446,6 @@ int FEISEMController::OnSpotY(MM::PropertyBase* pProp, MM::ActionType eAct)
 }
 int FEISEMController::OnHTState(MM::PropertyBase* pProp, MM::ActionType eAct)
 {
-	
 HRESULT hresult;
 	  HTState state;
 	  string statestring;
@@ -1433,7 +1480,7 @@ HRESULT hresult;
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1453,7 +1500,7 @@ HRESULT hresult;
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
@@ -1472,7 +1519,7 @@ int FEISEMController::OnAcceleratingVoltage(MM::PropertyBase* pProp, MM::ActionT
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1484,7 +1531,7 @@ int FEISEMController::OnAcceleratingVoltage(MM::PropertyBase* pProp, MM::ActionT
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
@@ -1503,7 +1550,7 @@ int FEISEMController::OnSpotSize(MM::PropertyBase* pProp, MM::ActionType eAct)
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1515,7 +1562,7 @@ int FEISEMController::OnSpotSize(MM::PropertyBase* pProp, MM::ActionType eAct)
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
@@ -1544,7 +1591,7 @@ VARIANT_BOOL enabled;
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1565,7 +1612,7 @@ VARIANT_BOOL enabled;
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
    }
    return DEVICE_OK;
@@ -1584,7 +1631,7 @@ HRESULT hresult;
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1608,12 +1655,12 @@ HRESULT hresult;
 		}
 	  else
 			{	
-			LogFEIError(hresult);
+			hub->LogFEIError(hresult);
 			}
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
 	  
    }
@@ -1633,7 +1680,7 @@ HRESULT hresult;
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1657,12 +1704,12 @@ HRESULT hresult;
 		}
 	  else
 			{	
-			LogFEIError(hresult);
+			hub->LogFEIError(hresult);
 			}
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
 	  
    }
@@ -1682,7 +1729,7 @@ HRESULT hresult;
 	  }
 	  else
 	  {
-		  //LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1706,12 +1753,12 @@ HRESULT hresult;
 		}
 	  else
 			{	
-			//LogFEIError(hresult);
+			hub->LogFEIError(hresult);
 			}
 	  }
 	  else
 	  {	
-		   //LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
 	  
    }
@@ -1731,7 +1778,7 @@ HRESULT hresult;
 	  }
 	  else
 	  {
-		  LogFEIError(hresult);
+		  hub->LogFEIError(hresult);
 	  }
    }
    else if (eAct == MM::AfterSet)
@@ -1755,12 +1802,12 @@ HRESULT hresult;
 		}
 	  else
 			{	
-			LogFEIError(hresult);
+			hub->LogFEIError(hresult);
 			}
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
 	  
    }
@@ -1825,7 +1872,7 @@ HRESULT hresult;
 	  }
 	  else
 	  {	
-		   LogFEIError(hresult);
+		   hub->LogFEIError(hresult);
 	  }
 	  }
 	  
@@ -1833,6 +1880,89 @@ HRESULT hresult;
    return DEVICE_OK;
 }
 
+MM::DeviceDetectionStatus FEISEMHub::DetectDevice(void)
+{
+	if (initialized_)
+      return MM::CanCommunicate;
+	
+	 MM::DeviceDetectionStatus result = MM::Misconfigured;
+	int nRetCode = 0;
+	try{
+    pIMicroscopeControl = NULL;
+    busy_ = true;
+ 
+        HRESULT hr = E_FAIL;
+        
+        CComBSTR sMachine( MACHINE );
+
+        if ( SUCCEEDED( hr = CoInitialize( NULL ) ) )
+        {
+  //          cout << _T( "COM library initialized successfully" ) << endl;
+
+            if ( SUCCEEDED( hr = CoCreateInstance( CLSID_MicroscopeControl, NULL, CLSCTX_INPROC_SERVER, IID_IMicroscopeControl, reinterpret_cast < void ** > (&pIMicroscopeControl) ) ) )
+            {
+  //              cout << _T( "Create instance of MicroscopeControl object succeeded" ) << endl;
+
+                if ( SUCCEEDED( hr = pIMicroscopeControl->Connect( sMachine ) ) )
+                {
+  //                  cout << _T( "Connect to microscope server succeeded" ) << endl;
+					 pIMicroscopeControl->Disconnect();
+					 pIMicroscopeControl->Release();
+					 pIMicroscopeControl = NULL;
+					 CoUninitialize();
+					 result = MM::CanCommunicate;
+                }
+                else
+                {
+					 pIMicroscopeControl->Release();
+					 pIMicroscopeControl = NULL;
+					 CoUninitialize();
+                 //   cout << _T( "ERROR: Cannot connect to microscope server" ) << endl;
+                }
+            }
+            else
+            {
+				CoUninitialize();
+       //         cout << _T( "ERROR: Cannot create instance of MicroscopeControl object" ) << endl;
+            }
+        }
+        else
+        {
+       //     cout << _T( "ERROR: Cannot initialize COM library" ) << endl;
+        }
+	}
+	catch(...)
+	{
+		LogMessage("Exception in DetectDevice!",false);
+	}
+		busy_ = false;
+		return result; 
+}
+
+int FEISEMHub::DetectInstalledDevices()
+{  
+	if (MM::CanCommunicate == DetectDevice()) 
+   {
+      std::vector<std::string> peripherals; 
+      peripherals.clear();
+     // peripherals.push_back(g_CameraDeviceName);
+      peripherals.push_back(g_ControllerDeviceName);
+      for (size_t i=0; i < peripherals.size(); i++) 
+      {
+         MM::Device* pDev = ::CreateDevice(peripherals[i].c_str());
+         if (pDev) 
+         {
+            AddInstalledDevice(pDev);
+         }
+      }
+	}
+   return DEVICE_OK; 
+}
+
+void FEISEMHub::GetName(char* pName) const
+{
+   CDeviceUtils::CopyLimitedString(pName, g_HubDeviceName);
+}
 
 void FEISEMController::GetName(char* pName) const
 {
@@ -1964,12 +2094,12 @@ void FEISEMController::GetName(char* pName) const
 //		hr = pIScanControl->get_DwellTimeRange((XTLibRange)XTLIB_RANGE_MIN, &min);
 //		if(hr != S_OK)
 //		{
-//			LogFEIError(hr);
+//			hub->LogFEIError(hr);
 //		}
 //		hr = pIScanControl->get_DwellTimeRange((XTLibRange)XTLIB_RANGE_MAX, &max);
 //		if(hr != S_OK)
 //		{
-//			LogFEIError(hr);
+//			hub->LogFEIError(hr);
 //		}
 //		SetPropertyLimits("Frame Time", min, max);
 //
@@ -2010,24 +2140,24 @@ void FEISEMController::GetName(char* pName) const
 //		hr = pIScanControl->get_NrOfVertPixelsRange((XTLibRange)XTLIB_RANGE_MIN, &lmin);
 //		if(hr != S_OK)
 //		{
-//			LogFEIError(hr);
+//			hub->LogFEIError(hr);
 //		}
 //		hr = pIScanControl->get_NrOfVertPixelsRange((XTLibRange)XTLIB_RANGE_MAX, &lmax);
 //		if(hr != S_OK)
 //		{
-//			LogFEIError(hr);
+//			hub->LogFEIError(hr);
 //		}
 //		SetPropertyLimits("Image Height", static_cast<double>(lmin), static_cast<double>(lmax));
 //
 //		hr = pIScanControl->get_NrOfHorPixelsRange((XTLibRange)XTLIB_RANGE_MIN, &lmin);
 //		if(hr != S_OK)
 //		{
-//			LogFEIError(hr);
+//			hub->LogFEIError(hr);
 //		}
 //		hr = pIScanControl->get_NrOfHorPixelsRange((XTLibRange)XTLIB_RANGE_MAX, &lmax);
 //		if(hr != S_OK)
 //		{
-//			LogFEIError(hr);
+//			hub->LogFEIError(hr);
 //		}
 //		SetPropertyLimits("Image Width", static_cast<double>(lmin), static_cast<double>(lmax));
 //
