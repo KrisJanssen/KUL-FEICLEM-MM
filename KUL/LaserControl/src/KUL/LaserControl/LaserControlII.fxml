@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="600.0" type="VBox" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label fx:id="laserID" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="xxx nm" textAlignment="CENTER">
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+      </Label>
+      <TextField fx:id="powerSettingmW">
+         <VBox.margin>
+            <Insets top="20.0" />
+         </VBox.margin></TextField>
+      <TextField fx:id="powerSettingPct">
+         <VBox.margin>
+            <Insets top="20.0" />
+         </VBox.margin></TextField>
+      <ProgressBar fx:id="pctIndicator" maxWidth="1.7976931348623157E308" progress="0.0">
+         <VBox.margin>
+            <Insets top="20.0" />
+         </VBox.margin></ProgressBar>
+      <Label fx:id="mWIndicator" alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" text="xxx mW">
+         <VBox.margin>
+            <Insets top="20.0" />
+         </VBox.margin></Label>
+      <Button fx:id="btnONOFF" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#doSomething"  text="Turn ON">
+         <VBox.margin>
+            <Insets top="20.0" />
+         </VBox.margin></Button>
+   </children>
+</fx:root>
