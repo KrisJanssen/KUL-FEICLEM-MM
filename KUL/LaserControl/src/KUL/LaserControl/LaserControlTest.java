@@ -20,12 +20,12 @@ public class LaserControlTest extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        LaserControlII testctrl = new LaserControlII();
+        LaserControlII testctrl = new LaserControlII(565.0,200.0);
         testctrl.setSetPointPct("50");
         stage.setScene(new Scene(testctrl));
         stage.setTitle("Custom Control");
-        stage.setWidth(300);
-        stage.setHeight(200);
+        stage.setWidth(250);
+        stage.setHeight(500);
         stage.show();
         
     }

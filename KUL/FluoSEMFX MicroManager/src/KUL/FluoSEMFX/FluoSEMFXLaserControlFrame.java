@@ -13,6 +13,7 @@ import java.util.prefs.Preferences;
 import java.awt.event.ActionEvent; 
 import java.awt.event.ActionListener; 
 import javax.swing.Timer;
+import org.micromanager.api.MMPlugin;
 import org.micromanager.api.ScriptInterface;
 
 /**
@@ -20,11 +21,23 @@ import org.micromanager.api.ScriptInterface;
  * @author supervisor
  */
 public class FluoSEMFXLaserControlFrame extends javax.swing.JFrame {
+    
+    private final ScriptInterface m_gui;
+    private final CMMCore m_core;
 
     /**
      * Creates new form FluoSEMFXLaserControl
      */
     public FluoSEMFXLaserControlFrame(ScriptInterface gui) {
+        m_gui = gui;
+        m_core = m_gui.getMMCore();
+
+        initComponents();
+        setLocation(0, 0);
+
+        setBackground(m_gui.getBackgroundColor());
+        m_gui.addMMBackgroundListener(this);
+        
         initComponents();
     }
 
@@ -52,41 +65,6 @@ public class FluoSEMFXLaserControlFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FluoSEMFXLaserControlFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FluoSEMFXLaserControlFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FluoSEMFXLaserControlFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FluoSEMFXLaserControlFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FluoSEMFXLaserControlFrame().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

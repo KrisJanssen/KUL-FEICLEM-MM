@@ -42,9 +42,8 @@
 
 
 #include <atlbase.h>
-
-#include "xtlib2_i.c"	// XTLib includes (constants CLSID,IDD)
-#include "xtlib2.h"    // XTLib includes (interface definitions)
+#include "FEI\xtlib2.h"   // XTLib includes (interface definitions)
+#include "FEI\xtlib2_i.c" // XTLib includes (constants CLSID,IDD)
 
 //////////////////////////////////////////////////////////////////////////////
 // Error codes

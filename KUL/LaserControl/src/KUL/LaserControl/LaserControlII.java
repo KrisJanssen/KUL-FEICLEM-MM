@@ -52,9 +52,15 @@ public class LaserControlII extends VBox  {
 
     }
     
+    private double dCurrentSetPointPct;
+    private double dRatedPower;
+    
+    private double dWavelength;
     private String strCurrentValue;
     
-    public LaserControlII() {
+    public LaserControlII(double _dWavelength, double _dRatedPower) {
+        
+        // Try and load the fxml
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("LaserControlII.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -64,6 +70,10 @@ public class LaserControlII extends VBox  {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
+        
+        // Set up our variables correctly
+        dWavelength = _dWavelength;
+        dRatedPower = _dRatedPower;
         
         strCurrentValue = "0";
         
