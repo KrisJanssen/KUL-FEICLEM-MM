@@ -176,17 +176,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\micromanager\MMDevice\DeviceUtils.cpp" />
-    <ClCompile Include="..\..\..\micromanager\MMDevice\ModuleInterface.cpp" />
-    <ClCompile Include="..\..\..\micromanager\MMDevice\Property.cpp" />
     <ClCompile Include="FEISEM.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Equipment\FEI\DCOMClientSDK_Light_22.08.2013\Examples\C++\SingleXTLibClient\Resource.h" />
-    <ClInclude Include="..\..\..\micromanager\MMDevice\DeviceBase.h" />
-    <ClInclude Include="..\..\..\micromanager\MMDevice\ModuleInterface.h" />
     <ClInclude Include="FEISEM.h" />
-    <ClInclude Include="WriteCompactTiffRGB.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\micromanager\MMDevice\MMDevice-SharedRuntime.vcxproj">

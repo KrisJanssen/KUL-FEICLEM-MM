@@ -53,10 +53,11 @@ MMThreadLock CFluoSEMStageHub::lock_;
 ///////////////////////////////////////////////////////////////////////////////
 MODULE_API void InitializeModuleData()
 {
-   AddAvailableDeviceName(g_DeviceNameFluoSEMStageHub, "Hub (required)");
-   AddAvailableDeviceName(g_DeviceNameFluoSEMStageXY, "Stage XY");
-   AddAvailableDeviceName(g_DeviceNameFluoSEMStageLR, "Objective LR");
-   AddAvailableDeviceName(g_DeviceNameFluoSEMStageZ, "Objective Z");
+	RegisterDevice(g_DeviceNameFluoSEMStageHub, MM::HubDevice, "Hub (required)");
+	RegisterDevice(g_DeviceNameFluoSEMStageXY, MM::StageDevice, "Stage XY");
+	RegisterDevice(g_DeviceNameFluoSEMStageLR, MM::StageDevice, "Objective LR");
+	RegisterDevice(g_DeviceNameFluoSEMStageZ, MM::StageDevice, "Objective Z");
+   
   // AddAvailableDeviceName(g_DeviceNameFluoSEMStageE861, "E861 Objective Controller");
   // AddAvailableDeviceName(g_DeviceNameFluoSEMStageC867, "C867 Stage Controller");
 }

@@ -51,15 +51,23 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\micromanager\buildscripts\VisualStudio\MMCommon.props" />
+    <Import Project="..\..\..\..\micromanager\buildscripts\VisualStudio\MMDeviceAdapter.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\micromanager\buildscripts\VisualStudio\MMCommon.props" />
+    <Import Project="..\..\..\..\micromanager\buildscripts\VisualStudio\MMDeviceAdapter.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\micromanager\buildscripts\VisualStudio\MMCommon.props" />
+    <Import Project="..\..\..\..\micromanager\buildscripts\VisualStudio\MMDeviceAdapter.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\micromanager\buildscripts\VisualStudio\MMCommon.props" />
+    <Import Project="..\..\..\..\micromanager\buildscripts\VisualStudio\MMDeviceAdapter.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -149,16 +157,15 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\micromanager\MMDevice\DeviceUtils.h" />
-    <ClInclude Include="..\..\..\..\micromanager\MMDevice\ModuleInterface.h" />
-    <ClInclude Include="..\..\..\..\micromanager\MMDevice\Property.h" />
     <ClInclude Include="Omicron.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\micromanager\MMDevice\DeviceUtils.cpp" />
-    <ClCompile Include="..\..\..\..\micromanager\MMDevice\ModuleInterface.cpp" />
-    <ClCompile Include="..\..\..\..\micromanager\MMDevice\Property.cpp" />
     <ClCompile Include="Omicron.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\micromanager\MMDevice\MMDevice-SharedRuntime.vcxproj">
+      <Project>{b8c95f39-54bf-40a9-807b-598df2821d55}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
