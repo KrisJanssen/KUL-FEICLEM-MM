@@ -1,7 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FEISEM", "DemoCamera.vcxproj", "{806A629B-7EAA-4265-A4C0-8A0EC03B104F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FEISEM", "FEISEM.vcxproj", "{806A629B-7EAA-4265-A4C0-8A0EC03B104F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MMDevice-SharedRuntime", "..\..\..\micromanager\MMDevice\MMDevice-SharedRuntime.vcxproj", "{B8C95F39-54BF-40A9-807B-598DF2821D55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +21,14 @@ Global
 		{806A629B-7EAA-4265-A4C0-8A0EC03B104F}.Release|Win32.Build.0 = Release|Win32
 		{806A629B-7EAA-4265-A4C0-8A0EC03B104F}.Release|x64.ActiveCfg = Release|x64
 		{806A629B-7EAA-4265-A4C0-8A0EC03B104F}.Release|x64.Build.0 = Release|x64
+		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Debug|Win32.Build.0 = Debug|Win32
+		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Debug|x64.ActiveCfg = Debug|x64
+		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Debug|x64.Build.0 = Debug|x64
+		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Release|Win32.ActiveCfg = Release|Win32
+		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Release|Win32.Build.0 = Release|Win32
+		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Release|x64.ActiveCfg = Release|x64
+		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

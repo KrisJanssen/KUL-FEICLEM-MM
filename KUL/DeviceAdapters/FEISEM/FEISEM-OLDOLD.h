@@ -33,13 +33,13 @@
 #ifndef _FEISEM_H_
 #define _FEISEM_H_
 
-#include "../../../micromanager/MMDevice/MMDevice.h"
-#include "../../../micromanager/MMDevice/DeviceBase.h"
-#include "../../../micromanager/MMDevice/ImgBuffer.h"
-#include "../../../micromanager/MMDevice/DeviceThreads.h"
+#include "../../micromanager/MMDevice/MMDevice.h"
+#include "../../micromanager/MMDevice/DeviceBase.h"
+#include "../../micromanager/MMDevice/ImgBuffer.h"
+#include "../../micromanager/MMDevice/DeviceThreads.h"
 #include <string>
 #include <map>
-
+#include <stdint.h>
 
 #include <atlbase.h>
 
@@ -49,69 +49,22 @@
 //////////////////////////////////////////////////////////////////////////////
 // Error codes
 //
-#define ERR_UNKNOWN_MODE         102
-#define ERR_UNKNOWN_POSITION     103
-#define ERR_IN_SEQUENCE          104
-#define ERR_SEQUENCE_INACTIVE    105
-#define ERR_STAGE_MOVING         106
-#define SIMULATED_ERROR          200
-#define HUB_NOT_AVAILABLE        107
 
-const char* NoHubError = "Parent Hub not defined.";
 
 ////////////////////////
 // DemoHub
 //////////////////////
-
-class FEISEMHub : public HubBase<FEISEMHub>
-{
-public:
-   FEISEMHub();
-   ~FEISEMHub();
-
-   // Device API
-   // ---------
-   int Initialize();
-   int Shutdown();
-   void GetName(char* pName) const; 
-   bool Busy() { return busy_;} ;
-   //bool GenerateRandomError();
-
-   // HUB api
-   MM::DeviceDetectionStatus DetectDevice(void);
-   int DetectInstalledDevices();
-   void LogFEIError(HRESULT hresult);
-   // action interface
- //  int OnErrorRate(MM::PropertyBase* pProp, MM::ActionType eAct);
- //  int OnDivideOneByMe(MM::PropertyBase* pProp, MM::ActionType eAct);
-
-private:
- //  void GetPeripheralInventory();
-
-   //std::vector<std::string> peripherals_;
-   bool initialized_;
-   bool busy_;
-   int lastError_;
-   static MMThreadLock lock_;
-   IMicroscopeControl * pIMicroscopeControl;
-};
-
-/*class FEISEMCamera : public CCameraBase<FEISEMCamera>
-{
-
-}*/
-
 class FEISEMController : public CGenericBase<FEISEMController>
 {
 public:
 	FEISEMController();
 	~FEISEMController();
-
+	void COMInit();
 	int Initialize();
     int Shutdown();
     void GetName(char* pszName) const;
     bool Busy(){ return busy_;} ;
-
+	void LogFEIError(HRESULT result);
    int OnPressure(MM::PropertyBase* pProp, MM::ActionType eAct);
    int OnChamberState(MM::PropertyBase* pProp, MM::ActionType eAct);
    int OnChamberMode(MM::PropertyBase* pProp, MM::ActionType eAct);
@@ -154,7 +107,6 @@ private:
 	  IVacSystemControl * pIVacSystemControl;
 	  IConnectionPointContainer * pIConnectionPointContainer;
 	  IDispatch * pIDispatch;
-	  FEISEMHub* hub;
 };
 //
 ////////////////////////////////////////////////////////////////////////////////
