@@ -1,0 +1,19 @@
+PermSettings = load("PermSettings");
+PermSettings.ApplyAllSettings();
+        mbar = gui.getJMenuBar(); 
+        plugins = mbar.getMenu(2); // this makes an assumption w/o checking 
+        for (i = 0; i < plugins.getItemCount(); i++) { 
+                item = plugins.getItem(i); 
+                if (item.getText().equals("FluoSEM Stage Control")) 
+                        item.doClick(); 
+        } 
+                for (i = 0; i < plugins.getItemCount(); i++) { 
+                item = plugins.getItem(i); 
+                if (item.getText().equals("FluoSEM Laser Control")) 
+                        item.doClick(); 
+        } 
+        for (i = 0; i < plugins.getItemCount(); i++) { 
+                item = plugins.getItem(i); 
+                if (item.getText().equals("Image Flipper")) 
+                        item.doClick(); 
+        } 

@@ -1,0 +1,150 @@
+import ij.process.ByteProcessor;
+import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
+import ij.measure.ResultsTable;
+import ij.plugin.filter.Analyzer;
+import ij.measure.CurveFitter;
+import ij.ImagePlus;
+double [] GetSpotFromCam(){
+double [] result = new double [2];
+gui.enableLiveMode(false);
+mmc.snapImage();
+img = mmc.getImage();
+int width = mmc.getImageWidth();
+int height = mmc.getImageHeight();
+int nrPixels = width * height;
+
+gui.enableLiveMode(true);
+ImageProcessor ip;
+   if (img instanceof byte[]) {
+      ip = new ByteProcessor (width,height);
+      ip.setPixels((byte[])img);
+   }
+	else if (img instanceof short[]) {
+      ip = new ShortProcessor(width, height);
+      ip.setPixels((short[])img);
+ 	}
+
+for(int i=0; i < 10; i++)
+{
+	ip.smooth();
+}
+
+
+int [] maxPixelLocation = new int [2];
+int maxValue = (int)ip.getMax();
+for(int x =0; x < width; x++)
+{
+	for(int y = 0; y < height; y++)
+	{
+		if(ip.get(x,y) == maxValue)
+		{
+			maxPixelLocation[0] = x;
+			maxPixelLocation[1] = y;
+		}
+	}
+}
+//print("High point at [" + maxPixelLocation[0] + "," + maxPixelLocation[1] + "]");
+int [] irow = new int [width];
+int [] icolumn = new int [width];
+ip.getRow(0,maxPixelLocation[1],irow,width);
+ip.getColumn(maxPixelLocation[0],0,icolumn,width);
+double [] index = new double [width];
+double [] drow = new double [width];
+double [] dcolumn = new double [width];
+for(int i = 0; i < width; i++)
+{
+	drow[i] = (double)irow[i];
+	dcolumn[i] = (double)icolumn[i];
+	index[i] = (double)i;
+}
+CurveFitter fitter = new CurveFitter(index, drow);
+fitter.doFit(12);
+double [] rowfit = new double [4];
+double [] columnfit = new double [4];
+rowfit = fitter.getParams();
+
+fitter = new CurveFitter(index, dcolumn);
+fitter.doFit(12);
+columnfit = fitter.getParams();
+//print("Spot at [" + rowfit[2] + "," + columnfit[2] + "]");
+result[0] = rowfit[2];
+result[1] = columnfit[2];
+return result;
+}
+
+double [] SpotPos = new double [4];
+
+SpotPos = GetSpotFromCam();
+print("Brightest Spot at [" + SpotPos[0] + "," + SpotPos[1] + "]");
+
+
+	
+boolean stop = false;
+double stagevoltage = Double.parseDouble(mmc.getProperty("FluoSEM-Stage-XY", "Stage Voltage XP"));
+double [] startPos = new double [4];
+double [] stopPos = new double [4];
+double distance = 10.0;
+double XP;
+double XN;
+double YP;
+double YN;
+startPos = GetSpotFromCam();
+while(!stop)
+{
+	mmc.setProperty("FluoSEM-Stage-XY", "Stage Voltage XP", Integer.toString((int)(stagevoltage)));
+	mmc.setRelativeXYPosition("FluoSEM-Stage-XY", 1, 0);
+	stopPos = GetSpotFromCam();
+	distance = stopPos[0]-startPos[0];
+	startPos = stopPos;	
+	print("Current voltage: " + stagevoltage + " gives X movement of: " + distance );	
+	if(Math.abs(distance) < 4.8)
+	{
+		stagevoltage = stagevoltage * 1.05;
+	}
+	else if(Math.abs(distance) > 5.2)
+	{
+		stagevoltage = stagevoltage * 0.95;
+	}
+	else
+	{
+		stop = true;
+	}
+}
+	XP = stagevoltage;
+	stagevoltage = Double.parseDouble(mmc.getProperty("FluoSEM-Stage-XY", "Stage Voltage XN"));
+	startPos = GetSpotFromCam();
+while(!stop)
+{
+	mmc.setProperty("FluoSEM-Stage-XY", "Stage Voltage XN", Integer.toString((int)(stagevoltage)));
+	mmc.setRelativeXYPosition("FluoSEM-Stage-XY", -1, 0);
+	stopPos = GetSpotFromCam();
+	distance = stopPos[0]-startPos[0];
+	startPos = stopPos;	
+	print("Current voltage: " + stagevoltage + " gives X movement of: " + distance );	
+	if(Math.abs(distance) < 4.8)
+	{
+		stagevoltage = stagevoltage * 1.1;
+	}
+	else if(Math.abs(distance) > 5.2)
+	{
+		stagevoltage = stagevoltage * 0.8;
+	}
+	else
+	{
+		stop = true;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,441 @@
+import ij.process.ByteProcessor;
+import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
+import ij.measure.ResultsTable;
+import ij.plugin.filter.Analyzer;
+import ij.measure.CurveFitter;
+import ij.ImagePlus;
+double [] GetSpotFromCam(){
+double [] result = new double [2];
+gui.enableLiveMode(false);
+mmc.snapImage();
+img = mmc.getImage();
+int width = mmc.getImageWidth();
+int height = mmc.getImageHeight();
+int nrPixels = width * height;
+
+gui.enableLiveMode(true);
+ImageProcessor ip;
+   if (img instanceof byte[]) {
+      ip = new ByteProcessor (width,height);
+      ip.setPixels((byte[])img);
+   }
+	else if (img instanceof short[]) {
+      ip = new ShortProcessor(width, height);
+      ip.setPixels((short[])img);
+ 	}
+
+for(int i=0; i < 10; i++)
+{
+	ip.smooth();
+}
+
+
+int [] maxPixelLocation = new int [2];
+int maxValue = (int)ip.getMax();
+for(int x =0; x < width; x++)
+{
+	for(int y = 0; y < height; y++)
+	{
+		if(ip.get(x,y) == maxValue)
+		{
+			maxPixelLocation[0] = x;
+			maxPixelLocation[1] = y;
+		}
+	}
+}
+//print("High point at [" + maxPixelLocation[0] + "," + maxPixelLocation[1] + "]");
+int [] irow = new int [width];
+int [] icolumn = new int [width];
+ip.getRow(0,maxPixelLocation[1],irow,width);
+ip.getColumn(maxPixelLocation[0],0,icolumn,width);
+double [] index = new double [width];
+double [] drow = new double [width];
+double [] dcolumn = new double [width];
+for(int i = 0; i < width; i++)
+{
+	drow[i] = (double)irow[i];
+	dcolumn[i] = (double)icolumn[i];
+	index[i] = (double)i;
+}
+CurveFitter fitter = new CurveFitter(index, drow);
+fitter.doFit(12);
+double [] rowfit = new double [4];
+double [] columnfit = new double [4];
+rowfit = fitter.getParams();
+
+fitter = new CurveFitter(index, dcolumn);
+fitter.doFit(12);
+columnfit = fitter.getParams();
+//print("Spot at [" + rowfit[2] + "," + columnfit[2] + "]");
+result[0] = rowfit[2];
+result[1] = columnfit[2];
+return result;
+}
+
+void SetSpot(int x, int y)
+{
+	mmc.setProperty("FEISEM Controller", "Spot X", Integer.toString(x));
+	mmc.setProperty("FEISEM Controller", "Spot Y", Integer.toString(y));
+}
+
+double GetRotation(int hv)
+{
+	gui.enableLiveMode(false);
+	mmc.snapImage();
+	img = mmc.getImage();
+	int width = mmc.getImageWidth();
+	int height = mmc.getImageHeight();
+	int nrPixels = width * height;
+	
+
+	gui.enableLiveMode(true);
+	ImageProcessor ip;
+   if (img instanceof byte[]) {
+      ip = new ByteProcessor (width,height);
+      ip.setPixels((byte[])img);
+   }
+	else if (img instanceof short[]) {
+      ip = new ShortProcessor(width, height);
+      ip.setPixels((short[])img);
+ 	}
+
+	for(int i=0; i < 10; i++)
+	{
+		ip.smooth();
+	}
+	int [] icolumn = new int [width];
+	double [] dcolumn = new double [width];
+	double [] index = new double [width];
+	double [] columnfit = new double [4];
+	double [] fitresults = new double [2];
+	double [] linelocation = new double[width];
+	double result;
+	CurveFitter fitter;
+	for(int x = 0; x < width; x++)
+	{
+		index[x] = (double)x;
+	}
+	for(int x = 0; x < width; x++)
+	{
+		if(hv == 0)
+		{
+		ip.getColumn(x,0,icolumn,width);
+		}
+		else
+		{
+		ip.getRow(0,x,icolumn,width);
+		}
+		for(int i = 0; i < width; i++)
+		{
+			dcolumn[i] = (double)icolumn[i];
+		}
+		fitter= new CurveFitter(index, dcolumn);
+		fitter.doFit(12);
+		columnfit = fitter.getParams();
+		linelocation[x] = columnfit[2];
+	}
+	fitter=new CurveFitter(index, linelocation); 
+	fitter.doFit(1); 
+	fitresults=fitter.getParams();
+	result = fitresults[1];
+	return result;
+}
+
+double Rotate(double rotation)
+{
+	double currRotation = Double.parseDouble(mmc.getProperty("FEISEM Controller", "Rotation"));
+	rotation = rotation*(-180/3.141582) + currRotation;
+	mmc.setProperty("FEISEM Controller", "Rotation", Double.toString(rotation));
+	return 0.0;
+}
+
+double [][][] RunRasterScan(int [] SEMSpotGridSize, int [][][] SEMSpotGrid )
+{
+print("Running raster scan:");
+double [] SpotPosOnCam = new double [2];
+double [][][] EMCCDSpotPos = new double [SEMSpotGridSize[0]][SEMSpotGridSize[1]][2];
+for (int x = 0; x < SEMSpotGridSize[0]; x++)
+{
+	for(int y = 0; y < SEMSpotGridSize[1]; y++)
+	{
+		SetSpot(SEMSpotGrid[x][y][0], SEMSpotGrid[x][y][1]);
+		SpotPosOnCam = GetSpotFromCam();
+		EMCCDSpotPos[x][y][0] = SpotPosOnCam[0];
+		EMCCDSpotPos[x][y][1] = SpotPosOnCam[1];
+		print("[" + x + "," + y + "] = [" + EMCCDSpotPos[x][y][0] + "," + EMCCDSpotPos[x][y][1] + "]");
+	}
+}
+return EMCCDSpotPos;
+}
+
+void CentreBeamPhysical()
+{
+	mmc.setProperty("FEISEM Controller", "Beam Shift X", "0.0");
+	mmc.setProperty("FEISEM Controller", "Beam Shift Y", "0.0");
+	print("Physical centering of objective");
+	double [] distance = new double [2];;
+	double [] pos = new double[2];
+	boolean stop = false;
+	while(!stop)
+	{	
+				pos = GetSpotFromCam();
+				distance[0] = pos[0]-64;
+				distance[1] = pos[1]-64;
+				if(Math.abs(distance[0]) > 2)
+				{
+					mmc.setRelativeXYPosition("FluoSEM-Stage-LR", distance[0]/2.0, 0);
+				}
+				else if(Math.abs(distance[1]) > 2)
+				{
+					mmc.setRelativeXYPosition("FluoSEM-Stage-LR", 0, distance[1]/2.0);
+				}
+				else
+				{
+					stop = true;
+				}
+				print("Out by [" + distance[0] + "," + distance[1] + "]");
+	}
+}	
+
+void CentreBeamEO(double umPerPxCCD, int CCDHalfWidth)
+{
+	int [] SEMScanArea = new int [2];
+	double [] SpotPos = new double [2];
+	double [] RequiredShift = new double [2]; 
+	print("EO centering");
+	SEMScanArea[0] = Integer.parseInt(mmc.getProperty("FEISEM Controller", "Horizontal Pixels"));
+	SEMScanArea[1] = Integer.parseInt(mmc.getProperty("FEISEM Controller", "Vertical Pixels"));
+	SetSpot(SEMScanArea[0]/2, SEMScanArea[1]/2);
+	SpotPos = GetSpotFromCam();
+	print("Centre at [" + SpotPos[0] + "," + SpotPos[1] + "]");
+	RequiredShift[0] = SpotPos[0] - CCDHalfWidth;
+	RequiredShift[1] = SpotPos[1] - CCDHalfWidth;
+	double BeamShiftX;
+	double BeamShiftY;
+	while(Math.abs(RequiredShift[0]) > CCDHalfWidth/200.0 || Math.abs(RequiredShift[1]) > CCDHalfWidth/200.0)
+	{
+	SpotPos = GetSpotFromCam();
+	print("Centre at [" + SpotPos[0] + "," + SpotPos[1] + "]");
+	RequiredShift[0] = SpotPos[0] - CCDHalfWidth;
+	RequiredShift[1] = SpotPos[1] - CCDHalfWidth;
+	BeamShiftX = Double.parseDouble(mmc.getProperty("FEISEM Controller", "Beam Shift X"));
+	BeamShiftY = Double.parseDouble(mmc.getProperty("FEISEM Controller", "Beam Shift Y"));
+	BeamShiftX += RequiredShift[0] * umPerPxCCD;
+	BeamShiftY += RequiredShift[1] * umPerPxCCD;
+	mmc.setProperty("FEISEM Controller", "Beam Shift X", Double.toString(BeamShiftX));
+	mmc.setProperty("FEISEM Controller", "Beam Shift Y", Double.toString(BeamShiftY));
+	}
+}
+
+//Start of sequence
+int [] SEMScanArea = new int [] {768,512};
+int [] SEMSpotGridSize = new int [] {5,5};
+
+mmc.setProperty("FEISEM Controller", "Scan Mode", "Full Frame");
+mmc.setProperty("FEISEM Controller", "FOV X (um)", "20.0");
+
+mmc.setProperty("FEISEM Controller", "Vertical Pixels", "512");
+mmc.setProperty("FEISEM Controller", "Scan Mode", "Spot");
+mmc.setProperty("FEISEM Controller", "Rotation", "0.0");
+
+	
+
+	gui.enableLiveMode(false);
+	mmc.setProperty("Camera", "Binning", "4x4");
+	gui.enableLiveMode(true);
+if(mmc.getProperty("FEISEM Controller", "HTState") == "OFF")
+{
+	mmc.setProperty("FEISEM Controller", "HTState", "ON");
+	sleep(3000);
+}
+for (int i = 0; i < 2; i++)
+{
+	if(SEMSpotGridSize[i]%2 == 0)
+	{
+		SEMSpotGridSize[i] = SEMSpotGridSize[i] + 1;
+	}
+}
+
+print("Grid Size is " + SEMSpotGridSize[0] + " by " + SEMSpotGridSize[1]);
+
+int [][][] SEMSpotGrid = new int [SEMSpotGridSize[0]][SEMSpotGridSize[1]][2];
+double [][][] EMCCDSpotPos = new double [SEMSpotGridSize[0]][SEMSpotGridSize[1]][2];
+
+print("Calculating spot locations:");
+
+for (int x = 0; x < SEMSpotGridSize[0]; x++)
+{
+	for(int y = 0; y < SEMSpotGridSize[1]; y++)
+	{
+		if(x == 0)
+		{
+			SEMSpotGrid[x][y][0] = 0;	
+		}
+		else if(x == SEMSpotGridSize[0])
+		{
+			SEMSpotGrid[x][y][0] = SEMScanArea[0];
+		}
+		else
+		{
+			SEMSpotGrid[x][y][0] = (SEMScanArea[0] * x)/(SEMSpotGridSize[0]-1);
+		}
+		if(y == 0)
+		{
+			SEMSpotGrid[x][y][1] = 0;	
+		}
+		else if(y == SEMSpotGridSize[1])
+		{
+			SEMSpotGrid[x][y][1] = (int)(SEMScanArea[1]);///1.497
+		}
+		else
+		{
+			SEMSpotGrid[x][y][1] = (int)(((SEMScanArea[1] * y)/(SEMSpotGridSize[1]-1)));///1.497
+		}
+		print("[" + x + "," + y + "] = [" + SEMSpotGrid[x][y][0] + "," + SEMSpotGrid[x][y][1] + "]");
+	}
+}
+mmc.setProperty("FEISEM Controller", "Beam Blank", "false");
+SetSpot(384, 256);
+CentreBeamPhysical();
+CentreBeamEO(0.025, 64);
+/*
+mmc.setProperty("FEISEM Controller", "Scan Mode", "Full Frame");
+mmc.setProperty("FEISEM Controller", "FOV X (um)", "50.0");
+mmc.setProperty("FEISEM Controller", "Scan Mode", "Line");
+mmc.sleep(3000);
+print("Calculating rotation");
+double arctanH = 0; 
+double arctanV = 0; 
+for(int i = 0; i < 10; i++)
+{
+	arctanH += GetRotation(0)/10.0;
+}
+print("Horizontal line should be rotated by " + Math.atan(arctanH)*(-180/3.141582) + " degrees");
+Rotate(3.14/2.0);
+mmc.sleep(1000);
+for(int i = 0; i < 10; i++)
+{
+	arctanV += GetRotation(1)/10.0;
+}
+Rotate(-3.14/2.0);
+print("Vertical line should be rotated by " + Math.atan(arctanV)*(-180/3.141582) + " degrees, if these aren't roughtly the same then the camera is wonky");
+Rotate(Math.atan(arctanH));
+mmc.sleep(1000);
+mmc.setProperty("FEISEM Controller", "Scan Mode", "Full Frame");
+mmc.setProperty("FEISEM Controller", "FOV X (um)", "20.0");
+mmc.setProperty("FEISEM Controller", "Scan Mode", "Spot");
+*/
+EMCCDSpotPos = RunRasterScan(SEMSpotGridSize, SEMSpotGrid);
+
+double [] XHorizontal = new double [SEMSpotGridSize[0]];
+double [] YHorizontal = new double [SEMSpotGridSize[0]];
+
+double [] XVertical = new double [SEMSpotGridSize[1]];
+double [] YVertical = new double [SEMSpotGridSize[1]];
+
+double arctan = 0;
+double[] fitresults = new double [2];
+
+CurveFitter fitter;
+
+for(int y = 0; y < SEMSpotGridSize[1]; y++)
+{
+	for(int x = 0; x < SEMSpotGridSize[0]; x++)
+	{
+		XHorizontal[x] = EMCCDSpotPos[x][y][0];
+		YHorizontal[x] = EMCCDSpotPos[x][y][1];
+	}
+	fitter=new CurveFitter(XHorizontal, YHorizontal); 
+	fitter.doFit(1); 
+	fitresults=fitter.getParams(); 
+	arctan = arctan + fitresults[1]/(SEMSpotGridSize[0]+SEMSpotGridSize[1]);
+	print("Line fit of horizontal row " + Integer.toString(y) + " : " + fitresults[1] + "x + " + fitresults[0]);
+}
+
+for(int x = 0; x < SEMSpotGridSize[0]; x++)
+{
+	for(int y = 0; y < SEMSpotGridSize[1]; y++)
+	{
+		XVertical[y] = EMCCDSpotPos[x][y][1];
+		YVertical[y] = EMCCDSpotPos[x][y][0];
+	}
+	fitter=new CurveFitter(XVertical, YVertical); 
+	fitter.doFit(1); 
+	fitresults=fitter.getParams(); 
+	arctan = arctan - fitresults[1]/(SEMSpotGridSize[0]+SEMSpotGridSize[1]);
+	print("Line fit of vertical column " + Integer.toString(x) + " : " + fitresults[1] + "x + " + fitresults[0]);
+}
+
+print("Rotating by " + Math.atan(arctan)*(-180/3.141582) + " degrees");
+Rotate(Math.atan(arctan));
+
+
+//EMCCDSpotPos = RunRasterScan(SEMSpotGridSize, SEMSpotGrid);
+
+double [] XDistance = new double [(SEMSpotGridSize[0]-1)*(SEMSpotGridSize[1]-1)];
+double [] YDistance = new double [(SEMSpotGridSize[0]-1)*(SEMSpotGridSize[1]-1)];
+int i = 0;
+for (int x = 0; x < SEMSpotGridSize[0]-1; x++)
+{
+	for(int y = 0; y < SEMSpotGridSize[1]-1; y++)
+	{
+		
+		XDistance[i] = Math.sqrt(Math.pow((EMCCDSpotPos[x+1][y][0]-EMCCDSpotPos[x][y][0]),2) + Math.pow((EMCCDSpotPos[x+1][y][1]-EMCCDSpotPos[x][y][1]),2));
+		YDistance[i] = Math.sqrt(Math.pow((EMCCDSpotPos[x][y+1][0]-EMCCDSpotPos[x][y][0]),2) + Math.pow((EMCCDSpotPos[x][y+1][1]-EMCCDSpotPos[x][y][1]),2));
+		i++;
+	}
+}
+double MeanX = 0;
+double MeanY = 0;
+
+for (int i=0; i < XDistance.length; i++)
+{
+	MeanX += XDistance[i]/XDistance.length;
+}
+for (int i=0; i < YDistance.length; i++)
+{
+	MeanY += YDistance[i]/YDistance.length;
+}
+print("Mean distance (pixels) between spots in X: " + MeanX);
+print("Mean distance (pixels) between spots in Y: " + MeanY);
+
+
+//GetFOV
+double SEMFOV = Double.parseDouble(mmc.getProperty("FEISEM Controller", "FOV X (um)"));
+double umPerSegment = (SEMFOV / (SEMSpotGridSize[0]-1));
+double umPerPxCCD = umPerSegment/MeanX;
+print("um per CCD pixel: " + umPerPxCCD);
+double CCDFOV = umPerPxCCD * mmc.getImageWidth();
+print("CCD FOV: " + CCDFOV);
+SEMFOV = CCDFOV*(768.0/512.0);
+mmc.setProperty("FEISEM Controller", "FOV X (um)", Double.toString(SEMFOV*1));
+print("Setting SEM FOV to 100% of: " + SEMFOV);
+/*mmc.setProperty("FEISEM Controller", "Scan Mode", "Full Frame");
+mmc.setProperty("FEISEM Controller", "Selected Area X Size", "512");
+mmc.setProperty("FEISEM Controller", "Selected Area Y Size", "512");
+mmc.setProperty("FEISEM Controller", "Selected Area X Start", "128");
+mmc.setProperty("FEISEM Controller", "Selected Area Y Start", "0");
+mmc.setProperty("FEISEM Controller", "Selected Area Enabled", "true");
+mmc.sleep(3000);
+mmc.setProperty("FEISEM Controller", "Selected Area Enabled", "false");*/
+print("Putting spot in each corner on CCD");
+SetSpot(128,0);//85
+mmc.sleep(1000);
+SetSpot(640, 0);//85
+mmc.sleep(1000);
+SetSpot(128, 512);//427
+mmc.sleep(1000);
+SetSpot(640, 512);//427
+mmc.sleep(1000);
+mmc.setProperty("FEISEM Controller", "Beam Blank", "true");
+	gui.enableLiveMode(false);
+	mmc.setProperty("Camera", "Binning", "1x1");
+	gui.enableLiveMode(true);
+
+
+
+
+
+
+

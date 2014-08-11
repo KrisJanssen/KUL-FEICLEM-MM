@@ -1,0 +1,70 @@
+PermSettings()
+{
+	ArrayList SettingsList = new ArrayList();
+	ApplyAllSettings()
+	{
+		for(int i = 0; i < SettingsList.size(); i++)
+		{
+				ApplySetting(SettingsList.get(i));
+		}
+	}
+	ApplySetting(ArrayList setting)
+	{
+		mmc.setProperty(setting.get(0), setting.get(1), setting.get(2));
+	}
+	AddorChangeSetting(ArrayList setting)
+	{
+		ArrayList  ListObject = new ArrayList();
+		boolean exist = false;
+		
+		for(int i = 0; i < SettingsList.size(); i++)
+		{
+			ListObject = SettingsList.get(i);
+			
+			if(ListObject.get(0) == setting.get(0) && ListObject.get(1) == setting.get(1))
+			{
+				SettingsList.set(i, ListObject);
+				exist = true;
+			}
+		}
+		if(!exist)
+		{
+			SettingsList.add(setting);
+		}
+	}
+	DeleteSetting(ArrayList setting)
+	{
+		ArrayList ListObject = new ArrayList();
+		boolean exist = false;
+		for(int i = 0; i < SettingsList.size(); i++)
+		{
+			ListObject = SettingsList.get(i);
+			if(ListObject.get(0) == setting.get(0) && ListObject.get(1) == setting.get(1))
+			{
+				SettingsList.remove(i);
+			}
+		}
+	}
+	return this;
+}
+
+ArrayList test = new ArrayList();
+fooObject = PermSettings();
+
+test.add("Camera");
+test.add("EM GAIN PROTECT MODE");
+test.add("ON");
+
+fooObject.AddorChangeSetting(test);
+
+test = new ArrayList();
+test.add("Camera");
+test.add("EM GAIN WARNING ALARM");
+test.add("ON");
+
+fooObject.AddorChangeSetting(test);
+save(fooObject, "PermSettings");
+
+
+
+

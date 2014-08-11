@@ -1,0 +1,16 @@
+mmc.reset();
+mmc.loadDevice("COM12","SerialManager","COM12");
+mmc.loadDevice("VariSpec","VariSpec Driver","VariSpec");
+
+
+mmc.setProperty("VariSpec","Port","COM12");
+
+# Pre-init settings for COM ports
+mmc.setProperty("COM12","AnswerTimeout","500.0000");
+mmc.setProperty("COM12","BaudRate","115200");
+mmc.setProperty("COM12","DelayBetweenCharsMs","0.0000");
+mmc.setProperty("COM12","Handshaking","Off");
+mmc.setProperty("COM12","Parity","None");
+mmc.setProperty("COM12","StopBits","1");
+mmc.setProperty("COM12","Verbose","1");
+mmc.initializeAllDevices();

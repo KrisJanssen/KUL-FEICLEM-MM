@@ -1,0 +1,274 @@
+import ij.process.ByteProcessor;
+import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
+import ij.measure.ResultsTable;
+import ij.plugin.filter.Analyzer;
+import ij.measure.CurveFitter;
+import ij.ImagePlus;
+double [] GetSpotFromCam(){
+double [] result = new double [4];
+gui.enableLiveMode(false);
+mmc.snapImage();
+img = mmc.getImage();
+int width = mmc.getImageWidth();
+int height = mmc.getImageHeight();
+int nrPixels = width * height;
+
+gui.enableLiveMode(true);
+ImageProcessor ip;
+   if (img instanceof byte[]) {
+      ip = new ByteProcessor (width,height);
+      ip.setPixels((byte[])img);
+   }
+	else if (img instanceof short[]) {
+      ip = new ShortProcessor(width, height);
+      ip.setPixels((short[])img);
+ 	}
+
+for(int i=0; i < 10; i++)
+{
+	ip.smooth();
+}
+
+
+int [] maxPixelLocation = new int [2];
+int maxValue = (int)ip.getMax();
+for(int x =0; x < width; x++)
+{
+	for(int y = 0; y < height; y++)
+	{
+		if(ip.get(x,y) == maxValue)
+		{
+			maxPixelLocation[0] = x;
+			maxPixelLocation[1] = y;
+		}
+	}
+}
+//print("High point at [" + maxPixelLocation[0] + "," + maxPixelLocation[1] + "]");
+int [] irow = new int [width];
+int [] icolumn = new int [width];
+ip.getRow(0,maxPixelLocation[1],irow,width);
+ip.getColumn(maxPixelLocation[0],0,icolumn,width);
+double [] index = new double [width];
+double [] drow = new double [width];
+double [] dcolumn = new double [width];
+for(int i = 0; i < width; i++)
+{
+	drow[i] = (double)irow[i];
+	dcolumn[i] = (double)icolumn[i];
+	index[i] = (double)i;
+}
+CurveFitter fitter = new CurveFitter(index, drow);
+fitter.doFit(12);
+double [] rowfit = new double [4];
+double [] columnfit = new double [4];
+rowfit = fitter.getParams();
+
+fitter = new CurveFitter(index, dcolumn);
+fitter.doFit(12);
+columnfit = fitter.getParams();
+//print("Spot at [" + rowfit[2] + "," + columnfit[2] + "]");
+result[0] = rowfit[2];
+result[1] = columnfit[2];
+result[2] = rowfit[3];
+result[3] =  columnfit[3];
+return result;
+}
+
+void SetSpot(int x, int y)
+{
+	mmc.setProperty("FEISEM Controller", "Spot X", Integer.toString(x));
+	mmc.setProperty("FEISEM Controller", "Spot Y", Integer.toString(y));
+}
+
+mmc.setProperty("FEISEM Controller", "Beam Shift X", "0.0");
+mmc.setProperty("FEISEM Controller", "Beam Shift Y", "0.0");
+
+//Find step Required to move 1um
+boolean stop = false;
+double step = 5.0;
+double [] startPos = new double [2];
+double [] stopPos = new double [2];
+double distance = 10.0;
+double LP;
+double LN;
+double RP;
+double RN;
+mmc.setProperty("FEISEM Controller", "Beam Blank", "false");
+startPos = GetSpotFromCam();
+PermSettings = load("PermSettings");
+ArrayList currsetting = new ArrayList();
+while(!stop)
+{
+	mmc.setProperty("FluoSEM-Stage-LR", "Step Voltage LP", Double.toString(step));
+	mmc.setRelativeXYPosition("FluoSEM-Stage-LR", 1, 0);
+	stopPos = GetSpotFromCam();
+	distance = stopPos[0]-startPos[0];
+	startPos = stopPos;	
+	print("Current step: " + step + " gives X movement of: " + distance );	
+	if(Math.abs(distance) < 1.9)
+	{
+		step = step * 1.1;
+	}
+	else if(Math.abs(distance) > 2.1)
+	{
+		step = step * 0.9;
+	}
+	else
+	{
+		stop = true;
+	}
+}
+print("2 pixel step of LP is: " + step);
+LP = step;
+currsetting.add("FluoSEM-Stage-LR");
+currsetting.add("Step Voltage LP");
+currsetting.add(Double.toString(LP));
+PermSettings.AddorChangeSetting(currsetting);
+currsetting = new ArrayList();
+currsetting.add("FluoSEM-Stage-LR");
+currsetting.add("Step Voltage LN");
+stop=false;
+step = 5;
+while(!stop)
+{
+	mmc.setProperty("FluoSEM-Stage-LR", "Step Voltage LN", Double.toString(step));
+	mmc.setRelativeXYPosition("FluoSEM-Stage-LR", -1, 0);
+	stopPos = GetSpotFromCam();
+	distance = stopPos[0]-startPos[0];
+	startPos = stopPos;	
+	print("Current step: " + step + " gives X movement of: " + distance );	
+	if(Math.abs(distance) < 1.9)
+	{
+		step = step * 1.1;
+	}
+	else if(Math.abs(distance) > 2.1)
+	{
+		step = step * 0.9;
+	}
+	else
+	{
+		stop = true;
+	}
+}
+print("2 pixel step of LN is: " + step);
+LN = step;
+currsetting.add(Double.toString(LN));
+PermSettings.AddorChangeSetting(currsetting);
+currsetting = new ArrayList();
+currsetting.add("FluoSEM-Stage-LR");
+currsetting.add("Step Voltage RP");
+stop=false;
+step = 5;
+distance = 64;
+while(distance > 2)
+{
+	startPos = GetSpotFromCam();
+	distance = startPos[0]-64;
+	mmc.setRelativeXYPosition("FluoSEM-Stage-LR", distance, 0);
+	distance = Math.abs(distance);
+}
+print("X axis aligned, Px error" + distance);
+
+stop=false;
+step = 5;
+while(!stop)
+{
+	mmc.setProperty("FluoSEM-Stage-LR", "Step Voltage RP", Double.toString(step));
+	mmc.setRelativeXYPosition("FluoSEM-Stage-LR", 0, 1);
+	stopPos = GetSpotFromCam();
+	distance = stopPos[1]-startPos[1];
+	startPos = stopPos;	
+	print("Current step: " + step + " gives Y movement of: " + distance );	
+	if(Math.abs(distance) < 1.9)
+	{
+		step = step * 1.1;
+	}
+	else if(Math.abs(distance) > 2.1)
+	{
+		step = step * 0.9;
+	}
+	else
+	{
+		stop = true;
+	}
+}
+print("2 pixel step of RP is: " + step);
+RP = step;
+currsetting.add(Double.toString(RP));
+PermSettings.AddorChangeSetting(currsetting);
+currsetting = new ArrayList();
+currsetting.add("FluoSEM-Stage-LR");
+currsetting.add("Step Voltage RN");
+stop=false;
+step = 5;
+while(!stop)
+{
+	mmc.setProperty("FluoSEM-Stage-LR", "Step Voltage RN", Double.toString(step));
+	mmc.setRelativeXYPosition("FluoSEM-Stage-LR", 0, -1);
+	stopPos = GetSpotFromCam();
+	distance = stopPos[1]-startPos[1];
+	startPos = stopPos;	
+	print("Current step: " + step + " gives Y movement of: " + distance );	
+	if(Math.abs(distance) < 1.9)
+	{
+		step = step * 1.1;
+	}
+	else if(Math.abs(distance) > 2.1)
+	{
+		step = step * 0.9;
+	}
+	else
+	{
+		stop = true;
+	}
+}
+print("2 pixel step of RN is: " + step);
+RN = step;
+currsetting.add(Double.toString(RN));
+PermSettings.AddorChangeSetting(currsetting);
+stop=false;
+step = 10;
+distance = 64;
+while(distance > 2)
+{
+	startPos = GetSpotFromCam();
+	distance = startPos[1]-64;
+	mmc.setRelativeXYPosition("FluoSEM-Stage-LR", 0, distance);
+	distance = Math.abs(distance);
+}
+print("Y axis aligned, Px error: " + distance);
+
+/*void autofocus(double step, double direction)
+{
+	mmc.setProperty("FluoSEM-Stage-Z", "Step Voltage P", Double.toString(step));
+	mmc.setProperty("FluoSEM-Stage-Z", "Step Voltage N", Double.toString(step));
+	double last; double current; 
+	double [] sigma = new double[4];
+	last = 10000;
+	 sigma = GetSpotFromCam();
+	 print("Sigma: " + sigma[3]);
+	 while(sigma[3] < last)
+	{
+	 		mmc.setRelativePosition("FluoSEM-Stage-Z", direction);
+
+
+	 	last = sigma[3];
+	 	sigma = GetSpotFromCam();
+	 	print("Sigma: " + sigma[3]);
+	 	
+	}
+	print("Done");
+}	
+//mmc.setProperty("FEISEM Controller", "Beam Blank", "false");
+double step = 20;
+for(int x = 0; x < 10; x++)
+{
+autofocus(step, 1.0);
+step = step * 0.9;
+autofocus(step, -1.0);
+step = step * 0.9;
+}*/
+mmc.setProperty("FEISEM Controller", "Beam Blank", "true");
+save(PermSettings, "PermSettings");
+

@@ -1,0 +1,31 @@
+import ij.process.*;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.io.FileSaver;
+
+//set-up parameterers
+float startWavelength = 400.0;
+float stopWavelength = 720.0; 
+float stepSize = 3.0;
+title = "test";
+path = "G:\\Haifeng\\LC Aquire\\";
+
+ImageStack stack = new ImageStack(512,512);
+for(float i=startWavelength; i <= stopWavelength; i=i+stepSize)
+{
+	mmc.setProperty("VariSpec", "Wavelength", Float.toString(i));
+	mmc.sleep(100);
+	mmc.snapImage();
+	print("Imaging at: " +  Float.toString(i));
+	img = mmc.getImage();
+	// save pre-frame to TIF
+	width = mmc.getImageWidth();
+	height = mmc.getImageHeight();
+	byteDepth = mmc.getBytesPerPixel();
+	ip = new ShortProcessor((int)width, (int)height);
+	ip.setPixels(img);
+	stack.addSlice(Float.toString(i),ip);
+}
+ImagePlus imp = new ImagePlus(title, stack);
+FileSaver fs = new FileSaver(imp);
+fs.saveAsTiffStack(path + title + ".tif");

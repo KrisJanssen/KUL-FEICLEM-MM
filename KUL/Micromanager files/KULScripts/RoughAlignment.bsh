@@ -1,0 +1,7 @@
+void SetSpot(int x, int y)
+{
+	mmc.setProperty("FEISEM Controller", "Spot X", Integer.toString(x));
+	mmc.setProperty("FEISEM Controller", "Spot Y", Integer.toString(y));
+}
+
+SetSpot(384, 428);
