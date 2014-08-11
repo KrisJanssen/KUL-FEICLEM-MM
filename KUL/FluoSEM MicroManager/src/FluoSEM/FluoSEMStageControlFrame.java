@@ -177,6 +177,8 @@ public class FluoSEMStageControlFrame extends javax.swing.JFrame {
         jLabel20 = new javax.swing.JLabel();
         jSlider3 = new javax.swing.JSlider();
         jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        jSlider4 = new javax.swing.JSlider();
 
         setTitle("Stage Control");
         setAlwaysOnTop(true);
@@ -188,54 +190,54 @@ public class FluoSEMStageControlFrame extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-sl.png"))); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-sl.png"))); // NOI18N
         jButton1.setBorderPainted(false);
-        jButton1.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-slp.png"))); // NOI18N
+        jButton1.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-slp.png"))); // NOI18N
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
 
-        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-sd.png"))); // NOI18N
+        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-sd.png"))); // NOI18N
         jButton10.setBorderPainted(false);
-        jButton10.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-sdp.png"))); // NOI18N
+        jButton10.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-sdp.png"))); // NOI18N
         jButton10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton10ActionPerformed(evt);
             }
         });
 
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-tl.png"))); // NOI18N
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-tl.png"))); // NOI18N
         jButton2.setBorderPainted(false);
-        jButton2.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-tlp.png"))); // NOI18N
+        jButton2.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-tlp.png"))); // NOI18N
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-dl.png"))); // NOI18N
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-dl.png"))); // NOI18N
         jButton3.setBorderPainted(false);
-        jButton3.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-dlp.png"))); // NOI18N
+        jButton3.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-dlp.png"))); // NOI18N
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
             }
         });
 
-        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-su.png"))); // NOI18N
+        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-su.png"))); // NOI18N
         jButton7.setBorderPainted(false);
-        jButton7.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-sup.png"))); // NOI18N
+        jButton7.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-sup.png"))); // NOI18N
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton7ActionPerformed(evt);
             }
         });
 
-        jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-dd.png"))); // NOI18N
+        jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-dd.png"))); // NOI18N
         jButton11.setBorderPainted(false);
-        jButton11.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-ddp.png"))); // NOI18N
+        jButton11.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-ddp.png"))); // NOI18N
         jButton11.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton11ActionPerformed(evt);
@@ -244,52 +246,52 @@ public class FluoSEMStageControlFrame extends javax.swing.JFrame {
 
         jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-tu.png"))); // NOI18N
         jButton8.setBorderPainted(false);
-        jButton8.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-tup.png"))); // NOI18N
+        jButton8.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-tup.png"))); // NOI18N
         jButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton8ActionPerformed(evt);
             }
         });
 
-        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-sr.png"))); // NOI18N
+        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-sr.png"))); // NOI18N
         jButton4.setBorderPainted(false);
-        jButton4.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-srp.png"))); // NOI18N
+        jButton4.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-srp.png"))); // NOI18N
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
             }
         });
 
-        jButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-td.png"))); // NOI18N
+        jButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-td.png"))); // NOI18N
         jButton12.setBorderPainted(false);
-        jButton12.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-tdp.png"))); // NOI18N
+        jButton12.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-tdp.png"))); // NOI18N
         jButton12.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton12ActionPerformed(evt);
             }
         });
 
-        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-tr.png"))); // NOI18N
+        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-tr.png"))); // NOI18N
         jButton5.setBorderPainted(false);
-        jButton5.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-trp.png"))); // NOI18N
+        jButton5.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-trp.png"))); // NOI18N
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton5ActionPerformed(evt);
             }
         });
 
-        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-du.png"))); // NOI18N
+        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-du.png"))); // NOI18N
         jButton9.setBorderPainted(false);
-        jButton9.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-dup.png"))); // NOI18N
+        jButton9.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-dup.png"))); // NOI18N
         jButton9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton9ActionPerformed(evt);
             }
         });
 
-        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-dr.png"))); // NOI18N
+        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-dr.png"))); // NOI18N
         jButton6.setBorderPainted(false);
-        jButton6.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-drp.png"))); // NOI18N
+        jButton6.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-drp.png"))); // NOI18N
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton6ActionPerformed(evt);
@@ -364,72 +366,72 @@ public class FluoSEMStageControlFrame extends javax.swing.JFrame {
         jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel14.setText("LR Adjust");
 
-        jButton13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-sl.png"))); // NOI18N
+        jButton13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-sl.png"))); // NOI18N
         jButton13.setBorderPainted(false);
-        jButton13.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-slp.png"))); // NOI18N
+        jButton13.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-slp.png"))); // NOI18N
         jButton13.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton13ActionPerformed(evt);
             }
         });
 
-        jButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-sd.png"))); // NOI18N
+        jButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-sd.png"))); // NOI18N
         jButton14.setBorderPainted(false);
-        jButton14.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-sdp.png"))); // NOI18N
+        jButton14.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-sdp.png"))); // NOI18N
         jButton14.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton14ActionPerformed(evt);
             }
         });
 
-        jButton20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-dl.png"))); // NOI18N
+        jButton20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-dl.png"))); // NOI18N
         jButton20.setBorderPainted(false);
-        jButton20.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-dlp.png"))); // NOI18N
+        jButton20.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-dlp.png"))); // NOI18N
         jButton20.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton20ActionPerformed(evt);
             }
         });
 
-        jButton21.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-su.png"))); // NOI18N
+        jButton21.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-su.png"))); // NOI18N
         jButton21.setBorderPainted(false);
-        jButton21.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-sup.png"))); // NOI18N
+        jButton21.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-sup.png"))); // NOI18N
         jButton21.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton21ActionPerformed(evt);
             }
         });
 
-        jButton22.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-dd.png"))); // NOI18N
+        jButton22.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-dd.png"))); // NOI18N
         jButton22.setBorderPainted(false);
-        jButton22.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-ddp.png"))); // NOI18N
+        jButton22.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-ddp.png"))); // NOI18N
         jButton22.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton22ActionPerformed(evt);
             }
         });
 
-        jButton24.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-sr.png"))); // NOI18N
+        jButton24.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-sr.png"))); // NOI18N
         jButton24.setBorderPainted(false);
-        jButton24.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-srp.png"))); // NOI18N
+        jButton24.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-srp.png"))); // NOI18N
         jButton24.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton24ActionPerformed(evt);
             }
         });
 
-        jButton27.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-du.png"))); // NOI18N
+        jButton27.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-du.png"))); // NOI18N
         jButton27.setBorderPainted(false);
-        jButton27.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-dup.png"))); // NOI18N
+        jButton27.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-dup.png"))); // NOI18N
         jButton27.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton27ActionPerformed(evt);
             }
         });
 
-        jButton28.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-dr.png"))); // NOI18N
+        jButton28.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-dr.png"))); // NOI18N
         jButton28.setBorderPainted(false);
-        jButton28.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-drp.png"))); // NOI18N
+        jButton28.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-drp.png"))); // NOI18N
         jButton28.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton28ActionPerformed(evt);
@@ -462,7 +464,7 @@ public class FluoSEMStageControlFrame extends javax.swing.JFrame {
                                 .add(jButton24, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 16, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(jButton28, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                        .add(0, 52, Short.MAX_VALUE))))
+                        .add(0, 53, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -484,36 +486,36 @@ public class FluoSEMStageControlFrame extends javax.swing.JFrame {
                 .add(46, 46, 46))
         );
 
-        jButton19.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-dd.png"))); // NOI18N
+        jButton19.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-dd.png"))); // NOI18N
         jButton19.setBorderPainted(false);
-        jButton19.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-ddp.png"))); // NOI18N
+        jButton19.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-ddp.png"))); // NOI18N
         jButton19.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton19ActionPerformed(evt);
             }
         });
 
-        jButton16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-du.png"))); // NOI18N
+        jButton16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-du.png"))); // NOI18N
         jButton16.setBorderPainted(false);
-        jButton16.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-dup.png"))); // NOI18N
+        jButton16.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-dup.png"))); // NOI18N
         jButton16.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton16ActionPerformed(evt);
             }
         });
 
-        jButton18.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-sd.png"))); // NOI18N
+        jButton18.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-sd.png"))); // NOI18N
         jButton18.setBorderPainted(false);
-        jButton18.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-sdp.png"))); // NOI18N
+        jButton18.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-sdp.png"))); // NOI18N
         jButton18.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton18ActionPerformed(evt);
             }
         });
 
-        jButton17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-su.png"))); // NOI18N
+        jButton17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-su.png"))); // NOI18N
         jButton17.setBorderPainted(false);
-        jButton17.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/FluoSEM/icons/arrowhead-sup.png"))); // NOI18N
+        jButton17.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/micromanager/stagecontrol/icons/arrowhead-sup.png"))); // NOI18N
         jButton17.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton17ActionPerformed(evt);
@@ -574,7 +576,7 @@ public class FluoSEMStageControlFrame extends javax.swing.JFrame {
         });
 
         jLabel17.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel17.setText("Objective Step Movement Size");
+        jLabel17.setText("Objective Step Down Movement Size");
 
         jTextField1.setText("jTextField1");
 
@@ -619,6 +621,20 @@ public class FluoSEMStageControlFrame extends javax.swing.JFrame {
         jLabel18.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel18.setText("Stage Step Movement Size");
 
+        jLabel19.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel19.setText("Objective Step Up Movement Size");
+
+        jSlider4.setMaximum(55);
+        jSlider4.setValue(30);
+        jSlider4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jSlider4MouseClicked(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jSlider4MouseReleased(evt);
+            }
+        });
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -635,7 +651,7 @@ public class FluoSEMStageControlFrame extends javax.swing.JFrame {
                                     .add(jLabel3))
                                 .add(0, 0, Short.MAX_VALUE))
                             .add(layout.createSequentialGroup()
-                                .add(25, 25, 25)
+                                .add(114, 114, 114)
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                                     .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel13, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .add(jLabel11, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
@@ -697,7 +713,9 @@ public class FluoSEMStageControlFrame extends javax.swing.JFrame {
                         .add(7, 7, 7)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
                             .add(org.jdesktop.layout.GroupLayout.LEADING, jLabel17, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, jSlider2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                            .add(org.jdesktop.layout.GroupLayout.LEADING, jSlider2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(org.jdesktop.layout.GroupLayout.LEADING, jLabel19, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(org.jdesktop.layout.GroupLayout.LEADING, jSlider4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
                 .add(13, 13, 13)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(layout.createSequentialGroup()
@@ -734,16 +752,23 @@ public class FluoSEMStageControlFrame extends javax.swing.JFrame {
                             .add(jPanel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                     .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 33, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(layout.createSequentialGroup()
+                        .add(23, 23, 23)
+                        .add(jSlider4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(jLabel19))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
-                                .add(jLabel17)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(23, 23, 23)
                                 .add(jSlider2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                             .add(layout.createSequentialGroup()
-                                .add(jLabel18)
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                    .add(jLabel18)
+                                    .add(jLabel17))
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(jSlider3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                         .add(18, 18, 18)
@@ -817,54 +842,6 @@ public class FluoSEMStageControlFrame extends javax.swing.JFrame {
    }
        
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       setRelativeXYStagePosition(-smallMovement_, 0.0);
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-       setRelativeXYStagePosition(-largeMovement_, 0.0);
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-       setRelativeXYStagePosition(-mediumMovement_, 0.0);
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-      setRelativeXYStagePosition(smallMovement_, 0.0);
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-       setRelativeXYStagePosition(largeMovement_, 0.0);
-    }//GEN-LAST:event_jButton5ActionPerformed
-
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-       setRelativeXYStagePosition(mediumMovement_, 0.0);
-    }//GEN-LAST:event_jButton6ActionPerformed
-
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-       setRelativeXYStagePosition(0.0, -smallMovement_);
-    }//GEN-LAST:event_jButton7ActionPerformed
-
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-       setRelativeXYStagePosition(0.0, -largeMovement_);
-    }//GEN-LAST:event_jButton8ActionPerformed
-
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-       setRelativeXYStagePosition(0.0, -mediumMovement_);
-    }//GEN-LAST:event_jButton9ActionPerformed
-
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-       setRelativeXYStagePosition(0.0, smallMovement_);
-    }//GEN-LAST:event_jButton10ActionPerformed
-
-    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-       setRelativeXYStagePosition(0.0, mediumMovement_);
-    }//GEN-LAST:event_jButton11ActionPerformed
-
-    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-       setRelativeXYStagePosition(0.0, largeMovement_);
-    }//GEN-LAST:event_jButton12ActionPerformed
-
     private void onWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_onWindowClosing
        prefs_.putInt(FRAMEXPOS, (int) getLocation().getX());
        prefs_.putInt(FRAMEYPOS, (int) getLocation().getY());
@@ -875,95 +852,152 @@ public class FluoSEMStageControlFrame extends javax.swing.JFrame {
        prefs_.putDouble(MEDIUMMOVEMENTZ, mediumMovementZ_);
     }//GEN-LAST:event_onWindowClosing
 
-    private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
-       setRelativeStagePosition(mediumMovementZ_);
-    }//GEN-LAST:event_jButton16ActionPerformed
-
     private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton17ActionPerformed
-       setRelativeStagePosition(smallMovementZ_);
+        setRelativeStagePosition(smallMovementZ_);
     }//GEN-LAST:event_jButton17ActionPerformed
 
     private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
-       setRelativeStagePosition(-smallMovementZ_);
+        setRelativeStagePosition(-smallMovementZ_);
     }//GEN-LAST:event_jButton18ActionPerformed
 
+    private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
+        setRelativeStagePosition(mediumMovementZ_);
+    }//GEN-LAST:event_jButton16ActionPerformed
+
     private void jButton19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton19ActionPerformed
-       setRelativeStagePosition(-mediumMovementZ_);
+        setRelativeStagePosition(-mediumMovementZ_);
     }//GEN-LAST:event_jButton19ActionPerformed
 
-    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
-        setRelativeLRStagePosition(-smallMovement_, 0.0);
-    }//GEN-LAST:event_jButton13ActionPerformed
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        setRelativeXYStagePosition(mediumMovement_, 0.0);
+    }//GEN-LAST:event_jButton6ActionPerformed
 
-    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
-        setRelativeLRStagePosition(0.0, -smallMovement_);
-    }//GEN-LAST:event_jButton14ActionPerformed
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+        setRelativeXYStagePosition(0.0, -mediumMovement_);
+    }//GEN-LAST:event_jButton9ActionPerformed
 
-    private void jButton20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton20ActionPerformed
-        setRelativeLRStagePosition(-mediumMovementLR_, 0.0);
-    }//GEN-LAST:event_jButton20ActionPerformed
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        setRelativeXYStagePosition(largeMovement_, 0.0);
+    }//GEN-LAST:event_jButton5ActionPerformed
 
-    private void jButton21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton21ActionPerformed
-        setRelativeLRStagePosition(0.0,smallMovementLR_);
-    }//GEN-LAST:event_jButton21ActionPerformed
+    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
+        setRelativeXYStagePosition(0.0, largeMovement_);
+    }//GEN-LAST:event_jButton12ActionPerformed
 
-    private void jButton22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton22ActionPerformed
-       setRelativeLRStagePosition(0.0, -mediumMovementLR_);
-    }//GEN-LAST:event_jButton22ActionPerformed
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        setRelativeXYStagePosition(smallMovement_, 0.0);
+    }//GEN-LAST:event_jButton4ActionPerformed
 
-    private void jButton24ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton24ActionPerformed
-        setRelativeLRStagePosition(smallMovementLR_, 0.0);
-    }//GEN-LAST:event_jButton24ActionPerformed
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+        setRelativeXYStagePosition(0.0, mediumMovement_);
+    }//GEN-LAST:event_jButton11ActionPerformed
 
-    private void jButton27ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton27ActionPerformed
-       setRelativeLRStagePosition(0.0, mediumMovementLR_);
-    }//GEN-LAST:event_jButton27ActionPerformed
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        setRelativeXYStagePosition(0.0, -smallMovement_);
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        setRelativeXYStagePosition(-mediumMovement_, 0.0);
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        setRelativeXYStagePosition(-largeMovement_, 0.0);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        setRelativeXYStagePosition(0.0, smallMovement_);
+    }//GEN-LAST:event_jButton10ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        setRelativeXYStagePosition(-smallMovement_, 0.0);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton28ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton28ActionPerformed
         setRelativeLRStagePosition(mediumMovementLR_, 0.0);
     }//GEN-LAST:event_jButton28ActionPerformed
 
-    private void jSlider2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider2MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jSlider2MouseClicked
+    private void jButton27ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton27ActionPerformed
+        setRelativeLRStagePosition(0.0, mediumMovementLR_);
+    }//GEN-LAST:event_jButton27ActionPerformed
+
+    private void jButton24ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton24ActionPerformed
+        setRelativeLRStagePosition(smallMovementLR_, 0.0);
+    }//GEN-LAST:event_jButton24ActionPerformed
+
+    private void jButton22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton22ActionPerformed
+        setRelativeLRStagePosition(0.0, -mediumMovementLR_);
+    }//GEN-LAST:event_jButton22ActionPerformed
+
+    private void jButton21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton21ActionPerformed
+        setRelativeLRStagePosition(0.0,smallMovementLR_);
+    }//GEN-LAST:event_jButton21ActionPerformed
+
+    private void jButton20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton20ActionPerformed
+        setRelativeLRStagePosition(-mediumMovementLR_, 0.0);
+    }//GEN-LAST:event_jButton20ActionPerformed
+
+    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
+        setRelativeLRStagePosition(0.0, -smallMovement_);
+    }//GEN-LAST:event_jButton14ActionPerformed
+
+    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+        setRelativeLRStagePosition(-smallMovement_, 0.0);
+    }//GEN-LAST:event_jButton13ActionPerformed
 
     private void jSlider2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider2MouseReleased
         // TODO add your handling code here:
         try {
-            core_.setProperty(ZStageLabel, "Step Voltage", jSlider2.getValue());
-       } catch(Exception e) {
-          gui_.logError(e);
-       }
-        try {
-            core_.setProperty(LRStageLabel, "Step Voltage", jSlider2.getValue());
-       } catch(Exception e) {
-          gui_.logError(e);
-       }
+            core_.setProperty(ZStageLabel, "Step Voltage N", jSlider2.getValue());
+        } catch(Exception e) {
+            gui_.logError(e);
+        }
     }//GEN-LAST:event_jSlider2MouseReleased
+
+    private void jSlider2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider2MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jSlider2MouseClicked
 
     private void jSlider1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider1MouseDragged
         // TODO add your handling code here:
-   try {
+        try {
             core_.setProperty(ZStageLabel, "Fine Voltage", jSlider1.getValue());
-       } catch(Exception e) {
-          gui_.logError(e);
-       }
-        
-        
+        } catch(Exception e) {
+            gui_.logError(e);
+        }
+
     }//GEN-LAST:event_jSlider1MouseDragged
+
+    private void jSlider3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider3MouseReleased
+        // TODO add your handling code here:
+        try {
+            core_.setProperty(XYStageLabel, "Stage Voltage XP", jSlider3.getValue());
+            core_.setProperty(XYStageLabel, "Stage Voltage XN", jSlider3.getValue());
+            core_.setProperty(XYStageLabel, "Stage Voltage YP", jSlider3.getValue());
+            core_.setProperty(XYStageLabel, "Stage Voltage YN", jSlider3.getValue());
+        } catch(Exception e) {
+            gui_.logError(e);
+        }
+    }//GEN-LAST:event_jSlider3MouseReleased
 
     private void jSlider3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider3MouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_jSlider3MouseClicked
 
-    private void jSlider3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider3MouseReleased
+    private void jSlider4MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider4MouseReleased
+        try {
+            core_.setProperty(ZStageLabel, "Step Voltage P", jSlider4.getValue());
+        } catch(Exception e) {
+            gui_.logError(e);
+        }        // TODO add your handling code here:
+    }//GEN-LAST:event_jSlider4MouseReleased
+
+    private void jSlider4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider4MouseClicked
         // TODO add your handling code here:
-         try {
-            core_.setProperty(XYStageLabel, "Stage Voltage", jSlider3.getValue());
-       } catch(Exception e) {
-          gui_.logError(e);
-       }
-    }//GEN-LAST:event_jSlider3MouseReleased
+    }//GEN-LAST:event_jSlider4MouseClicked
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        setRelativeXYStagePosition(0.0, -largeMovement_);
+    }//GEN-LAST:event_jButton8ActionPerformed
 
  
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1001,6 +1035,7 @@ public class FluoSEMStageControlFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel3;
@@ -1016,6 +1051,7 @@ public class FluoSEMStageControlFrame extends javax.swing.JFrame {
     private javax.swing.JSlider jSlider1;
     private javax.swing.JSlider jSlider2;
     private javax.swing.JSlider jSlider3;
+    private javax.swing.JSlider jSlider4;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
