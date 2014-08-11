@@ -24,7 +24,7 @@
 // CVS:           $Id$
 //
 #include "FEISEM.h"
-#include "../../../micromanager/MMDevice/ModuleInterface.h"
+#include "../../../../micromanager/MMDevice/ModuleInterface.h"
 #include "../../../micromanager/MMCore/Error.h"
 #include <sstream>
 #include <cstdio>
@@ -200,14 +200,14 @@ int FEISEMController::Initialize()
 	long lmin, lmax;
 	int nRetCode = 0;
 	HRESULT hr = E_FAIL;
-
+	bool COMOK = true;
 	CComBSTR sMachine( MACHINE );
 
 	if ( SUCCEEDED( hr = CoInitializeEx(NULL, COINIT_MULTITHREADED ) ) )
 	{
 		//          cout << _T( "COM library initialized successfully" ) << endl;
 
-		if ( SUCCEEDED( hr = CoCreateInstance( CLSID_MicroscopeControl, NULL, CLSCTX_INPROC_SERVER, IID_IMicroscopeControl, reinterpret_cast < void ** > (&pIMicroscopeControl) ) ) )
+		if ( SUCCEEDED( hr = CoCreateInstance( CLSID_MicroscopeControl, NULL, CLSCTX_LOCAL_SERVER, IID_IMicroscopeControl, reinterpret_cast < void ** > (&pIMicroscopeControl) ) ) )
 		{
 			//              cout << _T( "Create instance of MicroscopeControl object succeeded" ) << endl;
 
@@ -238,12 +238,13 @@ int FEISEMController::Initialize()
 					}
 					else
 					{
-						//               cout << _T( "ERROR: Cannot create ElectronBeamControl object" ) << endl;
+						COMOK = false;//               cout << _T( "ERROR: Cannot create ElectronBeamControl object" ) << endl;
 					}
 
 				}
 				else
 				{
+					COMOK = false;
 					//         cout << _T( "ERROR: Cannot create BeamControl object" ) << endl;
 				}
 				if( SUCCEEDED( hr = pIMicroscopeControl->ScanControl( &pIScanControl ) ) && (pIScanControl != NULL) )
@@ -251,12 +252,14 @@ int FEISEMController::Initialize()
 				}
 				else
 				{
+					COMOK = false;
 				}
 				if( SUCCEEDED( hr = pIMicroscopeControl->VacSystemControl( &pIVacSystemControl ) ) && (pIVacSystemControl != NULL) )
 				{
 				}
 				else
 				{
+					COMOK = false;
 				}
 				if(SUCCEEDED( hr = pIMicroscopeControl->VideoControl( &pIVideoControl ) ) && (pIVideoControl != NULL) )
 				{
@@ -268,27 +271,32 @@ int FEISEMController::Initialize()
 						}
 						else
 						{
+							COMOK = false;
 						}
 					}
 					else
 					{
+						COMOK = false;
 					}
 				}
 				else
 				{
 					//   cout << _T( "ERROR: Cannot connect to microscope server" ) << endl;
+					COMOK = false;
 				}
 			}
 			else
 			{
-				//         cout << _T( "ERROR: Cannot create instance of MicroscopeControl object" ) << endl;
+				COMOK = false;//         cout << _T( "ERROR: Cannot create instance of MicroscopeControl object" ) << endl;
 			}
 		}
 		else
 		{
-			//     cout << _T( "ERROR: Cannot initialize COM library" ) << endl;
+			COMOK = false;//     cout << _T( "ERROR: Cannot initialize COM library" ) << endl;
 		}
 	}    
+	if(COMOK)
+	{
 
 	vector<string> BOOLOPT;
 	BOOLOPT.push_back("true");
@@ -528,11 +536,11 @@ int FEISEMController::Initialize()
 	ret = SetAllowedValues("Selected Area Enabled", BOOLOPT);
 	assert(DEVICE_OK == ret);
 	pAct = new CPropertyAction (this, &FEISEMController::OnSpotX);
-	ret = CreateProperty("Spot X", "256" , MM::Integer, false, pAct);
+	ret = CreateProperty("Spot X", "384" , MM::Integer, false, pAct);
 	assert(DEVICE_OK == ret);
 
 	pAct = new CPropertyAction (this, &FEISEMController::OnSpotY);
-	ret = CreateProperty("Spot Y", "221" , MM::Integer, false, pAct);
+	ret = CreateProperty("Spot Y", "256" , MM::Integer, false, pAct);
 	assert(DEVICE_OK == ret);
 
 	//ElectronBeamControl	
@@ -684,6 +692,10 @@ int FEISEMController::Initialize()
 	ret = CreateProperty("Image Counter", "0" , MM::Integer, false);
 	assert(DEVICE_OK == ret);
 	initialized_ = true;
+	}
+	else
+	{
+	initialized_ = false;	}
 	return DEVICE_OK;
 }
 

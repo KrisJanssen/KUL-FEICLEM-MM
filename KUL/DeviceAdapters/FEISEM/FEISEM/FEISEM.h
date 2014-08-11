@@ -155,7 +155,7 @@ private:
 	  IVacSystemControl * pIVacSystemControl;
 	  IConnectionPointContainer * pIConnectionPointContainer;
 	  IDispatch * pIDispatch;
-	  FEISEMHub* hub;
+	  //FEISEMHub* hub;
 };
 
 #endif //_FEISEM_H_

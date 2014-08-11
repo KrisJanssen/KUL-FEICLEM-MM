@@ -46,7 +46,7 @@ const char* g_On = "On";
 const char* g_Off = "Off";
 */
 // static lock
-MMThreadLock CFluoSEMStageHub::lock_;
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Exported MMDevice API
@@ -54,8 +54,8 @@ MMThreadLock CFluoSEMStageHub::lock_;
 MODULE_API void InitializeModuleData()
 {
 	RegisterDevice(g_DeviceNameFluoSEMStageHub, MM::HubDevice, "Hub (required)");
-	RegisterDevice(g_DeviceNameFluoSEMStageXY, MM::StageDevice, "Stage XY");
-	RegisterDevice(g_DeviceNameFluoSEMStageLR, MM::StageDevice, "Objective LR");
+	RegisterDevice(g_DeviceNameFluoSEMStageXY, MM::XYStageDevice, "Stage XY");
+	RegisterDevice(g_DeviceNameFluoSEMStageLR, MM::XYStageDevice, "Objective LR");
 	RegisterDevice(g_DeviceNameFluoSEMStageZ, MM::StageDevice, "Objective Z");
    
   // AddAvailableDeviceName(g_DeviceNameFluoSEMStageE861, "E861 Objective Controller");
@@ -111,10 +111,10 @@ initialized_ (false)
    CreateProperty(MM::g_Keyword_Port, "Undefined", MM::String, false, pAct, true);
 }
 
-CFluoSEMStageHub::~CFluoSEMStageHub()
+/*CFluoSEMStageHub::~CFluoSEMStageHub()
 {
    Shutdown();
-}
+}*/
 
 void CFluoSEMStageHub::GetName(char* name) const
 {
@@ -159,7 +159,7 @@ MM::DeviceDetectionStatus CFluoSEMStageHub::DetectDevice(void)
          MM::Device* pS = GetCoreCallback()->GetDevice(this, port_.c_str());
          pS->Initialize();
          // The first second or so after opening the serial port, the Arduino is waiting for firmwareupgrades.  Simply sleep 1 second
-         MMThreadGuard myLock(lock_);
+        // MMThreadGuard myLock(lock_);
        
    
             // to succeed must reach here....
@@ -188,7 +188,7 @@ int CFluoSEMStageHub::Initialize()
    // The first second or so after opening the serial port, the Arduino is waiting for firmwareupgrades.  Simply sleep 1 second.
   
 
-   MMThreadGuard myLock(lock_);
+  // MMThreadGuard myLock(lock_);
 
    // Check that we have a controller:
    try{
@@ -272,6 +272,29 @@ bool CFluoSEMStageHub::GCSCommandWithAnswer(unsigned char singlebyte, std::vecto
 	return ReadGCSAnswer(answer, nExpectedLines);
 }
 
+bool CFluoSEMStageHub::DoReset(int device)
+{
+	int count = -1;
+	std::ostringstream command;
+	std::vector<std::string> answer;
+	command << device + " ERR?";
+	do
+	{
+		GCSCommandWithAnswer(command.str(), answer, 1);
+		count++;
+	}
+	while(count < 10 && answer[0][0] != '0');
+	if(count < 10)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+
+}
+
 bool CFluoSEMStageHub::ReadGCSAnswer(std::vector<std::string>& answer, int nExpectedLines)
 {
 	answer.clear();
@@ -318,15 +341,24 @@ CFluoSEMStageXY::CFluoSEMStageXY():initialized_(false)
    ret = CreateProperty(MM::g_Keyword_Name, g_DeviceNameFluoSEMStageXY, MM::String, true);
    assert(DEVICE_OK == ret);
 
-   ret = CreateProperty("Stage Voltage", "9500", MM::Integer, false);
+   ret = CreateProperty("Stage Voltage XP", "9500", MM::Integer, false);
    assert(DEVICE_OK == ret);
-
+      ret = CreateProperty("Stage Voltage XN", "9500", MM::Integer, false);
+   assert(DEVICE_OK == ret);
+      ret = CreateProperty("Stage Voltage YP", "9500", MM::Integer, false);
+   assert(DEVICE_OK == ret);
+      ret = CreateProperty("Stage Voltage YN", "9500", MM::Integer, false);
+   assert(DEVICE_OK == ret);
+   CPropertyAction* pAct = new CPropertyAction(this, &CFluoSEMStageXY::OnReset);
+   ret = CreateProperty("Reset?", "0", MM::Integer, pAct, false);
+   assert(DEVICE_OK == ret);
   // ret = CreateProperty("Stage Delay", "20", MM::Integer, false);
   // assert(DEVICE_OK == ret);
 
    // parent ID display
+   
    CreateHubIDProperty();
-
+   
 }
 
 CFluoSEMStageXY::~CFluoSEMStageXY()
@@ -369,12 +401,24 @@ bool CFluoSEMStageXY::Busy()
    return false;
 }
 
+int CFluoSEMStageXY::OnReset(MM::PropertyBase* pProp, MM::ActionType pAct)
+{
+	CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
+   if (pAct == MM::AfterSet)
+   {
+      pProp->Set((long)(0));
+      hub->DoReset(4);
+	  hub->DoReset(5);
+   }
+   return DEVICE_OK;
+}
+
+
 int CFluoSEMStageXY::SetPositionSteps(long x, long y)
 {
 	int i = 0;
 	long voltage = 0;
 	long delay = 0;
-	GetProperty("Stage Voltage", voltage);
 	//GetProperty("Stage Delay", delay);
 	std::ostringstream command;
    CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
@@ -382,12 +426,14 @@ int CFluoSEMStageXY::SetPositionSteps(long x, long y)
   //    return ERR_NO_PORT_SET;
    if(x > 0)
    {
+	   GetProperty("Stage Voltage XP", voltage);
 	    command << "5 MAC START OLSTEP " << voltage << " " << x;
 	   hub->SendGCSCommand(command.str());
 	  
    }
    else if(x < 0)
    {
+	   GetProperty("Stage Voltage XN", voltage);
 	   command << "5 MAC START OLSTEP -" << voltage << " " << -1*x;
 	       
 	   hub->SendGCSCommand(command.str());
@@ -397,6 +443,7 @@ int CFluoSEMStageXY::SetPositionSteps(long x, long y)
 
    if(y > 0)
    {
+	   GetProperty("Stage Voltage YP", voltage);
 	   command << "4 MAC START OLSTEP " << voltage << " " << y;  
 	        
 	   hub->SendGCSCommand(command.str());
@@ -404,6 +451,7 @@ int CFluoSEMStageXY::SetPositionSteps(long x, long y)
    }
    else if(y < 0)
    {
+	    GetProperty("Stage Voltage YN", voltage);
 	    command << "4 MAC START OLSTEP -" << voltage << " " << -1*y;  	   	     
 		hub->SendGCSCommand(command.str());
    }
@@ -477,11 +525,27 @@ CFluoSEMStageLR::CFluoSEMStageLR():initialized_(false)
    assert(DEVICE_OK == ret);
 
    // Name
-   ret = CreateProperty(MM::g_Keyword_Name, g_DeviceNameFluoSEMStageXY, MM::String, true);
+   ret = CreateProperty(MM::g_Keyword_Name, g_DeviceNameFluoSEMStageLR, MM::String, true);
    assert(DEVICE_OK == ret);
 
-   CPropertyAction* pAct = new CPropertyAction(this, &CFluoSEMStageLR::OnStepVoltage);
-   ret = CreateProperty("Step Voltage", "30", MM::Integer, false, pAct);
+   CPropertyAction* pAct = new CPropertyAction(this, &CFluoSEMStageLR::OnFineVoltageL);
+   ret = CreateProperty("Fine Voltage L", "0", MM::Float, false, pAct);
+   assert(DEVICE_OK == ret);
+   pAct = new CPropertyAction(this, &CFluoSEMStageLR::OnFineVoltageR);
+   ret = CreateProperty("Fine Voltage R", "0", MM::Float, false, pAct);
+   assert(DEVICE_OK == ret);
+   pAct = new CPropertyAction(this, &CFluoSEMStageLR::OnReset);
+   ret = CreateProperty("Reset?", "0", MM::Integer, pAct, false);
+   assert(DEVICE_OK == ret);
+
+   //pAct = new CPropertyAction(this, &CFluoSEMStageLR::OnStepVoltage);
+   ret = CreateProperty("Step Voltage RP", "30.0", MM::Float, false, pAct);
+   assert(DEVICE_OK == ret);
+   ret = CreateProperty("Step Voltage RN", "30.0", MM::Float, false, pAct);
+   assert(DEVICE_OK == ret);
+   ret = CreateProperty("Step Voltage LP", "30.0", MM::Float, false, pAct);
+   assert(DEVICE_OK == ret);
+   ret = CreateProperty("Step Voltage LN", "30.0", MM::Float, false, pAct);
    assert(DEVICE_OK == ret);
 
    // parent ID display
@@ -525,14 +589,92 @@ bool CFluoSEMStageLR::Busy()
    return false;
 }
 
-int CFluoSEMStageLR::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct)
+int CFluoSEMStageLR::OnFineVoltageL(MM::PropertyBase* pProp, MM::ActionType pAct)
 {
-   if (eAct == MM::BeforeGet) {
+   if (pAct == MM::BeforeGet) {
       // Nothing to do, let the caller use cached property
-   } else if (eAct ==MM::AfterSet) {
+   } else if (pAct ==MM::AfterSet) {
       std::ostringstream command;
 		CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
-		long val;
+		double val;
+		pProp->Get(val);
+  // if (!hub || !hub->IsPortAvailable())
+  //    return ERR_NO_PORT_SET;
+		if(_isFirstMoveL)
+		{
+			_wasLastMoveStepL = true;
+			_isFirstMoveL = false;
+		}
+		if(_wasLastMoveStepL)
+		{
+			command.str("");
+		    command.clear();
+			command << "2 RNP 1 0";  
+			hub->SendGCSCommand(command.str());
+		}  
+	   command.str("");
+	   command.clear();
+	   command << "2 OAD 1 " << val;  
+	   hub->SendGCSCommand(command.str());
+	   _wasLastMoveStepL = false;
+   }
+
+   return DEVICE_OK;
+}
+
+int CFluoSEMStageLR::OnFineVoltageR(MM::PropertyBase* pProp, MM::ActionType pAct)
+{
+   if (pAct == MM::BeforeGet) {
+      // Nothing to do, let the caller use cached property
+   } else if (pAct ==MM::AfterSet) {
+      std::ostringstream command;
+		CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
+		double val;
+		pProp->Get(val);
+  // if (!hub || !hub->IsPortAvailable())
+  //    return ERR_NO_PORT_SET;
+		if(_isFirstMoveR)
+		{
+			_wasLastMoveStepR = true;
+			_isFirstMoveR = false;
+		}
+		if(_wasLastMoveStepR)
+		{
+			command.str("");
+		    command.clear();
+			command << "1 RNP 1 0";  
+			hub->SendGCSCommand(command.str());
+		}  
+	   command.str("");
+	   command.clear();
+	   command << "1 OAD 1 " << val;  
+	   hub->SendGCSCommand(command.str());
+	   _wasLastMoveStepR = false;
+   }
+
+   return DEVICE_OK;
+}
+
+int CFluoSEMStageLR::OnReset(MM::PropertyBase* pProp, MM::ActionType pAct)
+{
+	CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
+   if (pAct == MM::AfterSet)
+   {
+      pProp->Set((long)(0));
+      hub->DoReset(1);
+	  hub->DoReset(2);
+   }
+   return DEVICE_OK;
+}
+/*
+int CFluoSEMStageLR::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType pAct)
+{
+   if (pAct == MM::BeforeGet) {
+      // Nothing to do, let the caller use cached property
+   } else if (pAct ==MM::AfterSet) {
+      std::ostringstream command;
+		CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
+		double val;
 		pProp->Get(val);
   // if (!hub || !hub->IsPortAvailable())
   //    return ERR_NO_PORT_SET;
@@ -548,6 +690,7 @@ int CFluoSEMStageLR::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct)
 
    return DEVICE_OK;
 }
+*/
 int CFluoSEMStageLR::SetPositionSteps(long x, long y)
 {
 	std::ostringstream command;
@@ -555,9 +698,25 @@ int CFluoSEMStageLR::SetPositionSteps(long x, long y)
   // if (!hub || !hub->IsPortAvailable())
   //    return ERR_NO_PORT_SET;
    
-
+   double val;
    if(x != 0)
    {
+	   if(x > 0)
+	   {
+		   GetProperty("Step Voltage LP", val);
+		   command.str("");
+		   command.clear();
+		   command << "2 SSA 1 " << val;  
+		   hub->SendGCSCommand(command.str());
+	   }
+	   else if(x < 0)
+	   {
+		   GetProperty("Step Voltage LN", val);
+		   command.str("");
+		   command.clear();
+		   command << "2 SSA 1 " << val;  
+		   hub->SendGCSCommand(command.str());
+	   }
 //	   command.str("");
 //	   command.clear();
 //	   command << "2 RNP 1 0";  
@@ -569,6 +728,23 @@ int CFluoSEMStageLR::SetPositionSteps(long x, long y)
    }
    if(y != 0)
    {
+	   	   
+	   if(y > 0)
+	   {
+		   GetProperty("Step Voltage RP", val);
+		   command.str("");
+		   command.clear();
+		   command << "1 SSA 1 " << val;  
+		   hub->SendGCSCommand(command.str());
+	   }
+	   else if(y < 0)
+	   {
+		   GetProperty("Step Voltage RN", val);
+		   command.str("");
+		   command.clear();
+		   command << "1 SSA 1 " << val;  
+		   hub->SendGCSCommand(command.str());
+	   }
 //	   command.str("");
 //	   command.clear();
 //	   command << "1 RNP 1 0";  
@@ -643,17 +819,22 @@ CFluoSEMStageZ::CFluoSEMStageZ():initialized_(false),_umPerStepDown(1.0),_umPerS
    InitializeDefaultErrorMessages();
 
    // Description
-   int ret = CreateProperty(MM::g_Keyword_Description, "FluoSEM OBjective Z Stage", MM::String, true);
+   int ret = CreateProperty(MM::g_Keyword_Description, "FluoSEM Objective Z Stage", MM::String, true);
    assert(DEVICE_OK == ret);
    CPropertyAction* pAct = new CPropertyAction(this, &CFluoSEMStageZ::OnFineVoltage);
-   ret = CreateProperty("Fine Voltage", "0", MM::Integer, false, pAct);
+   ret = CreateProperty("Fine Voltage", "0", MM::Float, false, pAct);
    assert(DEVICE_OK == ret);
-   pAct = new CPropertyAction(this, &CFluoSEMStageZ::OnStepVoltage);
-   ret = CreateProperty("Step Voltage", "30", MM::Integer, false, pAct);
+   pAct = new CPropertyAction(this, &CFluoSEMStageZ::OnReset);
+   ret = CreateProperty("Reset?", "0", MM::Integer, pAct, false);
    assert(DEVICE_OK == ret);
   // pAct = new CPropertyAction(this, &CFluoSEMStageZ::OnStepVoltage);
-   ret = CreateProperty("Relative Position", "0.0", MM::Float, false);
+   ret = CreateProperty("Step Voltage P", "30", MM::Float, false, pAct);
    assert(DEVICE_OK == ret);
+   ret = CreateProperty("Step Voltage N", "30", MM::Float, false, pAct);
+   assert(DEVICE_OK == ret);
+  // pAct = new CPropertyAction(this, &CFluoSEMStageZ::OnStepVoltage);
+ //  ret = CreateProperty("Relative Position", "0.0", MM::Float, false);
+//   assert(DEVICE_OK == ret);
 
    // Name
    ret = CreateProperty(MM::g_Keyword_Name, g_DeviceNameFluoSEMStageZ, MM::String, true);
@@ -669,14 +850,14 @@ CFluoSEMStageZ::~CFluoSEMStageZ()
    Shutdown();
 }
 
-int CFluoSEMStageZ::OnFineVoltage(MM::PropertyBase* pProp, MM::ActionType eAct)
+int CFluoSEMStageZ::OnFineVoltage(MM::PropertyBase* pProp, MM::ActionType pAct)
 {
-   if (eAct == MM::BeforeGet) {
+   if (pAct == MM::BeforeGet) {
       // Nothing to do, let the caller use cached property
-   } else if (eAct ==MM::AfterSet) {
+   } else if (pAct ==MM::AfterSet) {
       std::ostringstream command;
 		CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
-		long val;
+		double val;
 		pProp->Get(val);
   // if (!hub || !hub->IsPortAvailable())
   //    return ERR_NO_PORT_SET;
@@ -702,11 +883,22 @@ int CFluoSEMStageZ::OnFineVoltage(MM::PropertyBase* pProp, MM::ActionType eAct)
    return DEVICE_OK;
 }
 
-int CFluoSEMStageZ::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct)
+int CFluoSEMStageZ::OnReset(MM::PropertyBase* pProp, MM::ActionType pAct)
 {
-   if (eAct == MM::BeforeGet) {
+	CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
+   if (pAct == MM::AfterSet)
+   {
+      pProp->Set((long)(0));
+      hub->DoReset(3);
+   }
+   return DEVICE_OK;
+}
+
+/*int CFluoSEMStageZ::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType pAct)
+{
+   if (pAct == MM::BeforeGet) {
       // Nothing to do, let the caller use cached property
-   } else if (eAct ==MM::AfterSet) {
+   } else if (pAct ==MM::AfterSet) {
       std::ostringstream command;
 		CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
 		long val;
@@ -720,7 +912,7 @@ int CFluoSEMStageZ::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct)
    }
 
    return DEVICE_OK;
-}
+}*/
 
 void CFluoSEMStageZ::GetName(char* name) const
 {
@@ -756,7 +948,7 @@ bool CFluoSEMStageZ::Busy()
 int CFluoSEMStageZ::SetPositionSteps(long steps)
 {
 	std::ostringstream command;
-	long stepvoltage;
+	double stepvoltage;
 	GetProperty("Step Voltage", stepvoltage); 
    CFluoSEMStageHub* hub = static_cast<CFluoSEMStageHub*>(GetParentHub());
   // if (!hub || !hub->IsPortAvailable())
@@ -774,10 +966,22 @@ int CFluoSEMStageZ::SetPositionSteps(long steps)
 			command << "3 RNP 1 0";  
 			hub->SendGCSCommand(command.str());
 		}  
-//	   command.str("");
-//	   command.clear();
-//	   command << "3 SSA 1 " << stepvoltage;
-//	   hub->SendGCSCommand(command.str());
+		if(steps> 0)
+	   {
+		   GetProperty("Step Voltage P", stepvoltage);
+		   command.str("");
+		   command.clear();
+		   command << "3 SSA 1 " << stepvoltage;  
+		   hub->SendGCSCommand(command.str());
+	   }
+	   else if(steps < 0)
+	   {
+		   GetProperty("Step Voltage N", stepvoltage);
+		   command.str("");
+		   command.clear();
+		   command << "3 SSA 1 " << stepvoltage;  
+		   hub->SendGCSCommand(command.str());
+	   }
 	   command.str("");
 	   command.clear();
 	   command << "3 OSM 1 " << steps;  
@@ -786,19 +990,23 @@ int CFluoSEMStageZ::SetPositionSteps(long steps)
 	   return DEVICE_OK;
 }
 
-int CFluoSEMStageZ::GetPositionSteps(long& steps)
-{
-
-   return DEVICE_OK;
-}
-  
 int CFluoSEMStageZ::SetPositionUm(double pos)
 {
- return DEVICE_UNSUPPORTED_COMMAND;
+	SetPositionSteps((long)pos);
+ return DEVICE_OK;
 }
+/*
+int CFluoSEMStageZ::GetPositionSteps(long& steps)
+{
+	return DEVICE_UNSUPPORTED_COMMAND;
+   //return DEVICE_OK;
+}
+  
+
 
 int CFluoSEMStageZ::SetRelativePositionUm(double pos)
 {
+	/*
 	long stepconvert;
 	double oldpos; 
 	std::string posstring;
@@ -819,25 +1027,29 @@ int CFluoSEMStageZ::SetRelativePositionUm(double pos)
 	}
 
 	return DEVICE_OK;
+	return DEVICE_UNSUPPORTED_COMMAND;
 }
 
 int CFluoSEMStageZ::GetPositionUm(double& pos)
 { 
-GetProperty("Relative Position", pos);
+/*GetProperty("Relative Position", pos);
  return DEVICE_OK;
+	return DEVICE_UNSUPPORTED_COMMAND;
 }
 
 int CFluoSEMStageZ::SetOrigin()
 {
+	/*
 	double pos = 0.0;
 	std::string posstring;
 	posstring = pos;
 	SetProperty("Relative Position", posstring.c_str());
    return DEVICE_OK;
+   return DEVICE_UNSUPPORTED_COMMAND;
 }
 
 int CFluoSEMStageZ::GetLimits(double& min, double& max)
 {
    return DEVICE_UNSUPPORTED_COMMAND;
-}
+}*/
 

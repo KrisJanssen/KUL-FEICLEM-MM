@@ -35,7 +35,7 @@ class CFluoSEMStageHub : public HubBase<CFluoSEMStageHub>
 {
 public:
    CFluoSEMStageHub();
-   ~CFluoSEMStageHub();
+   //~CFluoSEMStageHub();
 
    int Initialize();
    int Shutdown();
@@ -46,10 +46,10 @@ public:
    int DetectInstalledDevices();
 
    // property handlers
-   int OnPort(MM::PropertyBase* pPropt, MM::ActionType eAct);
+   int OnPort(MM::PropertyBase* pPropt, MM::ActionType pAct);
 
-   //int OnLogic(MM::PropertyBase* pPropt, MM::ActionType eAct);
-   //int OnVersion(MM::PropertyBase* pPropt, MM::ActionType eAct);
+   //int OnLogic(MM::PropertyBase* pPropt, MM::ActionType pAct);
+   //int OnVersion(MM::PropertyBase* pPropt, MM::ActionType pAct);
 
    // custom interface for child devices
    bool IsPortAvailable() {return portAvailable_;}
@@ -57,7 +57,7 @@ public:
    //bool IsTimedOutputActive() {return timedOutputActive_;}
    //void SetTimedOutput(bool active) {timedOutputActive_ = active;}
 
-   
+   bool DoReset(int device);
    bool GCSCommandWithAnswer(const std::string command, std::vector<std::string>& answer, int nExpectedLines = -1);
    bool GCSCommandWithAnswer(unsigned char singleByte, std::vector<std::string>& answer, int nExpectedLines = -1);
    bool SendGCSCommand(const std::string command);
@@ -67,7 +67,7 @@ public:
 
 
 
-   static MMThreadLock& GetLock() {return lock_;}
+  // static MMThreadLock& GetLock() {return lock_;}
 
 private:
    //int GetControllerVersion(int&);
@@ -78,7 +78,7 @@ private:
    //bool invertedLogic_;
    //bool timedOutputActive_;
    //int version_;
-   static MMThreadLock lock_;
+  
 };
 
 class CFluoSEMStageXY : public CXYStageBase<CFluoSEMStageXY>  
@@ -113,7 +113,7 @@ public:
 	 
    // action interface
    // ----------------
-
+   int OnReset(MM::PropertyBase* pPropt, MM::ActionType pAct);
 private:
    bool initialized_;
    std::string name_;
@@ -151,12 +151,19 @@ public:
 	 
    // action interface
    // ----------------
-   int CFluoSEMStageLR::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct);
+   //int CFluoSEMStageLR::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType pAct);
+   int CFluoSEMStageLR::OnFineVoltageL(MM::PropertyBase* pProp, MM::ActionType pAct);
+   int CFluoSEMStageLR::OnFineVoltageR(MM::PropertyBase* pProp, MM::ActionType pAct);
+   int OnReset(MM::PropertyBase* pPropt, MM::ActionType pAct);
 private:
    bool initialized_;
    std::string name_;
    double _umPerStepUp, _umPerStepDown, _umPerStepLeft, _umPerStepRight;
    double _xPos, _yPos;
+      bool _wasLastMoveStepL;
+   bool _isFirstMoveL;
+      bool _wasLastMoveStepR;
+   bool _isFirstMoveR;
 };
 
 class CFluoSEMStageZ : public CStageBase<CFluoSEMStageZ>  
@@ -176,20 +183,43 @@ public:
    // Stage API
 
   int SetPositionUm(double pos);
-  int GetPositionUm(double& pos);
-  int SetRelativePositionUm(double d);
-  int SetPositionSteps(long steps);
-  int GetPositionSteps(long& steps);
-  int SetOrigin();
-  int GetLimits(double& min, double& max);
+  /*int GetPositionUm(double& pos);
+  //virtual int SetRelativePositionUm(double d);
+  double GetStepSize();
+  virtual int SetPositionSteps(long steps);
+  virtual int GetPositionSteps(long& steps);
+  virtual int SetOrigin();
+  virtual int GetLimits(double& min, double& max);
+  */
+
+
+   int GetPositionUm(double& pos) {pos = 0.0; return DEVICE_OK;}
+   double GetStepSize() {return 1.0;}
+   int GetPositionSteps(long& steps)
+   {
+      steps = 0;
+      return DEVICE_OK;
+   }
+   int SetPositionSteps(long steps);
+   int SetOrigin() { return DEVICE_OK; }
+   int GetLimits(double& lower, double& upper)
+   {
+      lower = -1.0;
+      upper = 1.0;
+      return DEVICE_OK;
+   }
+   int Move(double /*v*/) {return DEVICE_OK;}
+
+
 
    int IsStageSequenceable(bool& isSequenceable) const {isSequenceable = false; return DEVICE_OK;}
 	bool IsContinuousFocusDrive() const {return false;} 
 
    // action interface
    // ----------------
-int CFluoSEMStageZ::OnFineVoltage(MM::PropertyBase* pProp, MM::ActionType eAct);
-int CFluoSEMStageZ::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType eAct);
+int CFluoSEMStageZ::OnFineVoltage(MM::PropertyBase* pProp, MM::ActionType pAct);
+int CFluoSEMStageZ::OnStepVoltage(MM::PropertyBase* pProp, MM::ActionType pAct);
+int OnReset(MM::PropertyBase* pPropt, MM::ActionType pAct);
 private:
    bool initialized_;
    std::string name_;
