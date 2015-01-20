@@ -20,6 +20,7 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.FileReader;
 
 /**
  *
@@ -32,6 +33,7 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
      */
     private final ScriptInterface gui_;
     private final CMMCore core_;
+    private static boolean LCScanStop = false;
     Interpreter bsh = new Interpreter();  // Construct an interpreter 
 
     private static String nm405Label = "Laser 405nm";
@@ -784,13 +786,20 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
         jPanel20 = new javax.swing.JPanel();
         jLabel42 = new javax.swing.JLabel();
         LCFilterConditioning = new javax.swing.JButton();
-        LCStartWavelength = new javax.swing.JTextField();
-        LCStopWavelength = new javax.swing.JTextField();
-        LCStepSize = new javax.swing.JTextField();
-        LCIndex = new javax.swing.JTextField();
-        LCPath = new javax.swing.JTextField();
-        LCRunScan = new javax.swing.JButton();
-        LCTitle = new javax.swing.JTextField();
+        LCstartWavelength = new javax.swing.JTextField();
+        LCstopWavelength = new javax.swing.JTextField();
+        LCstepSize = new javax.swing.JTextField();
+        LCindex = new javax.swing.JTextField();
+        LCpath = new javax.swing.JTextField();
+        LCtitle = new javax.swing.JTextField();
+        LCrunScan = new javax.swing.JButton();
+        jLabel43 = new javax.swing.JLabel();
+        jLabel44 = new javax.swing.JLabel();
+        jLabel45 = new javax.swing.JLabel();
+        jLabel55 = new javax.swing.JLabel();
+        jLabel61 = new javax.swing.JLabel();
+        jLabel62 = new javax.swing.JLabel();
+        jPanel21 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel35 = new javax.swing.JLabel();
@@ -2237,14 +2246,13 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel15Layout.createSequentialGroup()
                         .addComponent(CrudeAutoAlignment)
                         .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(18, 18, 18)
                 .addComponent(LRFormStageReset)
                 .addGap(339, 339, 339))
         );
 
         jTabbedPane1.addTab("Alignments", jPanel15);
 
-        jLabel42.setText("Condition LC Filter - Takes up to ~3 minutes - Needs to be done if it hasn't been used for a few days.");
+        jLabel42.setText("Condition LC Filter - Takes ~3 minutes - Needs to be done if it hasn't been used for a few days.");
 
         LCFilterConditioning.setText("Condition");
         LCFilterConditioning.addActionListener(new java.awt.event.ActionListener() {
@@ -2253,31 +2261,41 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
             }
         });
 
-        LCStartWavelength.setText("400.0");
-        LCStartWavelength.setEnabled(false);
+        LCstartWavelength.setText("400.0");
 
-        LCStopWavelength.setText("720.0");
-        LCStopWavelength.setEnabled(false);
+        LCstopWavelength.setText("720.0");
+        LCstopWavelength.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                LCstopWavelengthActionPerformed(evt);
+            }
+        });
 
-        LCStepSize.setText("50.0");
-        LCStepSize.setEnabled(false);
+        LCstepSize.setText("50.0");
 
-        LCIndex.setText("0");
-        LCIndex.setEnabled(false);
+        LCindex.setText("1");
 
-        LCPath.setText("C:\\\\LCTEST\\\\");
-            LCPath.setEnabled(false);
+        LCpath.setText("C:\\\\LCTEST\\\\");
 
-            LCRunScan.setText("jButton1");
-            LCRunScan.setEnabled(false);
-            LCRunScan.addActionListener(new java.awt.event.ActionListener() {
+            LCtitle.setText("TEST1");
+
+            LCrunScan.setText("Start");
+            LCrunScan.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    LCRunScanActionPerformed(evt);
+                    LCrunScanActionPerformed(evt);
                 }
             });
 
-            LCTitle.setText("TEST1");
-            LCTitle.setEnabled(false);
+            jLabel43.setText("Start Wavelength");
+
+            jLabel44.setText("Stop Wavelength");
+
+            jLabel45.setText("Step Size");
+
+            jLabel55.setText("Index");
+
+            jLabel61.setText("Directory");
+
+            jLabel62.setText("Title");
 
             javax.swing.GroupLayout jPanel20Layout = new javax.swing.GroupLayout(jPanel20);
             jPanel20.setLayout(jPanel20Layout);
@@ -2285,22 +2303,29 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
                 jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel20Layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jLabel42)
-                    .addGap(18, 18, 18)
-                    .addComponent(LCFilterConditioning, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                    .addContainerGap())
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel20Layout.createSequentialGroup()
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(LCRunScan)
-                        .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(LCTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(LCPath, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(LCIndex, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(LCStepSize, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(LCStopWavelength, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(LCStartWavelength, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGap(337, 337, 337))
+                        .addGroup(jPanel20Layout.createSequentialGroup()
+                            .addComponent(jLabel42)
+                            .addGap(18, 18, 18)
+                            .addComponent(LCFilterConditioning))
+                        .addGroup(jPanel20Layout.createSequentialGroup()
+                            .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel43)
+                                .addComponent(jLabel44)
+                                .addComponent(jLabel45)
+                                .addComponent(jLabel55)
+                                .addComponent(jLabel61)
+                                .addComponent(jLabel62))
+                            .addGap(56, 56, 56)
+                            .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(LCrunScan)
+                                .addComponent(LCindex, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(LCstepSize, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(LCtitle, javax.swing.GroupLayout.PREFERRED_SIZE, 407, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(LCpath, javax.swing.GroupLayout.PREFERRED_SIZE, 407, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(LCstopWavelength, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(LCstartWavelength, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addContainerGap(99, Short.MAX_VALUE))
             );
             jPanel20Layout.setVerticalGroup(
                 jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2309,24 +2334,49 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
                     .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel42)
                         .addComponent(LCFilterConditioning))
-                    .addGap(68, 68, 68)
-                    .addComponent(LCStartWavelength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(LCStopWavelength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(LCStepSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(LCIndex, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(LCPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(LCTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(LCRunScan)
-                    .addContainerGap(330, Short.MAX_VALUE))
+                    .addGap(18, 18, 18)
+                    .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(LCstartWavelength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel43))
+                    .addGap(18, 18, 18)
+                    .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(LCstopWavelength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel44))
+                    .addGap(18, 18, 18)
+                    .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(LCstepSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel45))
+                    .addGap(18, 18, 18)
+                    .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(LCindex, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel55))
+                    .addGap(18, 18, 18)
+                    .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(LCpath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel61))
+                    .addGap(18, 18, 18)
+                    .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(LCtitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel62))
+                    .addGap(18, 18, 18)
+                    .addComponent(LCrunScan)
+                    .addContainerGap(308, Short.MAX_VALUE))
             );
 
             jTabbedPane1.addTab("LC Filter", jPanel20);
+
+            javax.swing.GroupLayout jPanel21Layout = new javax.swing.GroupLayout(jPanel21);
+            jPanel21.setLayout(jPanel21Layout);
+            jPanel21Layout.setHorizontalGroup(
+                jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(0, 661, Short.MAX_VALUE)
+            );
+            jPanel21Layout.setVerticalGroup(
+                jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(0, 611, Short.MAX_VALUE)
+            );
+
+            jTabbedPane1.addTab("Scripting", jPanel21);
 
             jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
             jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -2743,6 +2793,799 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
         }
     }
 
+    private void Laser532PercentSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser532PercentSetKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            if(Double.parseDouble(Laser532PercentSet.getText()) > 100)
+                    {
+                        Laser532PercentSet.setText("100");
+                    }
+            
+            try {
+                core_.setProperty(nm532PLabel, "Volts", (5.0 - Float.parseFloat(Laser532PercentSet.getText()) / 20));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            /*  try {
+             jLaserPercentSet3.setText();
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+            try {
+                Laser532mWSet.setText(Double.toString(Math.round((Double.parseDouble(Laser532PercentSet.getText()) * 3) * 100) / 100.d));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        }
+    }//GEN-LAST:event_Laser532PercentSetKeyPressed
+
+    private void Laser532OnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Laser532OnOffActionPerformed
+        if (Laser532OnOff.isSelected() && LaserToggle.isSelected()) {
+            try {
+                core_.setProperty(nm532Label, "Laser", "On");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            Laser532OnOff.setText("STATE: ON");
+            State532.setText("ON");
+            State532.setBackground(Color.red);
+            Laser532OnOff.setBackground(Color.red);
+            /* try {
+             core_.setProperty(nm532ENLabel, "Volts", 5.0);
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+        } else if (Laser532OnOff.isSelected() && !LaserToggle.isSelected()) {
+            Laser532OnOff.setText("STATE: READY");
+            State532.setText("READY");
+            State532.setBackground(Color.yellow);
+            Laser532OnOff.setBackground(Color.yellow);
+            try {
+                core_.setProperty(nm532Label, "Laser", "Off");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        } else {
+            try {
+                core_.setProperty(nm532Label, "Laser", "Off");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            Laser532OnOff.setText("STATE: OFF");
+            State532.setText("OFF");
+            State532.setBackground(Color.green);
+            Laser532OnOff.setBackground(Color.green);
+            /*try {
+             core_.setProperty(nm532ENLabel, "Volts", 0.0);
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+        }
+    }//GEN-LAST:event_Laser532OnOffActionPerformed
+
+    private void Laser532mWSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser532mWSetKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            if(Double.parseDouble(Laser532mWSet.getText()) > 300)
+                    {
+                        Laser532mWSet.setText("300");
+                    }
+            try {
+                core_.setProperty(nm532PLabel, "Volts", (5.0 - (Float.parseFloat(Laser532mWSet.getText()) / 60)));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                Laser532PercentSet.setText(Double.toString(Math.round((Double.parseDouble(Laser532mWSet.getText()) / 3) * 100) / 100.d));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        }
+    }//GEN-LAST:event_Laser532mWSetKeyPressed
+
+    private void Laser405OnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Laser405OnOffActionPerformed
+        if (Laser405OnOff.isSelected() && LaserToggle.isSelected()) {
+            try {
+                core_.setProperty(nm405Label, "Laser Operation Select", "On");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                core_.setProperty(nm405ENLabel, "Volts", 5.0);
+
+            } catch (Exception e) {
+                gui_.logError(e);
+
+            }
+            Laser405OnOff.setText("STATE: ON");
+            State405.setText("ON");
+            State405.setBackground(Color.red);
+            Laser405OnOff.setBackground(Color.red);
+        } else if (Laser405OnOff.isSelected() && !LaserToggle.isSelected()) {
+            Laser405OnOff.setText("STATE: READY");
+            State405.setText("READY");
+            State405.setBackground(Color.yellow);
+            Laser405OnOff.setBackground(Color.yellow);
+            try {
+                core_.setProperty(nm405Label, "Laser Operation Select", "Off");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                core_.setProperty(nm405ENLabel, "Volts", "0.0");
+
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        } else {
+            try {
+                core_.setProperty(nm405Label, "Laser Operation Select", "Off");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                core_.setProperty(nm405ENLabel, "Volts", "0.0");
+
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            Laser405OnOff.setText("STATE: OFF");
+            State405.setText("OFF");
+            State405.setBackground(Color.green);
+            Laser405OnOff.setBackground(Color.green);
+        }
+    }//GEN-LAST:event_Laser405OnOffActionPerformed
+
+    private void Laser405PercentSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser405PercentSetKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            if(Double.parseDouble(Laser405PercentSet.getText()) > 100)
+                    {
+                        Laser405PercentSet.setText("100");
+                    }
+            
+            try {
+                core_.setProperty(nm405PLabel, "Volts", Float.parseFloat(Laser405PercentSet.getText()) / 20);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            /* try {
+             jLaserPercentSet1.setText();
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+            try {
+                Laser405mWSet.setText(Double.toString(Math.round((Double.parseDouble(Laser405PercentSet.getText()) * 1.2) * 100) / 100.d));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        }
+    }//GEN-LAST:event_Laser405PercentSetKeyPressed
+
+    private void Laser405mWSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser405mWSetKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            if(Double.parseDouble(Laser405mWSet.getText()) > 120)
+                    {
+                        Laser405mWSet.setText("120");
+                    }
+            try {
+                core_.setProperty(nm405PLabel, "Volts", Float.parseFloat(Laser405mWSet.getText()) / 24);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                Laser405PercentSet.setText(Double.toString(Math.round((Double.parseDouble(Laser405mWSet.getText()) / 1.2) * 100) / 100.d));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            /*     try {
+             jLasermWSet1.setText(core_.getProperty(nm405Label, "Laser Power Set-point Select [mW]"));
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+        }
+    }//GEN-LAST:event_Laser405mWSetKeyPressed
+
+    private void Laser561PercentSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser561PercentSetKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            if(Double.parseDouble(Laser561PercentSet.getText()) > 100)
+                    {
+                        Laser561PercentSet.setText("100");
+                    }
+            try {
+                core_.setProperty(nm561PLabel, "Volts", (5.0 - Float.parseFloat(Laser561PercentSet.getText()) / 20));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            /*  try {
+             jLaserPercentSet3.setText();
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+            try {
+                Laser561mWSet.setText(Double.toString(Math.round((Double.parseDouble(Laser561PercentSet.getText()) * 1.5) * 100) / 100.d));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        }
+    }//GEN-LAST:event_Laser561PercentSetKeyPressed
+
+    private void Laser561OnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Laser561OnOffActionPerformed
+        if (Laser561OnOff.isSelected() && LaserToggle.isSelected()) {
+            try {
+                core_.setProperty(nm561Label, "Laser", "On");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            Laser561OnOff.setText("STATE: ON");
+            State561.setText("ON");
+            State561.setBackground(Color.red);
+            Laser561OnOff.setBackground(Color.red);
+            /* try {
+             core_.setProperty(nm561ENLabel, "Volts", 5.0);
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+        } else if (Laser561OnOff.isSelected() && !LaserToggle.isSelected()) {
+            Laser561OnOff.setText("STATE: READY");
+            State561.setText("READY");
+            State561.setBackground(Color.yellow);
+            Laser561OnOff.setBackground(Color.yellow);
+            try {
+                core_.setProperty(nm561Label, "Laser", "Off");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        } else {
+            try {
+                core_.setProperty(nm561Label, "Laser", "Off");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            Laser561OnOff.setText("STATE: OFF");
+            State561.setText("OFF");
+            State561.setBackground(Color.green);
+            Laser561OnOff.setBackground(Color.green);
+            /*try {
+             core_.setProperty(nm561ENLabel, "Volts", 0.0);
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+        }
+    }//GEN-LAST:event_Laser561OnOffActionPerformed
+
+    private void Laser561mWSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser561mWSetKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            if(Double.parseDouble(Laser561mWSet.getText()) > 150)
+                    {
+                        Laser561mWSet.setText("150");
+                    }
+            try {
+                core_.setProperty(nm561PLabel, "Volts", 5.0 - (Float.parseFloat(Laser561mWSet.getText()) / 30));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                Laser561PercentSet.setText(Double.toString(Math.round((Double.parseDouble(Laser561mWSet.getText()) / 1.5) * 100) / 100.d));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        }
+    }//GEN-LAST:event_Laser561mWSetKeyPressed
+
+    private void Laser445OnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Laser445OnOffActionPerformed
+        if (Laser445OnOff.isSelected() && LaserToggle.isSelected()) {
+            try {
+                core_.setProperty(nm445Label, "Laser Operation Select", "On");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                core_.setProperty(nm445ENLabel, "Volts", 5.0);
+
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            Laser445OnOff.setText("STATE: ON");
+            Laser445OnOff.setBackground(Color.red);
+            State445.setText("ON");
+            State445.setBackground(Color.red);
+        } else if (Laser365OnOff.isSelected() && !LaserToggle.isSelected()) {
+            Laser445OnOff.setText("STATE: READY");
+            Laser445OnOff.setBackground(Color.yellow);
+            State445.setText("READY");
+            State445.setBackground(Color.yellow);
+            try {
+                core_.setProperty(nm445Label, "Laser Operation Select", "Off");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                core_.setProperty(nm445ENLabel, "Volts", 0.0);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        } else {
+            try {
+                core_.setProperty(nm445Label, "Laser Operation Select", "Off");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                core_.setProperty(nm445ENLabel, "Volts", 0.0);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            Laser445OnOff.setText("STATE: OFF");
+            State445.setText("OFF");
+            State445.setBackground(Color.green);
+            Laser445OnOff.setBackground(Color.green);
+        }
+    }//GEN-LAST:event_Laser445OnOffActionPerformed
+
+    private void Laser445PercentSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser445PercentSetKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            if(Double.parseDouble(Laser445PercentSet.getText()) > 100)
+                    {
+                        Laser445PercentSet.setText("100");
+                    }
+            try {
+                core_.setProperty(nm445PLabel, "Volts", Float.parseFloat(Laser445PercentSet.getText()) / 20);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            /*try {
+             jLaserPercentSet2.setText(core_.getProperty(nm445Label, "Laser Power Set-point Select [%]").substring(0, core_.getProperty(nm445Label, "Laser Power Set-point [%]").length() - 2));
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+            try {
+                Laser445mWSet.setText(Float.toString(Math.round((Float.parseFloat(Laser445PercentSet.getText())) * 100) / 100.f));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        }
+    }//GEN-LAST:event_Laser445PercentSetKeyPressed
+
+    private void Laser445mWSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser445mWSetKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            if(Double.parseDouble(Laser445mWSet.getText()) > 100)
+                    {
+                        Laser445mWSet.setText("100");
+                    }
+            try {
+                core_.setProperty(nm445PLabel, "Volts", Float.parseFloat(Laser445mWSet.getText()) / 20);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                Laser445PercentSet.setText(Float.toString(Math.round((Float.parseFloat(Laser445mWSet.getText())) * 100) / 100.f));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            /* try {
+             jLasermWSet2.setText(core_.getProperty(nm445Label, "Laser Power Set-point Select [mW]"));
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+        }
+    }//GEN-LAST:event_Laser445mWSetKeyPressed
+
+    private void Laser365PercentSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser365PercentSetKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            if(Double.parseDouble(Laser365PercentSet.getText()) > 100)
+                    {
+                        Laser365PercentSet.setText("100");
+                    }
+            try {
+                Laser365mWSet.setText(Double.toString(Math.round((Double.parseDouble(Laser365PercentSet.getText()) * 0.03) * 100) / 100.d));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            if (Laser365OnOff.isSelected()) {
+                try {
+                    core_.setProperty(nm365PLabel, "Volts", Float.parseFloat(Laser365PercentSet.getText()) / 20);
+                } catch (Exception e) {
+                    gui_.logError(e);
+                }
+            }
+            /*  try {
+             jLaserPercentSet3.setText();
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+
+        }
+    }//GEN-LAST:event_Laser365PercentSetKeyPressed
+
+    private void Laser365OnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Laser365OnOffActionPerformed
+        if (Laser365OnOff.isSelected() && LaserToggle.isSelected()) {
+            try {
+
+                core_.setProperty(nm365PLabel, "Volts", Float.parseFloat(Laser365PercentSet.getText()) / 20);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            Laser365OnOff.setText("STATE: ON");
+            Laser365OnOff.setBackground(Color.red);
+            State365.setText("ON");
+            State365.setBackground(Color.red);
+        } else if (Laser365OnOff.isSelected() && !LaserToggle.isSelected()) {
+            Laser365OnOff.setText("STATE: ENABLED");
+            State365.setText("READY");
+            State365.setBackground(Color.yellow);
+            Laser365OnOff.setBackground(Color.yellow);
+            try {
+                core_.setProperty(nm365PLabel, "Volts", 0.0);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        } else {
+            try {
+                core_.setProperty(nm365PLabel, "Volts", 0.0);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            Laser365OnOff.setText("STATE: OFF");
+            State365.setText("OFF");
+            State365.setBackground(Color.green);
+            Laser365OnOff.setBackground(Color.green);
+        }
+    }//GEN-LAST:event_Laser365OnOffActionPerformed
+
+    private void Laser365mWSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser365mWSetKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            if(Double.parseDouble(Laser365mWSet.getText()) > 3)
+                    {
+                        Laser365mWSet.setText("3");
+                    }
+            try {
+                Laser365PercentSet.setText(Double.toString(Math.round((Double.parseDouble(Laser365mWSet.getText()) / 0.03) * 100) / 100.d));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            if (Laser365OnOff.isSelected()) {
+                try {
+                    core_.setProperty(nm365PLabel, "Volts", Float.parseFloat(Laser365mWSet.getText()) / (float) 28);
+                } catch (Exception e) {
+                    gui_.logError(e);
+                }
+            }
+            /*  try {
+             jLaserPercentSet3.setText();
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+
+        }
+    }//GEN-LAST:event_Laser365mWSetKeyPressed
+
+    private void Laser642OnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Laser642OnOffActionPerformed
+        if (Laser642OnOff.isSelected() && LaserToggle.isSelected()) {
+            try {
+                core_.setProperty(nm642Label, "Laser Operation Select", "On");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+
+            try {
+                core_.setProperty(nm642ENLabel, "Volts", 5.0);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            Laser642OnOff.setText("STATE: ON");
+            Laser642OnOff.setBackground(Color.red);
+            State642.setText("ON");
+            State642.setBackground(Color.red);
+
+        } else if (Laser642OnOff.isSelected() && !LaserToggle.isSelected()) {
+            Laser642OnOff.setText("STATE: READY");
+            Laser642OnOff.setBackground(Color.yellow);
+            State642.setText("READY");
+            State642.setBackground(Color.yellow);
+            try {
+                core_.setProperty(nm642Label, "Laser Operation Select", "Off");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                core_.setProperty(nm642ENLabel, "Volts", 0.0);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        } else {
+            try {
+                core_.setProperty(nm642Label, "Laser Operation Select", "Off");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                core_.setProperty(nm642ENLabel, "Volts", 0.0);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            Laser642OnOff.setText("STATE: OFF");
+            State642.setText("OFF");
+            State642.setBackground(Color.GREEN);
+            Laser642OnOff.setBackground(Color.green);
+        }
+    }//GEN-LAST:event_Laser642OnOffActionPerformed
+
+    private void Laser642PercentSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser642PercentSetKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            if(Double.parseDouble(Laser642PercentSet.getText()) > 100)
+                    {
+                        Laser642PercentSet.setText("100");
+                    }
+            try {
+
+                core_.setProperty(nm642PLabel, "Volts", Float.parseFloat(Laser642PercentSet.getText()) / 20);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            /*  try {
+             jLaserPercentSet3.setText();
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+            try {
+                Laser642mWSet.setText(Double.toString(Math.round((Double.parseDouble(Laser642PercentSet.getText()) * 1.4) * 100) / 100.d));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        }
+    }//GEN-LAST:event_Laser642PercentSetKeyPressed
+
+    private void Laser642mWSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser642mWSetKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            if(Double.parseDouble(Laser642mWSet.getText()) > 140)
+                    {
+                        Laser642mWSet.setText("140");
+                    }
+            try {
+                core_.setProperty(nm642PLabel, "Volts", Float.parseFloat(Laser642mWSet.getText()) / 28);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            /*  try {
+             jLaserPercentSet3.setText();
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+            try {
+                Laser642PercentSet.setText(Double.toString(Math.round((Double.parseDouble(Laser642mWSet.getText()) / 1.4) * 100) / 100.d));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        }
+    }//GEN-LAST:event_Laser642mWSetKeyPressed
+
+    private void Laser488OnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Laser488OnOffActionPerformed
+        if (Laser488OnOff.isSelected() && LaserToggle.isSelected()) {
+            try {
+                core_.setProperty(nm488Label, "Laser Operation Select", "On");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                core_.setProperty(nm488ENLabel, "Volts", 5.0);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            Laser488OnOff.setText("STATE: ON");
+            Laser488OnOff.setBackground(Color.red);
+            State488.setText("ON");
+            State488.setBackground(Color.red);
+        } else if (Laser488OnOff.isSelected() && !LaserToggle.isSelected()) {
+            Laser488OnOff.setText("STATE: READY");
+            Laser488OnOff.setBackground(Color.yellow);
+            State488.setText("READY");
+            State488.setBackground(Color.yellow);
+            try {
+                core_.setProperty(nm488Label, "Laser Operation Select", "Off");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                core_.setProperty(nm488ENLabel, "Volts", 0.0);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        } else {
+            try {
+                core_.setProperty(nm488Label, "Laser Operation Select", "Off");
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                core_.setProperty(nm488ENLabel, "Volts", 0.0);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            Laser488OnOff.setText("STATE: OFF");
+            Laser488OnOff.setBackground(Color.green);
+            State488.setText("OFF");
+            State488.setBackground(Color.green);
+        }
+    }//GEN-LAST:event_Laser488OnOffActionPerformed
+
+    private void Laser488PercentSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser488PercentSetKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            if(Double.parseDouble(Laser488PercentSet.getText()) > 100)
+                    {
+                        Laser488PercentSet.setText("100");
+                    }
+            try {
+                core_.setProperty(nm488PLabel, "Volts", Float.parseFloat(Laser488PercentSet.getText()) / 20);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            /*  try {
+             jLaserPercentSet3.setText();
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+            try {
+                Laser488mWSet.setText(Double.toString(Math.round((Double.parseDouble(Laser488PercentSet.getText()) * 2) * 100) / 100.d));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+        }
+    }//GEN-LAST:event_Laser488PercentSetKeyPressed
+
+    private void Laser488mWSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser488mWSetKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            if(Double.parseDouble(Laser488mWSet.getText()) > 200)
+                    {
+                        Laser488mWSet.setText("200");
+                    }
+            try {
+                core_.setProperty(nm488PLabel, "Volts", Float.parseFloat(Laser488mWSet.getText()) / 40);
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            try {
+                Laser488PercentSet.setText(Double.toString(Math.round((Double.parseDouble(Laser488mWSet.getText()) / 2) * 100) / 100.d));
+            } catch (Exception e) {
+                gui_.logError(e);
+            }
+            /*   try {
+             jLasermWSet3.setText(Double.toString(Double.parseDouble(jLasermWSet1.getText())/2));
+             } catch (Exception e) {
+             gui_.logError(e);
+             }*/
+        }
+    }//GEN-LAST:event_Laser488mWSetKeyPressed
+
+    private void ZUpSliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ZUpSliderMouseReleased
+        try {
+            core_.setProperty(ZStageLabel, "Step Voltage P", ZUpSlider.getValue());
+        } catch (Exception e) {
+            gui_.logError(e);
+        }        // TODO add your handling code here:
+    }//GEN-LAST:event_ZUpSliderMouseReleased
+
+    private void ZUpSliderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ZUpSliderMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ZUpSliderMouseClicked
+
+    private void ZDownSliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ZDownSliderMouseReleased
+        // TODO add your handling code here:
+        try {
+            core_.setProperty(ZStageLabel, "Step Voltage N", ZDownSlider.getValue());
+        } catch (Exception e) {
+            gui_.logError(e);
+        }
+    }//GEN-LAST:event_ZDownSliderMouseReleased
+
+    private void ZDownSliderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ZDownSliderMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ZDownSliderMouseClicked
+
+    private void ZFineSliderMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ZFineSliderMouseDragged
+        // TODO add your handling code here:
+        try {
+            positionTimer.stop();
+            core_.setProperty(ZStageLabel, "Fine Voltage", ZFineSlider.getValue());
+            positionTimer.start();
+        } catch (Exception e) {
+            gui_.logError(e);
+        }
+    }//GEN-LAST:event_ZFineSliderMouseDragged
+
+    private void ZSmallUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZSmallUpActionPerformed
+        setRelativeStagePosition(smallMovementZ_);
+    }//GEN-LAST:event_ZSmallUpActionPerformed
+
+    private void ZSmallDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZSmallDownActionPerformed
+        setRelativeStagePosition(-smallMovementZ_);
+    }//GEN-LAST:event_ZSmallDownActionPerformed
+
+    private void ZBigUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZBigUpActionPerformed
+        setRelativeStagePosition(mediumMovementZ_);
+    }//GEN-LAST:event_ZBigUpActionPerformed
+
+    private void ZBigDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZBigDownActionPerformed
+        setRelativeStagePosition(-mediumMovementZ_);
+    }//GEN-LAST:event_ZBigDownActionPerformed
+
+    private void XYMedRightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYMedRightActionPerformed
+        setRelativeXYStagePosition(mediumMovement_, 0.0);
+    }//GEN-LAST:event_XYMedRightActionPerformed
+
+    private void XYMedUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYMedUpActionPerformed
+        setRelativeXYStagePosition(0.0, -mediumMovement_);
+    }//GEN-LAST:event_XYMedUpActionPerformed
+
+    private void XYBigRightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYBigRightActionPerformed
+        setRelativeXYStagePosition(largeMovement_, 0.0);
+    }//GEN-LAST:event_XYBigRightActionPerformed
+
+    private void XYBigDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYBigDownActionPerformed
+        setRelativeXYStagePosition(0.0, largeMovement_);
+    }//GEN-LAST:event_XYBigDownActionPerformed
+
+    private void XYSmallRightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYSmallRightActionPerformed
+        setRelativeXYStagePosition(smallMovement_, 0.0);
+    }//GEN-LAST:event_XYSmallRightActionPerformed
+
+    private void XYBigUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYBigUpActionPerformed
+        setRelativeXYStagePosition(0.0, -largeMovement_);
+    }//GEN-LAST:event_XYBigUpActionPerformed
+
+    private void XYMedDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYMedDownActionPerformed
+        setRelativeXYStagePosition(0.0, mediumMovement_);
+    }//GEN-LAST:event_XYMedDownActionPerformed
+
+    private void XYSmallUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYSmallUpActionPerformed
+        setRelativeXYStagePosition(0.0, -smallMovement_);
+    }//GEN-LAST:event_XYSmallUpActionPerformed
+
+    private void XYMedLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYMedLeftActionPerformed
+        setRelativeXYStagePosition(-mediumMovement_, 0.0);
+    }//GEN-LAST:event_XYMedLeftActionPerformed
+
+    private void XYBigLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYBigLeftActionPerformed
+        setRelativeXYStagePosition(-largeMovement_, 0.0);
+    }//GEN-LAST:event_XYBigLeftActionPerformed
+
+    private void XYSmallDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYSmallDownActionPerformed
+        setRelativeXYStagePosition(0.0, smallMovement_);
+    }//GEN-LAST:event_XYSmallDownActionPerformed
+
+    private void XYSmallLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYSmallLeftActionPerformed
+        setRelativeXYStagePosition(-smallMovement_, 0.0);
+    }//GEN-LAST:event_XYSmallLeftActionPerformed
+
+    private void LRBigRightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRBigRightActionPerformed
+        setRelativeLRStagePosition(mediumMovementLR_, 0.0);
+    }//GEN-LAST:event_LRBigRightActionPerformed
+
+    private void LRBigUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRBigUpActionPerformed
+        setRelativeLRStagePosition(0.0, mediumMovementLR_);
+    }//GEN-LAST:event_LRBigUpActionPerformed
+
+    private void LRSmallRightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRSmallRightActionPerformed
+        setRelativeLRStagePosition(smallMovementLR_, 0.0);
+    }//GEN-LAST:event_LRSmallRightActionPerformed
+
+    private void LRBigDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRBigDownActionPerformed
+        setRelativeLRStagePosition(0.0, -mediumMovementLR_);
+    }//GEN-LAST:event_LRBigDownActionPerformed
+
+    private void LRSmallUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRSmallUpActionPerformed
+        setRelativeLRStagePosition(0.0, smallMovementLR_);
+    }//GEN-LAST:event_LRSmallUpActionPerformed
+
+    private void LRBigLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRBigLeftActionPerformed
+        setRelativeLRStagePosition(-mediumMovementLR_, 0.0);
+    }//GEN-LAST:event_LRBigLeftActionPerformed
+
+    private void LRSmallDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRSmallDownActionPerformed
+        setRelativeLRStagePosition(0.0, -smallMovementLR_);
+    }//GEN-LAST:event_LRSmallDownActionPerformed
+
+    private void LRSmallLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRSmallLeftActionPerformed
+        setRelativeLRStagePosition(-smallMovementLR_, 0.0);
+    }//GEN-LAST:event_LRSmallLeftActionPerformed
+
     private void UpdateCameraProperties() {
         /* try {
          Exposure.setText(core_.getProperty("Camera", "Exposure"));
@@ -2853,6 +3696,7 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
                     try {
                         core_.unloadDevice("VariSpec");
                         core_.unloadDevice("COM41");
+                        LCFilterEnable(false);
                     } catch (Exception ex) {
                         FilterLoadToggle.setText("FAILED");
                     }
@@ -2899,6 +3743,18 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_EMGainKeyPressed
 
+    private void CalibrateLRMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CalibrateLRMouseClicked
+        positionTimer.stop();
+        try {
+            bsh.source("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\CalibrateLR.bsh");
+        } catch (IOException ex) {
+            gui_.logError(ex);
+        } catch (EvalError ex) {
+            gui_.logError(ex);
+        }
+        positionTimer.start();
+    }//GEN-LAST:event_CalibrateLRMouseClicked
+
     private void ToggleShutterStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_ToggleShutterStateChanged
         if (ToggleShutter.isSelected()) {
             ToggleShutter.setText("STATE:OPEN");
@@ -2909,6 +3765,14 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
         SetCameraProperties();
         UpdateCameraProperties();
     }//GEN-LAST:event_ToggleShutterStateChanged
+
+    private void jButton30MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton30MouseClicked
+        ResetStages();
+    }//GEN-LAST:event_jButton30MouseClicked
+
+    private void LRFormStageResetMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LRFormStageResetMouseClicked
+        ResetStages();
+    }//GEN-LAST:event_LRFormStageResetMouseClicked
 
     private void LaserToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LaserToggleActionPerformed
         Laser365OnOffActionPerformed(evt);
@@ -2938,811 +3802,6 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
         prefs_.putDouble(MEDIUMMOVEMENTZ, mediumMovementZ_);
     }//GEN-LAST:event_formWindowClosing
 
-    private void LCFilterConditioningActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LCFilterConditioningActionPerformed
-        LCFilterConditioning.setText("Conditioning..");
-        try {
-            core_.setProperty("VariSpec", "Conditioning", "true");
-        } catch (Exception e) {
-            gui_.logError(e);
-        }/*
-        ActionListener taskPerformer2;
-        taskPerformer2 = new ActionListener() {
-            public void actionPerformed(ActionEvent d) {
-                // 1 Sekunde abziehen
-                String state = "true";
-                try {
-
-                    state = getProperty("VariSpec")
-
-                } catch (Exception e) {
-                    gui_.logError(e);
-                }
-
-            }
-        };
-
-        positionTimer = new Timer(500, taskPerformer2);
-        positionTimer.start();*/
-        LCFilterConditioning.setText("Conditioned");
-    }//GEN-LAST:event_LCFilterConditioningActionPerformed
-
-    private void LRFormStageResetMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LRFormStageResetMouseClicked
-        ResetStages();
-    }//GEN-LAST:event_LRFormStageResetMouseClicked
-
-    private void CrudeAutoAlignmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CrudeAutoAlignmentActionPerformed
-        positionTimer.stop();
-        try {
-            bsh.source("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\AutoAlign.bsh");
-        } catch (IOException ex) {
-            gui_.logError(ex);
-        } catch (EvalError ex) {
-            gui_.logError(ex);
-        }
-        positionTimer.start();
-    }//GEN-LAST:event_CrudeAutoAlignmentActionPerformed
-
-    private void CalibrateLRMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CalibrateLRMouseClicked
-        positionTimer.stop();
-        try {
-            bsh.source("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\CalibrateLR.bsh");
-        } catch (IOException ex) {
-            gui_.logError(ex);
-        } catch (EvalError ex) {
-            gui_.logError(ex);
-        }
-        positionTimer.start();
-    }//GEN-LAST:event_CalibrateLRMouseClicked
-
-    private void LRBigRightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRBigRightActionPerformed
-        setRelativeLRStagePosition(mediumMovementLR_, 0.0);
-    }//GEN-LAST:event_LRBigRightActionPerformed
-
-    private void LRBigUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRBigUpActionPerformed
-        setRelativeLRStagePosition(0.0, mediumMovementLR_);
-    }//GEN-LAST:event_LRBigUpActionPerformed
-
-    private void LRSmallRightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRSmallRightActionPerformed
-        setRelativeLRStagePosition(smallMovementLR_, 0.0);
-    }//GEN-LAST:event_LRSmallRightActionPerformed
-
-    private void LRBigDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRBigDownActionPerformed
-        setRelativeLRStagePosition(0.0, -mediumMovementLR_);
-    }//GEN-LAST:event_LRBigDownActionPerformed
-
-    private void LRSmallUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRSmallUpActionPerformed
-        setRelativeLRStagePosition(0.0, smallMovementLR_);
-    }//GEN-LAST:event_LRSmallUpActionPerformed
-
-    private void LRBigLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRBigLeftActionPerformed
-        setRelativeLRStagePosition(-mediumMovementLR_, 0.0);
-    }//GEN-LAST:event_LRBigLeftActionPerformed
-
-    private void LRSmallDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRSmallDownActionPerformed
-        setRelativeLRStagePosition(0.0, -smallMovementLR_);
-    }//GEN-LAST:event_LRSmallDownActionPerformed
-
-    private void LRSmallLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LRSmallLeftActionPerformed
-        setRelativeLRStagePosition(-smallMovementLR_, 0.0);
-    }//GEN-LAST:event_LRSmallLeftActionPerformed
-
-    private void Laser532PercentSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser532PercentSetKeyPressed
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            if(Double.parseDouble(Laser532PercentSet.getText()) > 100)
-            {
-                Laser532PercentSet.setText("100");
-            }
-
-            try {
-                core_.setProperty(nm532PLabel, "Volts", (5.0 - Float.parseFloat(Laser532PercentSet.getText()) / 20));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            /*  try {
-                jLaserPercentSet3.setText();
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-            try {
-                Laser532mWSet.setText(Double.toString(Math.round((Double.parseDouble(Laser532PercentSet.getText()) * 3) * 100) / 100.d));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        }
-    }//GEN-LAST:event_Laser532PercentSetKeyPressed
-
-    private void Laser532OnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Laser532OnOffActionPerformed
-        if (Laser532OnOff.isSelected() && LaserToggle.isSelected()) {
-            try {
-                core_.setProperty(nm532Label, "Laser", "On");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            Laser532OnOff.setText("STATE: ON");
-            State532.setText("ON");
-            State532.setBackground(Color.red);
-            Laser532OnOff.setBackground(Color.red);
-            /* try {
-                core_.setProperty(nm532ENLabel, "Volts", 5.0);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-        } else if (Laser532OnOff.isSelected() && !LaserToggle.isSelected()) {
-            Laser532OnOff.setText("STATE: READY");
-            State532.setText("READY");
-            State532.setBackground(Color.yellow);
-            Laser532OnOff.setBackground(Color.yellow);
-            try {
-                core_.setProperty(nm532Label, "Laser", "Off");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        } else {
-            try {
-                core_.setProperty(nm532Label, "Laser", "Off");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            Laser532OnOff.setText("STATE: OFF");
-            State532.setText("OFF");
-            State532.setBackground(Color.green);
-            Laser532OnOff.setBackground(Color.green);
-            /*try {
-                core_.setProperty(nm532ENLabel, "Volts", 0.0);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-        }
-    }//GEN-LAST:event_Laser532OnOffActionPerformed
-
-    private void Laser532mWSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser532mWSetKeyPressed
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            if(Double.parseDouble(Laser532mWSet.getText()) > 300)
-            {
-                Laser532mWSet.setText("300");
-            }
-            try {
-                core_.setProperty(nm532PLabel, "Volts", (5.0 - (Float.parseFloat(Laser532mWSet.getText()) / 60)));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                Laser532PercentSet.setText(Double.toString(Math.round((Double.parseDouble(Laser532mWSet.getText()) / 3) * 100) / 100.d));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        }
-    }//GEN-LAST:event_Laser532mWSetKeyPressed
-
-    private void Laser405OnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Laser405OnOffActionPerformed
-        if (Laser405OnOff.isSelected() && LaserToggle.isSelected()) {
-            try {
-                core_.setProperty(nm405Label, "Laser Operation Select", "On");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                core_.setProperty(nm405ENLabel, "Volts", 5.0);
-
-            } catch (Exception e) {
-                gui_.logError(e);
-
-            }
-            Laser405OnOff.setText("STATE: ON");
-            State405.setText("ON");
-            State405.setBackground(Color.red);
-            Laser405OnOff.setBackground(Color.red);
-        } else if (Laser405OnOff.isSelected() && !LaserToggle.isSelected()) {
-            Laser405OnOff.setText("STATE: READY");
-            State405.setText("READY");
-            State405.setBackground(Color.yellow);
-            Laser405OnOff.setBackground(Color.yellow);
-            try {
-                core_.setProperty(nm405Label, "Laser Operation Select", "Off");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                core_.setProperty(nm405ENLabel, "Volts", "0.0");
-
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        } else {
-            try {
-                core_.setProperty(nm405Label, "Laser Operation Select", "Off");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                core_.setProperty(nm405ENLabel, "Volts", "0.0");
-
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            Laser405OnOff.setText("STATE: OFF");
-            State405.setText("OFF");
-            State405.setBackground(Color.green);
-            Laser405OnOff.setBackground(Color.green);
-        }
-    }//GEN-LAST:event_Laser405OnOffActionPerformed
-
-    private void Laser405PercentSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser405PercentSetKeyPressed
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            if(Double.parseDouble(Laser405PercentSet.getText()) > 100)
-            {
-                Laser405PercentSet.setText("100");
-            }
-
-            try {
-                core_.setProperty(nm405PLabel, "Volts", Float.parseFloat(Laser405PercentSet.getText()) / 20);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            /* try {
-                jLaserPercentSet1.setText();
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-            try {
-                Laser405mWSet.setText(Double.toString(Math.round((Double.parseDouble(Laser405PercentSet.getText()) * 1.2) * 100) / 100.d));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        }
-    }//GEN-LAST:event_Laser405PercentSetKeyPressed
-
-    private void Laser405mWSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser405mWSetKeyPressed
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            if(Double.parseDouble(Laser405mWSet.getText()) > 120)
-            {
-                Laser405mWSet.setText("120");
-            }
-            try {
-                core_.setProperty(nm405PLabel, "Volts", Float.parseFloat(Laser405mWSet.getText()) / 24);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                Laser405PercentSet.setText(Double.toString(Math.round((Double.parseDouble(Laser405mWSet.getText()) / 1.2) * 100) / 100.d));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            /*     try {
-                jLasermWSet1.setText(core_.getProperty(nm405Label, "Laser Power Set-point Select [mW]"));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-        }
-    }//GEN-LAST:event_Laser405mWSetKeyPressed
-
-    private void Laser561PercentSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser561PercentSetKeyPressed
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            if(Double.parseDouble(Laser561PercentSet.getText()) > 100)
-            {
-                Laser561PercentSet.setText("100");
-            }
-            try {
-                core_.setProperty(nm561PLabel, "Volts", (5.0 - Float.parseFloat(Laser561PercentSet.getText()) / 20));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            /*  try {
-                jLaserPercentSet3.setText();
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-            try {
-                Laser561mWSet.setText(Double.toString(Math.round((Double.parseDouble(Laser561PercentSet.getText()) * 1.5) * 100) / 100.d));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        }
-    }//GEN-LAST:event_Laser561PercentSetKeyPressed
-
-    private void Laser561OnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Laser561OnOffActionPerformed
-        if (Laser561OnOff.isSelected() && LaserToggle.isSelected()) {
-            try {
-                core_.setProperty(nm561Label, "Laser", "On");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            Laser561OnOff.setText("STATE: ON");
-            State561.setText("ON");
-            State561.setBackground(Color.red);
-            Laser561OnOff.setBackground(Color.red);
-            /* try {
-                core_.setProperty(nm561ENLabel, "Volts", 5.0);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-        } else if (Laser561OnOff.isSelected() && !LaserToggle.isSelected()) {
-            Laser561OnOff.setText("STATE: READY");
-            State561.setText("READY");
-            State561.setBackground(Color.yellow);
-            Laser561OnOff.setBackground(Color.yellow);
-            try {
-                core_.setProperty(nm561Label, "Laser", "Off");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        } else {
-            try {
-                core_.setProperty(nm561Label, "Laser", "Off");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            Laser561OnOff.setText("STATE: OFF");
-            State561.setText("OFF");
-            State561.setBackground(Color.green);
-            Laser561OnOff.setBackground(Color.green);
-            /*try {
-                core_.setProperty(nm561ENLabel, "Volts", 0.0);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-        }
-    }//GEN-LAST:event_Laser561OnOffActionPerformed
-
-    private void Laser561mWSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser561mWSetKeyPressed
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            if(Double.parseDouble(Laser561mWSet.getText()) > 150)
-            {
-                Laser561mWSet.setText("150");
-            }
-            try {
-                core_.setProperty(nm561PLabel, "Volts", 5.0 - (Float.parseFloat(Laser561mWSet.getText()) / 30));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                Laser561PercentSet.setText(Double.toString(Math.round((Double.parseDouble(Laser561mWSet.getText()) / 1.5) * 100) / 100.d));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        }
-    }//GEN-LAST:event_Laser561mWSetKeyPressed
-
-    private void Laser445OnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Laser445OnOffActionPerformed
-        if (Laser445OnOff.isSelected() && LaserToggle.isSelected()) {
-            try {
-                core_.setProperty(nm445Label, "Laser Operation Select", "On");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                core_.setProperty(nm445ENLabel, "Volts", 5.0);
-
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            Laser445OnOff.setText("STATE: ON");
-            Laser445OnOff.setBackground(Color.red);
-            State445.setText("ON");
-            State445.setBackground(Color.red);
-        } else if (Laser365OnOff.isSelected() && !LaserToggle.isSelected()) {
-            Laser445OnOff.setText("STATE: READY");
-            Laser445OnOff.setBackground(Color.yellow);
-            State445.setText("READY");
-            State445.setBackground(Color.yellow);
-            try {
-                core_.setProperty(nm445Label, "Laser Operation Select", "Off");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                core_.setProperty(nm445ENLabel, "Volts", 0.0);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        } else {
-            try {
-                core_.setProperty(nm445Label, "Laser Operation Select", "Off");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                core_.setProperty(nm445ENLabel, "Volts", 0.0);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            Laser445OnOff.setText("STATE: OFF");
-            State445.setText("OFF");
-            State445.setBackground(Color.green);
-            Laser445OnOff.setBackground(Color.green);
-        }
-    }//GEN-LAST:event_Laser445OnOffActionPerformed
-
-    private void Laser445PercentSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser445PercentSetKeyPressed
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            if(Double.parseDouble(Laser445PercentSet.getText()) > 100)
-            {
-                Laser445PercentSet.setText("100");
-            }
-            try {
-                core_.setProperty(nm445PLabel, "Volts", Float.parseFloat(Laser445PercentSet.getText()) / 20);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            /*try {
-                jLaserPercentSet2.setText(core_.getProperty(nm445Label, "Laser Power Set-point Select [%]").substring(0, core_.getProperty(nm445Label, "Laser Power Set-point [%]").length() - 2));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-            try {
-                Laser445mWSet.setText(Float.toString(Math.round((Float.parseFloat(Laser445PercentSet.getText())) * 100) / 100.f));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        }
-    }//GEN-LAST:event_Laser445PercentSetKeyPressed
-
-    private void Laser445mWSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser445mWSetKeyPressed
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            if(Double.parseDouble(Laser445mWSet.getText()) > 100)
-            {
-                Laser445mWSet.setText("100");
-            }
-            try {
-                core_.setProperty(nm445PLabel, "Volts", Float.parseFloat(Laser445mWSet.getText()) / 20);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                Laser445PercentSet.setText(Float.toString(Math.round((Float.parseFloat(Laser445mWSet.getText())) * 100) / 100.f));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            /* try {
-                jLasermWSet2.setText(core_.getProperty(nm445Label, "Laser Power Set-point Select [mW]"));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-        }
-    }//GEN-LAST:event_Laser445mWSetKeyPressed
-
-    private void Laser365PercentSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser365PercentSetKeyPressed
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            if(Double.parseDouble(Laser365PercentSet.getText()) > 100)
-            {
-                Laser365PercentSet.setText("100");
-            }
-            try {
-                Laser365mWSet.setText(Double.toString(Math.round((Double.parseDouble(Laser365PercentSet.getText()) * 0.03) * 100) / 100.d));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            if (Laser365OnOff.isSelected()) {
-                try {
-                    core_.setProperty(nm365PLabel, "Volts", Float.parseFloat(Laser365PercentSet.getText()) / 20);
-                } catch (Exception e) {
-                    gui_.logError(e);
-                }
-            }
-            /*  try {
-                jLaserPercentSet3.setText();
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-
-        }
-    }//GEN-LAST:event_Laser365PercentSetKeyPressed
-
-    private void Laser365OnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Laser365OnOffActionPerformed
-        if (Laser365OnOff.isSelected() && LaserToggle.isSelected()) {
-            try {
-
-                core_.setProperty(nm365PLabel, "Volts", Float.parseFloat(Laser365PercentSet.getText()) / 20);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            Laser365OnOff.setText("STATE: ON");
-            Laser365OnOff.setBackground(Color.red);
-            State365.setText("ON");
-            State365.setBackground(Color.red);
-        } else if (Laser365OnOff.isSelected() && !LaserToggle.isSelected()) {
-            Laser365OnOff.setText("STATE: ENABLED");
-            State365.setText("READY");
-            State365.setBackground(Color.yellow);
-            Laser365OnOff.setBackground(Color.yellow);
-            try {
-                core_.setProperty(nm365PLabel, "Volts", 0.0);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        } else {
-            try {
-                core_.setProperty(nm365PLabel, "Volts", 0.0);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            Laser365OnOff.setText("STATE: OFF");
-            State365.setText("OFF");
-            State365.setBackground(Color.green);
-            Laser365OnOff.setBackground(Color.green);
-        }
-    }//GEN-LAST:event_Laser365OnOffActionPerformed
-
-    private void Laser365mWSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser365mWSetKeyPressed
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            if(Double.parseDouble(Laser365mWSet.getText()) > 3)
-            {
-                Laser365mWSet.setText("3");
-            }
-            try {
-                Laser365PercentSet.setText(Double.toString(Math.round((Double.parseDouble(Laser365mWSet.getText()) / 0.03) * 100) / 100.d));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            if (Laser365OnOff.isSelected()) {
-                try {
-                    core_.setProperty(nm365PLabel, "Volts", Float.parseFloat(Laser365mWSet.getText()) / (float) 28);
-                } catch (Exception e) {
-                    gui_.logError(e);
-                }
-            }
-            /*  try {
-                jLaserPercentSet3.setText();
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-
-        }
-    }//GEN-LAST:event_Laser365mWSetKeyPressed
-
-    private void Laser642OnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Laser642OnOffActionPerformed
-        if (Laser642OnOff.isSelected() && LaserToggle.isSelected()) {
-            try {
-                core_.setProperty(nm642Label, "Laser Operation Select", "On");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-
-            try {
-                core_.setProperty(nm642ENLabel, "Volts", 5.0);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            Laser642OnOff.setText("STATE: ON");
-            Laser642OnOff.setBackground(Color.red);
-            State642.setText("ON");
-            State642.setBackground(Color.red);
-
-        } else if (Laser642OnOff.isSelected() && !LaserToggle.isSelected()) {
-            Laser642OnOff.setText("STATE: READY");
-            Laser642OnOff.setBackground(Color.yellow);
-            State642.setText("READY");
-            State642.setBackground(Color.yellow);
-            try {
-                core_.setProperty(nm642Label, "Laser Operation Select", "Off");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                core_.setProperty(nm642ENLabel, "Volts", 0.0);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        } else {
-            try {
-                core_.setProperty(nm642Label, "Laser Operation Select", "Off");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                core_.setProperty(nm642ENLabel, "Volts", 0.0);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            Laser642OnOff.setText("STATE: OFF");
-            State642.setText("OFF");
-            State642.setBackground(Color.GREEN);
-            Laser642OnOff.setBackground(Color.green);
-        }
-    }//GEN-LAST:event_Laser642OnOffActionPerformed
-
-    private void Laser642PercentSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser642PercentSetKeyPressed
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            if(Double.parseDouble(Laser642PercentSet.getText()) > 100)
-            {
-                Laser642PercentSet.setText("100");
-            }
-            try {
-
-                core_.setProperty(nm642PLabel, "Volts", Float.parseFloat(Laser642PercentSet.getText()) / 20);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            /*  try {
-                jLaserPercentSet3.setText();
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-            try {
-                Laser642mWSet.setText(Double.toString(Math.round((Double.parseDouble(Laser642PercentSet.getText()) * 1.4) * 100) / 100.d));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        }
-    }//GEN-LAST:event_Laser642PercentSetKeyPressed
-
-    private void Laser642mWSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser642mWSetKeyPressed
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            if(Double.parseDouble(Laser642mWSet.getText()) > 140)
-            {
-                Laser642mWSet.setText("140");
-            }
-            try {
-                core_.setProperty(nm642PLabel, "Volts", Float.parseFloat(Laser642mWSet.getText()) / 28);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            /*  try {
-                jLaserPercentSet3.setText();
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-            try {
-                Laser642PercentSet.setText(Double.toString(Math.round((Double.parseDouble(Laser642mWSet.getText()) / 1.4) * 100) / 100.d));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        }
-    }//GEN-LAST:event_Laser642mWSetKeyPressed
-
-    private void Laser488OnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Laser488OnOffActionPerformed
-        if (Laser488OnOff.isSelected() && LaserToggle.isSelected()) {
-            try {
-                core_.setProperty(nm488Label, "Laser Operation Select", "On");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                core_.setProperty(nm488ENLabel, "Volts", 5.0);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            Laser488OnOff.setText("STATE: ON");
-            Laser488OnOff.setBackground(Color.red);
-            State488.setText("ON");
-            State488.setBackground(Color.red);
-        } else if (Laser488OnOff.isSelected() && !LaserToggle.isSelected()) {
-            Laser488OnOff.setText("STATE: READY");
-            Laser488OnOff.setBackground(Color.yellow);
-            State488.setText("READY");
-            State488.setBackground(Color.yellow);
-            try {
-                core_.setProperty(nm488Label, "Laser Operation Select", "Off");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                core_.setProperty(nm488ENLabel, "Volts", 0.0);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        } else {
-            try {
-                core_.setProperty(nm488Label, "Laser Operation Select", "Off");
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                core_.setProperty(nm488ENLabel, "Volts", 0.0);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            Laser488OnOff.setText("STATE: OFF");
-            Laser488OnOff.setBackground(Color.green);
-            State488.setText("OFF");
-            State488.setBackground(Color.green);
-        }
-    }//GEN-LAST:event_Laser488OnOffActionPerformed
-
-    private void Laser488PercentSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser488PercentSetKeyPressed
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            if(Double.parseDouble(Laser488PercentSet.getText()) > 100)
-            {
-                Laser488PercentSet.setText("100");
-            }
-            try {
-                core_.setProperty(nm488PLabel, "Volts", Float.parseFloat(Laser488PercentSet.getText()) / 20);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            /*  try {
-                jLaserPercentSet3.setText();
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-            try {
-                Laser488mWSet.setText(Double.toString(Math.round((Double.parseDouble(Laser488PercentSet.getText()) * 2) * 100) / 100.d));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-        }
-    }//GEN-LAST:event_Laser488PercentSetKeyPressed
-
-    private void Laser488mWSetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Laser488mWSetKeyPressed
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            if(Double.parseDouble(Laser488mWSet.getText()) > 200)
-            {
-                Laser488mWSet.setText("200");
-            }
-            try {
-                core_.setProperty(nm488PLabel, "Volts", Float.parseFloat(Laser488mWSet.getText()) / 40);
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            try {
-                Laser488PercentSet.setText(Double.toString(Math.round((Double.parseDouble(Laser488mWSet.getText()) / 2) * 100) / 100.d));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }
-            /*   try {
-                jLasermWSet3.setText(Double.toString(Double.parseDouble(jLasermWSet1.getText())/2));
-            } catch (Exception e) {
-                gui_.logError(e);
-            }*/
-        }
-    }//GEN-LAST:event_Laser488mWSetKeyPressed
-
-    private void jButton30MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton30MouseClicked
-        ResetStages();
-    }//GEN-LAST:event_jButton30MouseClicked
-
-    private void ZUpSliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ZUpSliderMouseReleased
-        try {
-            core_.setProperty(ZStageLabel, "Step Voltage P", ZUpSlider.getValue());
-        } catch (Exception e) {
-            gui_.logError(e);
-        }        // TODO add your handling code here:
-    }//GEN-LAST:event_ZUpSliderMouseReleased
-
-    private void ZUpSliderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ZUpSliderMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_ZUpSliderMouseClicked
-
-    private void ZDownSliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ZDownSliderMouseReleased
-        // TODO add your handling code here:
-        try {
-            core_.setProperty(ZStageLabel, "Step Voltage N", ZDownSlider.getValue());
-        } catch (Exception e) {
-            gui_.logError(e);
-        }
-    }//GEN-LAST:event_ZDownSliderMouseReleased
-
-    private void ZDownSliderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ZDownSliderMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_ZDownSliderMouseClicked
-
-    private void ZFineSliderMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ZFineSliderMouseDragged
-        // TODO add your handling code here:
-        try {
-            positionTimer.stop();
-            core_.setProperty(ZStageLabel, "Fine Voltage", ZFineSlider.getValue());
-            positionTimer.start();
-        } catch (Exception e) {
-            gui_.logError(e);
-        }
-    }//GEN-LAST:event_ZFineSliderMouseDragged
-
-    private void ZSmallUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZSmallUpActionPerformed
-        setRelativeStagePosition(smallMovementZ_);
-    }//GEN-LAST:event_ZSmallUpActionPerformed
-
-    private void ZSmallDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZSmallDownActionPerformed
-        setRelativeStagePosition(-smallMovementZ_);
-    }//GEN-LAST:event_ZSmallDownActionPerformed
-
-    private void ZBigUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZBigUpActionPerformed
-        setRelativeStagePosition(mediumMovementZ_);
-    }//GEN-LAST:event_ZBigUpActionPerformed
-
-    private void ZBigDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZBigDownActionPerformed
-        setRelativeStagePosition(-mediumMovementZ_);
-    }//GEN-LAST:event_ZBigDownActionPerformed
-
     private void XYMoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYMoveActionPerformed
         try {
 
@@ -3756,65 +3815,91 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
         YPositionLabel.setText(String.valueOf(Ypos));
 
         setRelativeXYStagePosition((Double.parseDouble(XPositionSet.getText()) - Xpos), (Double.parseDouble(YPositionSet.getText()) - Ypos));
+
     }//GEN-LAST:event_XYMoveActionPerformed
 
-    private void XYMedRightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYMedRightActionPerformed
-        setRelativeXYStagePosition(mediumMovement_, 0.0);
-    }//GEN-LAST:event_XYMedRightActionPerformed
-
-    private void XYMedUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYMedUpActionPerformed
-        setRelativeXYStagePosition(0.0, -mediumMovement_);
-    }//GEN-LAST:event_XYMedUpActionPerformed
-
-    private void XYBigRightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYBigRightActionPerformed
-        setRelativeXYStagePosition(largeMovement_, 0.0);
-    }//GEN-LAST:event_XYBigRightActionPerformed
-
-    private void XYBigDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYBigDownActionPerformed
-        setRelativeXYStagePosition(0.0, largeMovement_);
-    }//GEN-LAST:event_XYBigDownActionPerformed
-
-    private void XYSmallRightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYSmallRightActionPerformed
-        setRelativeXYStagePosition(smallMovement_, 0.0);
-    }//GEN-LAST:event_XYSmallRightActionPerformed
-
-    private void XYBigUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYBigUpActionPerformed
-        setRelativeXYStagePosition(0.0, -largeMovement_);
-    }//GEN-LAST:event_XYBigUpActionPerformed
-
-    private void XYMedDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYMedDownActionPerformed
-        setRelativeXYStagePosition(0.0, mediumMovement_);
-    }//GEN-LAST:event_XYMedDownActionPerformed
-
-    private void XYSmallUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYSmallUpActionPerformed
-        setRelativeXYStagePosition(0.0, -smallMovement_);
-    }//GEN-LAST:event_XYSmallUpActionPerformed
-
-    private void XYMedLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYMedLeftActionPerformed
-        setRelativeXYStagePosition(-mediumMovement_, 0.0);
-    }//GEN-LAST:event_XYMedLeftActionPerformed
-
-    private void XYBigLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYBigLeftActionPerformed
-        setRelativeXYStagePosition(-largeMovement_, 0.0);
-    }//GEN-LAST:event_XYBigLeftActionPerformed
-
-    private void XYSmallDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYSmallDownActionPerformed
-        setRelativeXYStagePosition(0.0, smallMovement_);
-    }//GEN-LAST:event_XYSmallDownActionPerformed
-
-    private void XYSmallLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYSmallLeftActionPerformed
-        setRelativeXYStagePosition(-smallMovement_, 0.0);
-    }//GEN-LAST:event_XYSmallLeftActionPerformed
-
-    private void LCRunScanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LCRunScanActionPerformed
+    private void CrudeAutoAlignmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CrudeAutoAlignmentActionPerformed
+        positionTimer.stop();
         try {
-            bsh.source("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\test.bsh "+LCStartWavelength.getText() + " " + LCStopWavelength.getText() + " " + LCStepSize.getText() + " " + LCIndex.getText() + " " + LCPath.getText() + " " + LCTitle.getText());
+            bsh.source("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\AutoAlign.bsh");
         } catch (IOException ex) {
             gui_.logError(ex);
         } catch (EvalError ex) {
             gui_.logError(ex);
         }
-    }//GEN-LAST:event_LCRunScanActionPerformed
+        positionTimer.start();
+
+    }//GEN-LAST:event_CrudeAutoAlignmentActionPerformed
+
+    private void LCFilterConditioningActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LCFilterConditioningActionPerformed
+        LCFilterConditioning.setText("Conditioning..");
+        try {
+            core_.setProperty("VariSpec", "Conditioning", "true");
+        } catch (Exception e) {
+            gui_.logError(e);
+        }/*
+        ActionListener taskPerformer2;
+            taskPerformer2 = new ActionListener() {
+                public void actionPerformed(ActionEvent d) {
+                    // 1 Sekunde abziehen
+                    String state = "true";
+                    try {
+
+                        state = getProperty("VariSpec")
+
+                    } catch (Exception e) {
+                        gui_.logError(e);
+                    }
+                    
+                }
+            };
+
+            positionTimer = new Timer(500, taskPerformer2);
+            positionTimer.start();*/
+        LCFilterConditioning.setText("Conditioned");
+    }//GEN-LAST:event_LCFilterConditioningActionPerformed
+
+    private void LCrunScanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LCrunScanActionPerformed
+         LCScanStop = false;
+        try{
+        FileReader reader1 = new FileReader("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\LCFilterScan\\1.bsh");
+        FileReader reader2 = new FileReader("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\LCFilterScan.bsh");
+        FileReader reader3 = new FileReader("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\LCFilterScan\\3.bsh");
+        FileReader reader4 = new FileReader("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\LCFilterScan\\4.bsh");
+            
+            bsh.set( "gui", gui_ );
+            bsh.set( "mmc", core_ );
+            //bsh.eval(reader1);
+            bsh.set("startWavelength", Float.parseFloat(LCstartWavelength.getText()));
+            bsh.set("stopWavelength", Float.parseFloat(LCstopWavelength.getText()));
+            bsh.set("stepSize",Float.parseFloat(LCstepSize.getText()));
+            bsh.set("index", Integer.parseInt(LCindex.getText()));
+            bsh.set("path", LCpath.getText());
+            bsh.set("title",LCtitle.getText());
+            bsh.eval(reader2); 
+            /*Integer stackSize = (Integer)bsh.get("stackSize");
+            for(int i = 0; (i < stackSize) && (LCScanStop == false); i++)
+            {
+                bsh.set("i", i);
+                bsh.eval(reader3);
+                UpdateLCWavelength();
+            }
+            LCScanStop = false;
+            bsh.eval(reader4);
+            LCindex.setText(Integer.toString((Integer.parseInt(LCindex.getText()) + 1)));*/
+        }
+        catch (IOException ex)
+        {
+            gui_.logError(ex);
+        }
+        catch (EvalError ex) {
+            gui_.logError(ex);
+        }
+    }//GEN-LAST:event_LCrunScanActionPerformed
+
+    private void LCstopWavelengthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LCstopWavelengthActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_LCstopWavelengthActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton CalibrateLR;
@@ -3822,14 +3907,14 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     private javax.swing.JTextField EMGain;
     private javax.swing.JToggleButton FilterLoadToggle;
     private javax.swing.JButton LCFilterConditioning;
-    private javax.swing.JTextField LCIndex;
-    private javax.swing.JTextField LCPath;
-    private javax.swing.JButton LCRunScan;
-    private javax.swing.JTextField LCStartWavelength;
-    private javax.swing.JTextField LCStepSize;
-    private javax.swing.JTextField LCStopWavelength;
-    private javax.swing.JTextField LCTitle;
     private javax.swing.JTextField LCWavelength;
+    private javax.swing.JTextField LCindex;
+    private javax.swing.JTextField LCpath;
+    private javax.swing.JButton LCrunScan;
+    private javax.swing.JTextField LCstartWavelength;
+    private javax.swing.JTextField LCstepSize;
+    private javax.swing.JTextField LCstopWavelength;
+    private javax.swing.JTextField LCtitle;
     private javax.swing.JButton LRBigDown;
     private javax.swing.JButton LRBigLeft;
     private javax.swing.JButton LRBigRight;
@@ -3943,6 +4028,9 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel40;
     private javax.swing.JLabel jLabel41;
     private javax.swing.JLabel jLabel42;
+    private javax.swing.JLabel jLabel43;
+    private javax.swing.JLabel jLabel44;
+    private javax.swing.JLabel jLabel45;
     private javax.swing.JLabel jLabel46;
     private javax.swing.JLabel jLabel47;
     private javax.swing.JLabel jLabel48;
@@ -3953,12 +4041,15 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel52;
     private javax.swing.JLabel jLabel53;
     private javax.swing.JLabel jLabel54;
+    private javax.swing.JLabel jLabel55;
     private javax.swing.JLabel jLabel56;
     private javax.swing.JLabel jLabel57;
     private javax.swing.JLabel jLabel58;
     private javax.swing.JLabel jLabel59;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel60;
+    private javax.swing.JLabel jLabel61;
+    private javax.swing.JLabel jLabel62;
     private javax.swing.JLabel jLabel68;
     private javax.swing.JLabel jLabel69;
     private javax.swing.JLabel jLabel7;
@@ -3991,6 +4082,7 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;

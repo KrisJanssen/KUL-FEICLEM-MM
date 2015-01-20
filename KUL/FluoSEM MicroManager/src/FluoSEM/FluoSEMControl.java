@@ -30,12 +30,16 @@ public class FluoSEMControl implements MMPlugin {
     public static String menuName = "FluoSEM Control";
     public static String tooltipDescription = "FluoSEM Control.";
     private CMMCore core_;
+    private CMMCore mmc;
     private ScriptInterface gui_;
+    private ScriptInterface gui;
     private FluoSEMControlFrame myFrame_;
 
     public void setApp(ScriptInterface app) {
         gui_ = app;
+        gui = gui_;
         core_ = app.getMMCore();
+        mmc = core_;
         if (myFrame_ == null) {
             myFrame_ = new FluoSEMControlFrame(gui_);
         }
