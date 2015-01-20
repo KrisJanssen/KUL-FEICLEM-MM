@@ -48,8 +48,8 @@ const double g_TimeMultiplier = 1000000;
 const double g_ScanRotationMultiplier = 180/3.141582;
 
 // External names used used by the rest of the system
-const char* g_CameraDeviceName = "FEISEM Camera";
-const char* g_ControllerDeviceName = "FEISEM Controller";
+//const char* g_CameraDeviceName = "FEISEM Camera";
+const char* g_ControllerDeviceName = "FEISEM-MT";
 
 // constants for naming pixel types (allowed values of the "PixelType" property)
 const char* g_MODE_HIVAC = "Hi-Vac";
@@ -88,7 +88,7 @@ const char* g_HTSTATE_INITIALIZING = "Initialising";
 */
 MODULE_API void InitializeModuleData()
 {
-	RegisterDevice(g_CameraDeviceName, MM::GenericDevice, "FEISEM Controller");
+	RegisterDevice(g_ControllerDeviceName, MM::GenericDevice, "FEISEM-MT");
 }
 
 MODULE_API MM::Device* CreateDevice(const char* deviceName)
@@ -113,17 +113,16 @@ FEISEMController::FEISEMController():initialized_(false),busy_(false)
 {
 	pIBeamControl = NULL;
 	pIElectronBeamControl = NULL;
-	pIVideoControl = NULL;
-	pIChannels = NULL;
+
 	pIMicroscopeControl = NULL;
 	pIScanControl = NULL;
 	pIVacSystemControl = NULL;
-	pIChannel = NULL;
+
 	pIConnectionPointContainer = NULL;
 	pIDispatch = NULL; 
 
-	CreateProperty(MM::g_Keyword_Description, "FEISEM Controller", MM::String, true);
-	int ret = CreateProperty(MM::g_Keyword_Description, "FEISEM Controller", MM::String, true);
+	CreateProperty(MM::g_Keyword_Description, "FEISEM-MT", MM::String, true);
+	int ret = CreateProperty(MM::g_Keyword_Description, "FEISEM-MT", MM::String, true);
 	assert(DEVICE_OK == ret);
 	// Name
 	ret = CreateProperty(MM::g_Keyword_Name, g_ControllerDeviceName, MM::String, true);
@@ -202,12 +201,11 @@ int FEISEMController::Initialize()
 	HRESULT hr = E_FAIL;
 	bool COMOK = true;
 	CComBSTR sMachine( MACHINE );
-
-	if ( SUCCEEDED( hr = CoInitializeEx(NULL, COINIT_MULTITHREADED ) ) )
+	if ( SUCCEEDED( hr = CoInitializeEx(NULL,  COINIT_MULTITHREADED) ) )
 	{
 		//          cout << _T( "COM library initialized successfully" ) << endl;
 
-		if ( SUCCEEDED( hr = CoCreateInstance( CLSID_MicroscopeControl, NULL, CLSCTX_LOCAL_SERVER, IID_IMicroscopeControl, reinterpret_cast < void ** > (&pIMicroscopeControl) ) ) )
+		if ( SUCCEEDED( hr = CoCreateInstance( CLSID_MicroscopeControl, NULL, CLSCTX_INPROC_SERVER, IID_IMicroscopeControl, reinterpret_cast < void ** > (&pIMicroscopeControl) ) ) )
 		{
 			//              cout << _T( "Create instance of MicroscopeControl object succeeded" ) << endl;
 
@@ -259,29 +257,6 @@ int FEISEMController::Initialize()
 				}
 				else
 				{
-					COMOK = false;
-				}
-				if(SUCCEEDED( hr = pIMicroscopeControl->VideoControl( &pIVideoControl ) ) && (pIVideoControl != NULL) )
-				{
-					if(SUCCEEDED( hr = pIVideoControl->Channels( &pIChannels ) ) && (pIChannels != NULL) )
-					{
-						CComVariant varChannel( 0 );
-						if(SUCCEEDED( hr = pIChannels->get_Item(varChannel, &pIChannel) ) && (pIChannel != NULL) )
-						{
-						}
-						else
-						{
-							COMOK = false;
-						}
-					}
-					else
-					{
-						COMOK = false;
-					}
-				}
-				else
-				{
-					//   cout << _T( "ERROR: Cannot connect to microscope server" ) << endl;
 					COMOK = false;
 				}
 			}
@@ -674,22 +649,6 @@ int FEISEMController::Initialize()
 		LogFEIError(hr);
 	}
 	ret = SetPropertyLimits("Beam Shift Y", min*g_BeamShiftMultiplier, max*g_BeamShiftMultiplier);
-	assert(DEVICE_OK == ret);
-
-
-	pAct = new CPropertyAction (this, &FEISEMController::OnSaveImage);
-	ret = CreateProperty("Save Image", "false" , MM::String, false, pAct);
-	assert(DEVICE_OK == ret);
-
-
-	ret = SetAllowedValues("Save Image", BOOLOPT);
-	assert(DEVICE_OK == ret);
-	ret = CreateProperty("Image Filename", "D:\\Imaging\\MMSave\\filename" , MM::String, false);
-	assert(DEVICE_OK == ret);
-
-
-
-	ret = CreateProperty("Image Counter", "0" , MM::Integer, false);
 	assert(DEVICE_OK == ret);
 	initialized_ = true;
 	}
@@ -1719,72 +1678,6 @@ int FEISEMController::OnBeamShiftY(MM::PropertyBase* pProp, MM::ActionType eAct)
 		else
 		{	
 			LogFEIError(hresult);
-		}
-
-	}
-	return DEVICE_OK;
-}
-int FEISEMController::OnSaveImage(MM::PropertyBase* pProp, MM::ActionType eAct)
-{
-	HRESULT hresult;
-	//	double X,Y;
-	if (eAct == MM::BeforeGet)
-	{
-	}
-	else if (eAct == MM::AfterSet)
-	{
-
-
-		XTLibFileFormat format = XTLibFileFormat::XTLIB_TIF16;
-
-		XTLibChannelState state;
-		int count;
-
-		ostringstream ss;
-		string isTrue;
-		BSTR userdata = SysAllocString(L"");
-		pProp->Get(isTrue);
-		char file[MM::MaxStrLength];
-		char countvalue[MM::MaxStrLength];
-		if(isTrue == "true")
-		{
-			GetProperty("Image Filename", file);
-			string filename = string(file);
-			GetProperty("Image Counter", countvalue);
-			string counter = string(countvalue);
-			ss << counter;
-			filename += "-" + counter + ".tif";
-			// 
-			pIChannel->get_ChannelState(&state);
-			if ( state != XTLIB_CHANNELSTATE_RUN)
-			{
-				pIChannel->put_ChannelState(XTLIB_CHANNELSTATE_RUN);
-			}
-
-			// indicate we want to stop scanning at the end of frame
-			pIChannel->put_ChannelState(XTLIB_CHANNELSTATE_STOP);
-			do
-			{
-				pIChannel->get_ChannelState(&state);
-			}
-			while(state != XTLIB_CHANNELSTATE_STOP);
-			hresult = pIChannel->SaveImage(CComBSTR(filename.c_str()).Detach(), format, 0, 0, userdata);
-			if(hresult == S_OK)
-			{
-				pProp->Set("false");
-				istringstream ( counter ) >> count;
-
-				count++;
-				ss.str("");
-				ss << count;
-				counter = ss.str();;
-				const char * countchar = counter.c_str();
-				SetProperty("Image Counter", countchar);
-			}
-			else
-			{	
-				LogFEIError(hresult);
-			}
 		}
 
 	}

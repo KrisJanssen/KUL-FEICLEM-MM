@@ -135,10 +135,9 @@ public:
    int OnStigmationY(MM::PropertyBase* pProp, MM::ActionType eAct);
    int OnBeamShiftX(MM::PropertyBase* pProp, MM::ActionType eAct);
    int OnBeamShiftY(MM::PropertyBase* pProp, MM::ActionType eAct);
-   int OnSaveImage(MM::PropertyBase* pProp, MM::ActionType eAct);
+ 
    void LogFEIError(HRESULT hresult);
    void COMInit();
-
 private:
    bool initialized_;
    bool busy_;
@@ -149,9 +148,7 @@ private:
         IElectronBeamControl * pIElectronBeamControl;
         IMicroscopeControl * pIMicroscopeControl;
 		IScanControl * pIScanControl;
-		IVideoControl * pIVideoControl;
-		IChannels * pIChannels;
-		IChannel* pIChannel;
+		
 	  IVacSystemControl * pIVacSystemControl;
 	  IConnectionPointContainer * pIConnectionPointContainer;
 	  IDispatch * pIDispatch;

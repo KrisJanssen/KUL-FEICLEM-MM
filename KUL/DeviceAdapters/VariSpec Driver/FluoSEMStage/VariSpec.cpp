@@ -14,6 +14,7 @@
 
 #include "VariSpec.h"
 #include "../../../../micromanager/MMDevice/ModuleInterface.h"
+#include "../../../micromanager/MMCore/Error.h"
 #include <sstream>
 #include <cstdio>
 
@@ -102,7 +103,7 @@ CVariSpec::CVariSpec() :
 initialized_ (false),
 	answerTimeoutMs_(1000),
 	numPos_(0),
-	baud_("115200")
+	baud_("115200"), exercising_(false)
 
 {
    portAvailable_ = false;
@@ -237,13 +238,19 @@ int CVariSpec::Initialize()
    GetCoreCallback()->SetDeviceProperty(port_.c_str(), "Verbose", "0");
    
    InitializeFilter();
-   
+   std::vector<std::string> BOOLOPT;
+	BOOLOPT.push_back("true");
+	BOOLOPT.push_back("false");
 
    CPropertyAction* pAct = new CPropertyAction (this, &CVariSpec::OnWavelength);
    ret = CreateProperty("Wavelength", "400.0", MM::Float, false, pAct); 
-   if (ret != DEVICE_OK)
-      return ret;
+   assert(DEVICE_OK == ret);
    SetPropertyLimits("Wavelength", 400., 720.);
+   pAct = new CPropertyAction (this, &CVariSpec::OnConditioning);
+   ret = CreateProperty("Conditioning", "false", MM::String, false, pAct);
+   assert(DEVICE_OK == ret);
+   ret = SetAllowedValues("Conditioning", BOOLOPT);
+   assert(DEVICE_OK == ret);
 
    initialized_ = true;
    return DEVICE_OK;
@@ -408,6 +415,35 @@ int CVariSpec::OnWavelength (MM::PropertyBase* pProp, MM::ActionType eAct)
    }
    return DEVICE_OK;
  }
+
+int CVariSpec::OnConditioning (MM::PropertyBase* pProp, MM::ActionType eAct)
+ {
+   if (eAct == MM::BeforeGet)
+   {
+	   if(exercising_ == true)
+	   {
+		   pProp->Set("true");
+	   }
+	   else
+	   {
+		   pProp->Set("false");
+	   }
+   }
+   else if (eAct == MM::AfterSet)
+   {
+	   std::string state;
+	   pProp->Get(state);
+	   if(state == "true")
+	   {
+		   exercising_ = true;
+		   ExerciseFilter();
+		   exercising_ = false;
+		   pProp->Set("false");
+	   }
+   }
+   return DEVICE_OK;
+ }
+
 
 int 	CVariSpec::SetPosition (long pos)
 {

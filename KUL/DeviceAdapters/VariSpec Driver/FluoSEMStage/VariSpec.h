@@ -75,6 +75,7 @@ public:
    static MMThreadLock& GetLock() {return lock_;}
 
    int OnWavelength (MM::PropertyBase* pProp, MM::ActionType eAct);
+   int OnConditioning (MM::PropertyBase* pProp, MM::ActionType eAct);
 
 private:
    //int GetControllerVersion(int&);
@@ -90,6 +91,7 @@ private:
    static MMThreadLock lock_;
    long answerTimeoutMs_;
    std::string serialnum_;
+   bool exercising_;
 };
 
 #endif //_Arduino_H_
