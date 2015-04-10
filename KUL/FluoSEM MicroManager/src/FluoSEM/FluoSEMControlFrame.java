@@ -31,11 +31,14 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     /**
      * Creates new form FluoSEMControl
      */
+    //Objects to hold interface with micromanager
     private final ScriptInterface gui_;
     private final CMMCore core_;
-    private static boolean LCScanStop = false;
-    Interpreter bsh = new Interpreter();  // Construct an interpreter 
+    
+    //Beansell intepreter for running scripts
+    Interpreter bsh = new Interpreter();  
 
+    //Labels for many of the devices
     private static String nm405Label = "Laser 405nm";
     private static String nm445Label = "Laser 445nm";
     private static String nm488Label = "Laser 488nm";
@@ -58,6 +61,9 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     private static String nm561PLabel = "Laser 561nmP";
     private static String nm642PLabel = "Laser 642nmP";
 
+    
+    //Preferences and storage of variables
+    
     private Preferences prefs_;
 
     private double smallMovement_ = 1.0;
@@ -85,21 +91,23 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     private static String ZStageLabel = "FluoSEM-Stage-Z";
     private static String LRStageLabel = "FluoSEM-Stage-LR";
 
+    //Declare timers for polling/timeouts
     private static Timer positionTimer;
-    private static Timer laserPowerTimer;
     private static Timer laserOnTimer;
-    private static Timer LCConditionTimer;
     private static Timer SEMTimer;
 
     private double Xpos, Ypos;
 
+    //Set state of system to nothing loaded
     private boolean isCameraLoaded, isXYStageLoaded, isLRStageLoaded, isZStageLoaded, isLaserLoaded, isSEMLoaded = false;
 
+    //Enable the LC Filter tab.
     private void LCFilterEnable(boolean enabled)
     {
         jTabbedPane1.setEnabledAt(3, enabled);
     }
     
+    //Enable the laser tab, Set up the laser powers and make sure everything is switched off...
     private void LaserEnable(boolean enabled) {
         if (isLaserLoaded == true) {
             LaserToggle.setEnabled(enabled);
@@ -200,6 +208,8 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
             } catch (Exception e) {
                 gui_.logError(e);
             }
+            
+            //These set the initial state displayed in the GUI to off
             State365.setText("OFF");
             State405.setText("OFF");
             State445.setText("OFF");
@@ -207,10 +217,11 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
             State532.setText("OFF");
             State561.setText("OFF");
             State642.setText("OFF");
-
+            
+            //This is the timer for the laser protection. This runs every second...
             ActionListener LaserProtection = new ActionListener() {
                 public void actionPerformed(ActionEvent d) {
-                    // 1 Sekunde abziehen 
+                    
 
                     boolean conflict = false;
                     String nm365 = "";
@@ -410,9 +421,7 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
             laserOnTimer.start();
 
         } else {
-            if (laserPowerTimer.isRunning()) {
-                laserPowerTimer.stop();
-            }
+            
             if (laserOnTimer.isRunning()) {
                 laserOnTimer.stop();
             }
@@ -698,7 +707,7 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
         ZUpSlider = new javax.swing.JSlider();
         jLabel19 = new javax.swing.JLabel();
         jSeparator4 = new javax.swing.JSeparator();
-        jButton30 = new javax.swing.JButton();
+        XYStageReset = new javax.swing.JButton();
         jPanel7 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jPower3 = new javax.swing.JLabel();
@@ -1253,9 +1262,6 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
         ZDownSlider.setValue(30);
         ZDownSlider.setEnabled(false);
         ZDownSlider.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                ZDownSliderMouseClicked(evt);
-            }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 ZDownSliderMouseReleased(evt);
             }
@@ -1268,9 +1274,6 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
         ZUpSlider.setValue(30);
         ZUpSlider.setEnabled(false);
         ZUpSlider.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                ZUpSliderMouseClicked(evt);
-            }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 ZUpSliderMouseReleased(evt);
             }
@@ -1354,10 +1357,10 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jButton30.setText("Reset ALL stages");
-        jButton30.addMouseListener(new java.awt.event.MouseAdapter() {
+        XYStageReset.setText("Reset ALL stages");
+        XYStageReset.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton30MouseClicked(evt);
+                XYStageResetMouseClicked(evt);
             }
         });
 
@@ -1377,7 +1380,7 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
                 .addContainerGap())
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(251, 251, 251)
-                .addComponent(jButton30)
+                .addComponent(XYStageReset)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -1390,7 +1393,7 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton30)
+                .addComponent(XYStageReset)
                 .addContainerGap(23, Short.MAX_VALUE))
         );
 
@@ -2218,7 +2221,7 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
                             .addComponent(CrudeAutoAlignment, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel80, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel15Layout.createSequentialGroup()
-                        .addGap(87, 87, 87)
+                        .addGap(86, 86, 86)
                         .addComponent(LRFormStageReset)))
                 .addContainerGap(118, Short.MAX_VALUE))
         );
@@ -2246,8 +2249,9 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel15Layout.createSequentialGroup()
                         .addComponent(CrudeAutoAlignment)
                         .addGap(0, 0, Short.MAX_VALUE)))
+                .addGap(18, 18, 18)
                 .addComponent(LRFormStageReset)
-                .addGap(339, 339, 339))
+                .addGap(321, 321, 321))
         );
 
         jTabbedPane1.addTab("Alignments", jPanel15);
@@ -2264,11 +2268,6 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
         LCstartWavelength.setText("400.0");
 
         LCstopWavelength.setText("720.0");
-        LCstopWavelength.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                LCstopWavelengthActionPerformed(evt);
-            }
-        });
 
         LCstepSize.setText("50.0");
 
@@ -3462,10 +3461,6 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
         }        // TODO add your handling code here:
     }//GEN-LAST:event_ZUpSliderMouseReleased
 
-    private void ZUpSliderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ZUpSliderMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_ZUpSliderMouseClicked
-
     private void ZDownSliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ZDownSliderMouseReleased
         // TODO add your handling code here:
         try {
@@ -3474,10 +3469,6 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
             gui_.logError(e);
         }
     }//GEN-LAST:event_ZDownSliderMouseReleased
-
-    private void ZDownSliderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ZDownSliderMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_ZDownSliderMouseClicked
 
     private void ZFineSliderMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ZFineSliderMouseDragged
         // TODO add your handling code here:
@@ -3587,27 +3578,11 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_LRSmallLeftActionPerformed
 
     private void UpdateCameraProperties() {
-        /* try {
-         Exposure.setText(core_.getProperty("Camera", "Exposure"));
-         } catch (Exception e) {
-         gui_.logError(e);
-         }*/
         try {
             EMGain.setText(core_.getProperty("Camera", "EMGain"));
         } catch (Exception e) {
             gui_.logError(e);
         }
-        /*try {
-         String binning = core_.getProperty("Camera", "Binning");
-         for (int i = 0; i < Binning.getItemCount(); i++) {
-         if (Binning.getItemAt(i).equals(binning)) {
-         Binning.setSelectedIndex(i);
-         }
-
-         }
-         } catch (Exception e) {
-         gui_.logError(e);
-         }*/
         try {
             String shutter = core_.getProperty("Camera", "MECHANICAL SHUTTER");
             ToggleShutter.setSelected(shutter.equals("OPEN"));
@@ -3623,16 +3598,6 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
         } catch (Exception e) {
             gui_.logError(e);
         }
-        /*try {
-         core_.setProperty("Camera", "Exposure", Float.valueOf(Exposure.getText()));
-         } catch (Exception e) {
-         gui_.logError(e);
-         }
-         try {
-         core_.setProperty("Camera", "Binning", Binning.getSelectedItem().toString());
-         } catch (Exception e) {
-         gui_.logError(e);
-         }*/
 
         if (ToggleShutter.isSelected()) {
             try {
@@ -3651,7 +3616,7 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     }
 
     private void FilterLoadToggleStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_FilterLoadToggleStateChanged
-
+        //Load varispec driver
         if (FilterLoadToggle.isSelected()) {
             boolean loaded = false;
             StrVector loadeddevices = core_.getLoadedDevices();
@@ -3718,7 +3683,7 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
                 {
                     LCWavelength.setText("400");
                 }
-        if(Float.valueOf(LCWavelength.getText()) < 720)
+        if(Float.valueOf(LCWavelength.getText()) > 720)
                 {
                     LCWavelength.setText("720");
                 }
@@ -3730,6 +3695,7 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
 
     }
     private void LCWavelengthKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_LCWavelengthKeyPressed
+        //Set LC filter wavelength 
         if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
             SetLCWavelength();
             UpdateLCWavelength();
@@ -3737,6 +3703,7 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_LCWavelengthKeyPressed
 
     private void EMGainKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_EMGainKeyPressed
+        //Updates EMGain
         if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
             SetCameraProperties();
             UpdateCameraProperties();
@@ -3744,9 +3711,14 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_EMGainKeyPressed
 
     private void CalibrateLRMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CalibrateLRMouseClicked
+        //Calibrates the objective XY axis to move 2 pixels per movement. 
+        
         positionTimer.stop();
         try {
-            bsh.source("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\CalibrateLR.bsh");
+            FileReader reader1 = new FileReader("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\CalibrateLR.bsh");
+            bsh.set( "gui", gui_ );
+            bsh.set( "mmc", core_ );
+            bsh.eval(reader1);
         } catch (IOException ex) {
             gui_.logError(ex);
         } catch (EvalError ex) {
@@ -3756,6 +3728,7 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_CalibrateLRMouseClicked
 
     private void ToggleShutterStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_ToggleShutterStateChanged
+        //Toggles the shutter, get updated camera properties.
         if (ToggleShutter.isSelected()) {
             ToggleShutter.setText("STATE:OPEN");
 
@@ -3766,15 +3739,17 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
         UpdateCameraProperties();
     }//GEN-LAST:event_ToggleShutterStateChanged
 
-    private void jButton30MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton30MouseClicked
+    private void XYStageResetMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_XYStageResetMouseClicked
         ResetStages();
-    }//GEN-LAST:event_jButton30MouseClicked
+    }//GEN-LAST:event_XYStageResetMouseClicked
 
     private void LRFormStageResetMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LRFormStageResetMouseClicked
         ResetStages();
     }//GEN-LAST:event_LRFormStageResetMouseClicked
 
     private void LaserToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LaserToggleActionPerformed
+        //Sets lasers to be enabled
+        
         Laser365OnOffActionPerformed(evt);
         Laser405OnOffActionPerformed(evt);
         Laser445OnOffActionPerformed(evt);
@@ -3793,6 +3768,8 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         positionTimer.stop();
+        laserOnTimer.stop();
+        SEMTimer.stop();
         prefs_.putInt(FRAMEXPOS, (int) getLocation().getX());
         prefs_.putInt(FRAMEYPOS, (int) getLocation().getY());
         prefs_.putDouble(SMALLMOVEMENT, smallMovement_);
@@ -3803,6 +3780,8 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosing
 
     private void XYMoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XYMoveActionPerformed
+        //This function does an absolute move by using the current and desired location to calculate the difference and perform a relative move.
+        
         try {
 
             Xpos = core_.getXPosition(XYStageLabel);
@@ -3819,14 +3798,19 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_XYMoveActionPerformed
 
     private void CrudeAutoAlignmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CrudeAutoAlignmentActionPerformed
+        //Stop the XY stage feedback off timer (otherwise will interfere whilst the script is running).
         positionTimer.stop();
         try {
-            bsh.source("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\AutoAlign.bsh");
+            FileReader reader1 = new FileReader("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\AutoAlign.bsh");
+            bsh.set( "gui", gui_ );
+            bsh.set( "mmc", core_ );
+            bsh.eval(reader1);
         } catch (IOException ex) {
             gui_.logError(ex);
         } catch (EvalError ex) {
             gui_.logError(ex);
         }
+        //Switch timer back on:
         positionTimer.start();
 
     }//GEN-LAST:event_CrudeAutoAlignmentActionPerformed
@@ -3837,56 +3821,30 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
             core_.setProperty("VariSpec", "Conditioning", "true");
         } catch (Exception e) {
             gui_.logError(e);
-        }/*
-        ActionListener taskPerformer2;
-            taskPerformer2 = new ActionListener() {
-                public void actionPerformed(ActionEvent d) {
-                    // 1 Sekunde abziehen
-                    String state = "true";
-                    try {
-
-                        state = getProperty("VariSpec")
-
-                    } catch (Exception e) {
-                        gui_.logError(e);
-                    }
-                    
-                }
-            };
-
-            positionTimer = new Timer(500, taskPerformer2);
-            positionTimer.start();*/
+        }
         LCFilterConditioning.setText("Conditioned");
     }//GEN-LAST:event_LCFilterConditioningActionPerformed
 
     private void LCrunScanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LCrunScanActionPerformed
-         LCScanStop = false;
-        try{
-        FileReader reader1 = new FileReader("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\LCFilterScan\\1.bsh");
-        FileReader reader2 = new FileReader("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\LCFilterScan.bsh");
-        FileReader reader3 = new FileReader("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\LCFilterScan\\3.bsh");
-        FileReader reader4 = new FileReader("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\LCFilterScan\\4.bsh");
-            
+        //Runs a LC filter scan using the beanshell script in tutorial 8
+        try{   
+            //Read in the script to a filereader object.
+            FileReader reader1 = new FileReader("C:\\Program Files\\Micro-Manager-1.4\\KULScripts\\LCFilterScan.bsh");
+            //bsh.set allows you to set variables that can be accessed by the script. bsh.get() can be used to get variables from the script
+            //Need to give the script a handle to the gui and core objects:
             bsh.set( "gui", gui_ );
             bsh.set( "mmc", core_ );
-            //bsh.eval(reader1);
+            //Here are all the variables we need to define
             bsh.set("startWavelength", Float.parseFloat(LCstartWavelength.getText()));
             bsh.set("stopWavelength", Float.parseFloat(LCstopWavelength.getText()));
             bsh.set("stepSize",Float.parseFloat(LCstepSize.getText()));
             bsh.set("index", Integer.parseInt(LCindex.getText()));
             bsh.set("path", LCpath.getText());
             bsh.set("title",LCtitle.getText());
-            bsh.eval(reader2); 
-            /*Integer stackSize = (Integer)bsh.get("stackSize");
-            for(int i = 0; (i < stackSize) && (LCScanStop == false); i++)
-            {
-                bsh.set("i", i);
-                bsh.eval(reader3);
-                UpdateLCWavelength();
-            }
-            LCScanStop = false;
-            bsh.eval(reader4);
-            LCindex.setText(Integer.toString((Integer.parseInt(LCindex.getText()) + 1)));*/
+            //Run the script
+            bsh.eval(reader1);
+            //Update the index so you do not have to rename everytime.
+            LCindex.setText(Integer.toString((Integer.parseInt(LCindex.getText()) + 1)));
         }
         catch (IOException ex)
         {
@@ -3896,10 +3854,6 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
             gui_.logError(ex);
         }
     }//GEN-LAST:event_LCrunScanActionPerformed
-
-    private void LCstopWavelengthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LCstopWavelengthActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_LCstopWavelengthActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton CalibrateLR;
@@ -3979,6 +3933,7 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     private javax.swing.JButton XYSmallLeft;
     private javax.swing.JButton XYSmallRight;
     private javax.swing.JButton XYSmallUp;
+    private javax.swing.JButton XYStageReset;
     private javax.swing.JLabel YPositionLabel;
     private javax.swing.JTextField YPositionSet;
     private javax.swing.JButton ZBigDown;
@@ -3990,7 +3945,6 @@ public class FluoSEMControlFrame extends javax.swing.JFrame {
     private javax.swing.JTextField ZSmallStepsSet;
     private javax.swing.JButton ZSmallUp;
     private javax.swing.JSlider ZUpSlider;
-    private javax.swing.JButton jButton30;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
